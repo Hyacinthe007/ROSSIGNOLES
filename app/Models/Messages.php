@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Messages
  * Correspond à la table 'messages'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Messages extends BaseModel {
     protected $table = 'messages';

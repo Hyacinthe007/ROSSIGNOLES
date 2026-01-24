@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Helpers\Loggable;
+
 /**
  * Modèle NoteInterrogation
  * Gestion des notes d'interrogations avec journalisation automatique
  */
-
-require_once __DIR__ . '/BaseModel.php';
-require_once __DIR__ . '/../Helpers/Loggable.php';
 
 class NoteInterrogation extends BaseModel {
     use Loggable;

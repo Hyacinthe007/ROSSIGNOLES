@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle ParametresEcole
  * Correspond à la table 'parametres_ecole'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ParametresEcole extends BaseModel {
     protected $table = 'parametres_ecole';
