@@ -1,13 +1,17 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Article;
+use App\Models\TarifArticle;
+use App\Models\AnneeScolaire;
+use Exception;
+
 /**
  * Contrôleur ArticlesController
  * Gestion des articles scolaires optionnels
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Article.php';
-require_once APP_PATH . '/Models/TarifArticle.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class ArticlesController extends BaseController {
     

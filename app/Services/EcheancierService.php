@@ -1,14 +1,19 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\EcheancierEcolage;
+use App\Models\TarifInscription;
+use App\Models\Inscription;
+use App\Models\Classe;
+use App\Models\Niveau;
+use Exception;
+
 /**
  * Service EcheancierService
  * Gère la logique métier de l'échéancier d'écolage
  */
-
-require_once __DIR__ . '/../Models/EcheancierEcolage.php';
-require_once __DIR__ . '/../Models/TarifInscription.php';
-require_once __DIR__ . '/../Models/Inscription.php';
-require_once __DIR__ . '/../Models/Classe.php';
-require_once __DIR__ . '/../Models/Niveau.php';
 
 class EcheancierService {
     

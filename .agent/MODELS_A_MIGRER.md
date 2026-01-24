@@ -42,6 +42,7 @@
 - Notification
 - Message
 - ModeleNotification
+- Annonce
 - ConseilClasse
 - DecisionConseil
 

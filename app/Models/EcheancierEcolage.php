@@ -1,11 +1,17 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Helpers\Loggable;
+use Exception;
+use DateTime;
+use App\Models\AnneeScolaire;
+
 /**
  * Modèle EcheancierEcolage
  * Gestion des échéanciers d'écolage avec journalisation automatique
  */
-
-require_once __DIR__ . '/BaseModel.php';
-require_once __DIR__ . '/../Helpers/Loggable.php';
 
 class EcheancierEcolage extends BaseModel {
     use Loggable;
@@ -96,7 +102,6 @@ class EcheancierEcolage extends BaseModel {
             }
             
             // Récupérer l'année scolaire pour obtenir l'année de début
-            require_once __DIR__ . '/AnneeScolaire.php';
             $anneeScolaireModel = new AnneeScolaire();
             $anneeScolaire = $anneeScolaireModel->findById($anneeScolaireId);
             

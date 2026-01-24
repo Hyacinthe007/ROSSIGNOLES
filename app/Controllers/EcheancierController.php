@@ -1,14 +1,21 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Services\EcheancierService;
+use App\Models\Eleve;
+use App\Models\AnneeScolaire;
+use App\Models\Inscription;
+use App\Services\PdfService;
+use Exception;
+
 /**
  * Contrôleur EcheancierController
  * Gère l'affichage et la manipulation des échéanciers d'écolage
  */
 
-require_once __DIR__ . '/../Services/EcheancierService.php';
-require_once __DIR__ . '/../Models/Eleve.php';
-require_once __DIR__ . '/../Models/AnneeScolaire.php';
-
-class EcheancierController {
+class EcheancierController extends BaseController {
     
     private $echeancierService;
     private $eleveModel;
@@ -50,10 +57,7 @@ class EcheancierController {
         // Mettre à jour les statuts
         $this->echeancierService->updateStatutsEcheancier($eleveId, $anneeScolaireId);
         
-        // Récupérer l'échéancier mis à jour
-        $data = $this->echeancierService->getEcheancierAvecStatistiques($eleveId, $anneeScolaireId);
-        
-        require_once __DIR__ . '/../Views/echeancier/view.php';
+        $this->view('echeancier/view', ['eleve' => $eleve, 'anneeScolaire' => $anneeScolaire, 'data' => $data]);
     }
     
     /**
@@ -98,7 +102,11 @@ class EcheancierController {
         $anneeScolaire = $this->anneeScolaireModel->findById($anneeScolaireId);
         $annesScolaires = $this->anneeScolaireModel->getAll();
         
-        require_once __DIR__ . '/../Views/echeancier/list.php';
+        $this->view('echeancier/list', [
+            'echeanciers' => $echeanciers,
+            'anneeScolaire' => $anneeScolaire,
+            'annesScolaires' => $annesScolaires
+        ]);
     }
     
     /**
@@ -116,7 +124,11 @@ class EcheancierController {
         $anneeScolaire = $this->anneeScolaireModel->findById($anneeScolaireId);
         $annesScolaires = $this->anneeScolaireModel->getAll();
         
-        require_once __DIR__ . '/../Views/echeancier/retards.php';
+        $this->view('echeancier/retards', [
+            'elevesEnRetard' => $elevesEnRetard,
+            'anneeScolaire' => $anneeScolaire,
+            'annesScolaires' => $annesScolaires
+        ]);
     }
     
     /**
@@ -155,7 +167,6 @@ class EcheancierController {
             exit;
         }
         
-        require_once __DIR__ . '/../Models/Inscription.php';
         $inscriptionModel = new Inscription();
         $inscription = $inscriptionModel->getDetails($inscriptionId);
         
@@ -165,7 +176,7 @@ class EcheancierController {
             exit;
         }
         
-        require_once __DIR__ . '/../Views/echeancier/generer.php';
+        $this->view('echeancier/generer', ['inscription' => $inscription]);
     }
     
     /**
@@ -213,7 +224,6 @@ class EcheancierController {
         $data = $this->echeancierService->getEcheancierAvecStatistiques($eleveId, $anneeScolaireId);
         
         // Générer le PDF
-        require_once __DIR__ . '/../Services/PdfService.php';
         $pdfService = new PdfService();
         
         $html = $this->renderEcheancierPdf($eleve, $anneeScolaire, $data);

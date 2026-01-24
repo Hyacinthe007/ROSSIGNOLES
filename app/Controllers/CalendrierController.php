@@ -1,11 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\CalendrierScolaire;
+use App\Models\AnneeScolaire;
+use Exception;
+
 /**
  * Contrôleur du calendrier scolaire (vacances et jours fériés)
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/CalendrierScolaire.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class CalendrierController extends BaseController {
     private $model;
