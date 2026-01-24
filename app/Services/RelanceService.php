@@ -1,10 +1,18 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\Relance;
+use App\Models\Eleve;
+use App\Models\Facture;
+use App\Models\BaseModel;
+use Exception;
+use PDOException;
+
 /**
  * Service de relances
  */
-
-require_once APP_PATH . '/Models/Relance.php';
-require_once APP_PATH . '/Services/NotificationService.php';
 
 class RelanceService {
     private $relanceModel;
@@ -20,9 +28,6 @@ class RelanceService {
      */
     public function envoyerRelance($factureId, $eleveId, $canal, $message, $userId = null) {
         // Récupérer les informations de l'élève et de la facture
-        require_once APP_PATH . '/Models/Eleve.php';
-        require_once APP_PATH . '/Models/Facture.php';
-        
         $eleveModel = new Eleve();
         $factureModel = new Facture();
         
@@ -127,7 +132,6 @@ class RelanceService {
      * Obtient les statistiques des relances
      */
     public function getStats($anneeScolaireId = null) {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $db = BaseModel::getDBConnection();
         
         if (!$anneeScolaireId) {

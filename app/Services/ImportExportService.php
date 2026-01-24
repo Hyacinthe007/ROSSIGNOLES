@@ -1,7 +1,7 @@
 <?php
-/**
- * Service d'import/export
- */
+declare(strict_types=1);
+
+namespace App\Services;
 
 class ImportExportService {
     
