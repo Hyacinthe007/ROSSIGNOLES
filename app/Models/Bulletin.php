@@ -218,4 +218,23 @@ class Bulletin extends BaseModel {
         );
         return $result && $result['count'] > 0;
     }
+    
+    /**
+     * Récupère la liste globale des bulletins avec tous les détails
+     */
+    public function getAllWithDetails() {
+        return $this->query(
+            "SELECT b.*, 
+                    e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
+                    p.nom as periode_nom, p.date_debut as periode_debut, p.date_fin as periode_fin,
+                    c.nom as classe_nom, c.code as classe_code,
+                    a.libelle as annee_libelle
+             FROM {$this->table} b
+             INNER JOIN eleves e ON b.eleve_id = e.id
+             INNER JOIN periodes p ON b.periode_id = p.id
+             INNER JOIN classes c ON b.classe_id = c.id
+             INNER JOIN annees_scolaires a ON b.annee_scolaire_id = a.id
+             ORDER BY b.created_at DESC"
+        );
+    }
 }

@@ -19,19 +19,7 @@ class BulletinsController extends BaseController {
     
     public function list() {
         // Récupérer les bulletins avec les informations des élèves, classes et périodes
-        $bulletins = $this->bulletinModel->query(
-            "SELECT b.*, 
-                    e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
-                    p.nom as periode_nom, p.date_debut as periode_debut, p.date_fin as periode_fin,
-                    c.nom as classe_nom, c.code as classe_code,
-                    a.libelle as annee_libelle
-             FROM bulletins b
-             INNER JOIN eleves e ON b.eleve_id = e.id
-             INNER JOIN periodes p ON b.periode_id = p.id
-             INNER JOIN classes c ON b.classe_id = c.id
-             INNER JOIN annees_scolaires a ON b.annee_scolaire_id = a.id
-             ORDER BY b.created_at DESC"
-        );
+        $bulletins = $this->bulletinModel->getAllWithDetails();
         
         $this->view('bulletins/list', ['bulletins' => $bulletins]);
     }
@@ -103,14 +91,7 @@ class BulletinsController extends BaseController {
         }
         
         // Récupérer les données pour le formulaire
-        $classes = $classeModel->query("
-            SELECT c.*, n.libelle as niveau_libelle, cy.libelle as cycle_libelle
-            FROM classes c
-            JOIN niveaux n ON c.niveau_id = n.id
-            JOIN cycles cy ON n.cycle_id = cy.id
-            WHERE c.statut = 'actif' AND c.deleted_at IS NULL
-            ORDER BY cy.ordre ASC, n.ordre ASC, c.nom ASC
-        ");
+        $classes = $classeModel->getAllWithCycleAndNiveau();
         $periodes = $periodeModel->getAll();
         $anneesScolaires = $anneeScolaireModel->getAll();
         

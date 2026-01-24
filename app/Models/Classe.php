@@ -66,5 +66,20 @@ class Classe extends BaseModel {
         
         return $this->query($sql, $params);
     }
+    
+    /**
+     * Récupère toutes les classes avec leurs informations de niveau et cycle
+     * Triées par ordre de cycle et de niveau
+     */
+    public function getAllWithCycleAndNiveau() {
+        return $this->query(
+            "SELECT c.*, n.libelle as niveau_libelle, cy.libelle as cycle_libelle
+             FROM {$this->table} c
+             JOIN niveaux n ON c.niveau_id = n.id
+             JOIN cycles cy ON n.cycle_id = cy.id
+             WHERE c.statut = 'actif' AND c.deleted_at IS NULL
+             ORDER BY cy.ordre ASC, n.ordre ASC, c.nom ASC"
+        );
+    }
 }
 
