@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle AnneeScolaire
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class AnneeScolaire extends BaseModel {
     protected $table = 'annees_scolaires';

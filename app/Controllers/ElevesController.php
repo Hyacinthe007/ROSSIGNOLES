@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Eleve;
+use App\Models\LogActivite;
+
 /**
  * Contrôleur des élèves
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Eleve.php';
-require_once APP_PATH . '/Models/LogActivite.php';
 
 class ElevesController extends BaseController {
     private $eleveModel;
