@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Annonce;
+
 /**
  * Contrôleur des annonces
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Annonce.php';
 
 class AnnoncesController extends BaseController {
     private $annonceModel;

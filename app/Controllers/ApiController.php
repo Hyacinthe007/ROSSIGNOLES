@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
 /**
  * Contrôleur API
  */
-
-require_once __DIR__ . '/BaseController.php';
 
 class ApiController extends BaseController {
     

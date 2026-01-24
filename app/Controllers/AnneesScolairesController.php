@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\AnneeScolaire;
+use Exception;
+
 /**
  * Contrôleur des années scolaires
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class AnneesScolairesController extends BaseController {
     private $anneeScolaireModel;

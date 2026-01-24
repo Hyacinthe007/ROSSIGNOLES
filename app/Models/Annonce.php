@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Annonce
  * Gestion des annonces scolaires (générales, urgentes, administratives, pédagogiques)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Annonce extends BaseModel {
     protected $table = 'annonces';

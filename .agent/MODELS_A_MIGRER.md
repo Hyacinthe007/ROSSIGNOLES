@@ -39,6 +39,9 @@
 - MatieresNiveaux
 - MatieresClasses
 - CalendrierScolaire
+- Notification
+- Message
+- ModeleNotification
 - ConseilClasse
 - DecisionConseil
 
