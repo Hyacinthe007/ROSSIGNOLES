@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle ParcoursEleves
  * Correspond à la table 'parcours_eleves'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ParcoursEleves extends BaseModel {
     protected $table = 'parcours_eleves';

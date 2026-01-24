@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/BaseModel.php';
+declare(strict_types=1);
+
+namespace App\Models;
 
 class PassageConditionnel extends BaseModel {
     protected $table = 'passages_conditionnels';

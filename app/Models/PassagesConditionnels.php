@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle PassagesConditionnels
  * Correspond à la table 'passages_conditionnels'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class PassagesConditionnels extends BaseModel {
     protected $table = 'passages_conditionnels';

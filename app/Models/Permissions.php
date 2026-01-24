@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Permissions
  * Correspond à la table 'permissions'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Permissions extends BaseModel {
     protected $table = 'permissions';
