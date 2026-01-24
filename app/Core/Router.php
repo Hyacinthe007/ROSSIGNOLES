@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Core;
+
+use Exception;
+
 /**
  * Routeur de l'application
  * Gère le dispatching des requêtes vers les contrôleurs appropriés
@@ -68,25 +74,27 @@ class Router {
         // Séparer le contrôleur et la méthode
         list($controllerName, $methodName) = explode('@', $handler);
         
-        // Charger le contrôleur
-        $controllerFile = APP_PATH . '/Controllers/' . $controllerName . '.php';
+        // Nom complet de la classe avec namespace
+        $fullControllerName = "\\App\\Controllers\\" . $controllerName;
         
-        if (!file_exists($controllerFile)) {
-            throw new Exception("Contrôleur non trouvé : {$controllerName}");
+        // Vérifier que la classe existe (l'autoloader PSR-4 s'occupe du chargement)
+        if (!class_exists($fullControllerName)) {
+            // Fallback pour le développement: tenter de charger le fichier si l'autoloader échoue
+            $controllerFile = APP_PATH . '/Controllers/' . $controllerName . '.php';
+            if (file_exists($controllerFile)) {
+                require_once $controllerFile;
+            }
+            
+            if (!class_exists($fullControllerName)) {
+                throw new Exception("Classe de contrôleur non trouvée : {$fullControllerName}");
+            }
         }
         
-        require_once $controllerFile;
-        
-        // Créer une instance du contrôleur
-        if (!class_exists($controllerName)) {
-            throw new Exception("Classe de contrôleur non trouvée : {$controllerName}");
-        }
-        
-        $controller = new $controllerName();
+        $controller = new $fullControllerName();
         
         // Vérifier que la méthode existe
         if (!method_exists($controller, $methodName)) {
-            throw new Exception("Méthode non trouvée : {$controllerName}@{$methodName}");
+            throw new Exception("Méthode non trouvée : {$fullControllerName}@{$methodName}");
         }
         
         // Appeler la méthode avec les paramètres

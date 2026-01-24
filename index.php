@@ -27,11 +27,9 @@ date_default_timezone_set($config['timezone']);
 // Charger les helpers
 require_once APP_PATH . '/Helpers/functions.php';
 
-// Charger les middlewares
-require_once APP_PATH . '/Middleware/CsrfMiddleware.php';
-
-// Charger le routeur
-require_once APP_PATH . '/Core/Router.php';
+// Utiliser les classes avec namespaces
+use App\Middleware\CsrfMiddleware;
+use App\Core\Router;
 
 // Charger les routes
 $routes = require __DIR__ . '/routes/web.php';
