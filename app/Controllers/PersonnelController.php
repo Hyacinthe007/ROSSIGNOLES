@@ -1,12 +1,20 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Personnel;
+use App\Models\PersonnelEnseignant;
+use App\Models\PersonnelAdministratif;
+use App\Models\Document;
+use App\Models\AbsencePersonnel;
+use App\Models\BaseModel;
+use App\Services\PdfService;
+use Exception;
+
 /**
  * Contrôleur du personnel
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Personnel.php';
-require_once APP_PATH . '/Models/PersonnelEnseignant.php';
-require_once APP_PATH . '/Models/PersonnelAdministratif.php';
 
 class PersonnelController extends BaseController {
     
@@ -355,7 +363,6 @@ class PersonnelController extends BaseController {
             // Récupérer la liste des postes administratifs pour le dropdown
             $postes = [];
             if ($personnel['type_personnel'] === 'administratif') {
-                require_once APP_PATH . '/Models/BaseModel.php';
                 $baseIdx = new BaseModel();
                 try {
                     $postes = $baseIdx->query("SELECT * FROM postes_administratifs ORDER BY libelle ASC");
@@ -398,9 +405,6 @@ class PersonnelController extends BaseController {
         }
         
         // Charger les documents (via modèle générique)
-        require_once APP_PATH . '/Models/Document.php';
-        require_once APP_PATH . '/Models/AbsencePersonnel.php';
-        
         $docModel = new Document();
         $absModel = new AbsencePersonnel();
         
@@ -440,7 +444,6 @@ class PersonnelController extends BaseController {
     // Gestion des Documents
     public function addDocument($personnelId) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
-            require_once APP_PATH . '/Models/Document.php';
             $docModel = new Document();
             
             $uploadDir = PUBLIC_PATH . '/uploads/documents/';
@@ -469,7 +472,6 @@ class PersonnelController extends BaseController {
     }
 
     public function deleteDocument($id) {
-        require_once APP_PATH . '/Models/Document.php';
         $docModel = new Document();
         $doc = $docModel->find($id);
         
@@ -497,7 +499,6 @@ class PersonnelController extends BaseController {
             die("Personnel non trouvé");
         }
         
-        require_once APP_PATH . '/Services/PdfService.php';
         $pdfService = new PdfService();
         
         // Préparation des données pour la vue

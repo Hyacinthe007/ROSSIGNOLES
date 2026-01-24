@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle PersonnelEnseignant
- * Correspond à la table 'personnels_enseignants'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class PersonnelEnseignant extends BaseModel {
     protected $table = 'personnels_enseignants';

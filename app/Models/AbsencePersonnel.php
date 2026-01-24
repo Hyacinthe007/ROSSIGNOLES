@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle pour les absences du personnel
  */
-
-require_once APP_PATH . '/Models/BaseModel.php';
 
 class AbsencePersonnel extends BaseModel {
     protected $table = 'absences_personnels';
