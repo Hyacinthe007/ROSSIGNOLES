@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Periode;
+use App\Models\AnneeScolaire;
+
 /**
  * Contrôleur des périodes (Trimestres/Semestres)
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Periode.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class PeriodesController extends BaseController {
     private $periodeModel;

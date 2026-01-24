@@ -1,13 +1,17 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\TarifInscription;
+use App\Models\AnneeScolaire;
+use App\Models\Niveau;
+use Exception;
+
 /**
  * Contrôleur TarifController
  * Gère les tarifs d'inscription et d'écolage par niveau
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/TarifInscription.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
-require_once APP_PATH . '/Models/Niveau.php';
 
 class TarifController extends BaseController {
     
