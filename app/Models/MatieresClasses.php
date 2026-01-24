@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle MatieresClasses
- * Table: matieres_classes
- * Gère l'association entre matières et classes avec coefficients spécifiques à l'année
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class MatieresClasses extends BaseModel {
     protected $table = 'matieres_classes';

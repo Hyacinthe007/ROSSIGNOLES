@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle MatieresNiveaux
- * Table: matieres_niveaux
- * Gère l'association entre matières et niveaux avec coefficients
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class MatieresNiveaux extends BaseModel {
     protected $table = 'matieres_niveaux';

@@ -10,6 +10,11 @@ use App\Models\Matiere;
 use App\Models\Personnel;
 use App\Models\Classe;
 use App\Models\AnneeScolaire;
+use App\Models\EmploisTemps;
+use App\Models\EnseignantsClasses;
+use App\Models\MatieresSeries;
+use App\Models\MatieresNiveaux;
+use App\Models\MatieresClasses;
 
 /**
  * Contrôleur Pédagogie
@@ -232,9 +237,6 @@ class PedagogieController extends BaseController {
      * Emplois du temps
      */
     public function emploisTemps() {
-        require_once APP_PATH . '/Models/EmploisTemps.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
-        
         $model = new EmploisTemps();
         $anneeModel = new AnneeScolaire();
         

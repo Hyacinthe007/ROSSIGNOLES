@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle MatieresSeries
- * Table: matieres_series
- * Gère l'association entre matières et séries avec coefficients
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class MatieresSeries extends BaseModel {
     protected $table = 'matieres_series';

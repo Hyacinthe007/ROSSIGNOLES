@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle EnseignantsClasses
- * Table: enseignants_classes
- * Gère l'affectation des enseignants (personnels) aux classes pour enseigner des matières
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class EnseignantsClasses extends BaseModel {
     protected $table = 'enseignants_classes';
