@@ -146,5 +146,155 @@ class Classe extends BaseModel {
             [$niveauOrdre]
         );
     }
+
+    /**
+     * Récupère toutes les classes avec détails et effectif pour une année donnée
+     */
+    public function getAllWithDetailsAndEffectif($anneeId) {
+        return $this->query(
+            "SELECT c.*, 
+                    n.libelle as niveau_nom,
+                    s.libelle as serie_nom,
+                    an.libelle as annee_scolaire_libelle,
+                    (SELECT COUNT(*) FROM inscriptions i WHERE i.classe_id = c.id AND i.statut = 'validee') as effectif
+             FROM {$this->table} c
+             LEFT JOIN niveaux n ON c.niveau_id = n.id
+             LEFT JOIN series s ON c.serie_id = s.id
+             LEFT JOIN annees_scolaires an ON c.annee_scolaire_id = an.id
+             WHERE c.annee_scolaire_id = ? AND c.statut = 'actif' AND c.deleted_at IS NULL
+             ORDER BY n.ordre ASC, c.nom ASC",
+            [$anneeId]
+        );
+    }
+
+    /**
+     * Récupère les associations de classes avec filtres
+     */
+    public function getAssociationsWithFilters($filters = []) {
+        $sql = "SELECT c.id as classe_id, c.nom as classe_nom, c.code as classe_code,
+                       c.niveau_id, c.serie_id, c.annee_scolaire_id,
+                       n.id as niveau_id, n.libelle as niveau_nom,
+                       s.id as serie_id_join, s.libelle as serie_nom,
+                       an.id as annee_id, an.libelle as annee_scolaire_libelle
+                FROM {$this->table} c
+                LEFT JOIN niveaux n ON c.niveau_id = n.id
+                LEFT JOIN series s ON c.serie_id = s.id
+                LEFT JOIN annees_scolaires an ON c.annee_scolaire_id = an.id
+                WHERE c.statut = 'actif' AND c.deleted_at IS NULL";
+        
+        $params = [];
+        
+        if (!empty($filters['show_unassociated'])) {
+            $sql .= " AND c.niveau_id IS NULL";
+        }
+        
+        if (!empty($filters['niveau_id'])) {
+            $sql .= " AND c.niveau_id = ?";
+            $params[] = $filters['niveau_id'];
+        }
+        
+        if (!empty($filters['serie_id'])) {
+            $sql .= " AND c.serie_id = ?";
+            $params[] = $filters['serie_id'];
+        }
+        
+        if (!empty($filters['annee_scolaire_id'])) {
+            $sql .= " AND c.annee_scolaire_id = ?";
+            $params[] = $filters['annee_scolaire_id'];
+        }
+        
+        if (!empty($filters['search'])) {
+            $sql .= " AND (c.nom LIKE ? OR c.code LIKE ?)";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+        
+        $sql .= " ORDER BY c.nom ASC";
+        
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Calcule les statistiques des associations
+     */
+    public function getAssociationStats() {
+        $stats = [
+            'total_classes' => 0,
+            'classes_associees' => 0,
+            'classes_non_associees' => 0,
+            'repartition_niveaux' => []
+        ];
+        
+        // Total des classes actives
+        $totalResult = $this->queryOne("SELECT COUNT(*) as total FROM {$this->table} WHERE statut = 'actif' AND deleted_at IS NULL");
+        $stats['total_classes'] = (int)($totalResult['total'] ?? 0);
+        
+        // Classes associées (avec niveau)
+        $associeesResult = $this->queryOne("SELECT COUNT(*) as total FROM {$this->table} WHERE statut = 'actif' AND deleted_at IS NULL AND niveau_id IS NOT NULL");
+        $stats['classes_associees'] = (int)($associeesResult['total'] ?? 0);
+        
+        // Classes non associées
+        $stats['classes_non_associees'] = $stats['total_classes'] - $stats['classes_associees'];
+        
+        // Répartition par niveau
+        $stats['repartition_niveaux'] = $this->query(
+            "SELECT n.libelle as niveau_nom, 
+                    COUNT(c.id) as nombre_classes
+             FROM {$this->table} c
+             INNER JOIN niveaux n ON c.niveau_id = n.id
+             WHERE c.statut = 'actif' AND c.deleted_at IS NULL
+             GROUP BY n.id, n.libelle
+             ORDER BY n.ordre ASC"
+        );
+        
+        return $stats;
+    }
+
+    /**
+     * Récupère les élèves d'une classe avec filtrage sur le statut de paiement
+     */
+    public function getElevesWithPaymentStatus($classeId = null, $anneeId = null) {
+        $paymentFilter = "";
+        $params = [];
+
+        if ($anneeId) {
+            $paymentFilter = " AND NOT EXISTS (
+                SELECT 1 FROM echeanciers_ecolages ee 
+                WHERE ee.eleve_id = e.id 
+                AND ee.annee_scolaire_id = ? 
+                AND ee.statut IN ('retard', 'exclusion') 
+                AND ee.montant_restant > 0
+            )";
+        }
+
+        $sql = "SELECT e.*, i.date_inscription, i.statut as inscription_statut, i.type_inscription,
+                       c.id as classe_id, c.nom as classe_nom, c.code as classe_code
+                FROM eleves e
+                INNER JOIN inscriptions i ON e.id = i.eleve_id
+                LEFT JOIN classes c ON i.classe_id = c.id
+                WHERE i.statut = 'validee'";
+
+        if ($classeId) {
+            $sql .= " AND i.classe_id = ?";
+            $params[] = $classeId;
+        }
+
+        if ($anneeId) {
+            $sql .= " AND i.annee_scolaire_id = ?";
+            $params[] = $anneeId;
+            $params[] = $anneeId; // Pour le paymentFilter
+        } elseif (!$classeId) {
+            $sql .= " AND 1=0";
+        }
+
+        if ($classeId) {
+            $sql .= " ORDER BY e.nom ASC, e.prenom ASC";
+        } else {
+            $sql .= " ORDER BY c.nom ASC, e.nom ASC, e.prenom ASC";
+        }
+
+        return $this->query($sql . $paymentFilter, $params);
+    }
 }
 

@@ -123,7 +123,13 @@
 - [x] Paiement::getLastByFacture()
 - [x] Paiement::getByFactureWithDetails()
 
-### ClassesController ⏳ À FAIRE
+### ClassesController ✅ TERMINÉ
+- [x] Classe::getAllWithDetailsAndEffectif()
+- [x] Classe::getAssociationsWithFilters()
+- [x] Classe::getAssociationStats()
+- [x] Classe::getElevesWithPaymentStatus()
+- [x] Utilisation de Personnel::getEnseignants()
+- [x] Utilisation de AnneeScolaire::all()
 
 ---
 
@@ -131,21 +137,25 @@
 
 ### 📊 Statistiques globales
 
-**Commits réalisés :** 5 commits
-**Lignes de SQL déplacées :** ~250 lignes
-**Modèles enrichis :** 6 modèles (Bulletin, Classe, ExamenFinal, Interrogation, Facture, Personnel)
-**Nouvelles méthodes créées :** 13 méthodes réutilisables
+**Commits réalisés :** 7 commits
+**Lignes de SQL déplacées :** ~400 lignes
+**Modèles enrichis :** 10 modèles (Bulletin, Classe, ExamenFinal, Interrogation, Facture, Personnel, Eleve, Parent, Paiement, Niveau)
+**Nouvelles méthodes créées :** 25+ méthodes réutilisables
 
 ### 🏆 Modèles refactorisés
 
 | Modèle | Méthodes ajoutées | Impact |
 |--------|-------------------|--------|
 | **Bulletin** | 4 | Statistiques complètes + liste détaillée |
-| **Classe** | 1 | Récupération avec cycle/niveau |
+| **Classe** | 8 | Récupération détails, effectifs, associations, élèves, suggestion |
 | **ExamenFinal** | 3 | Gestion complète des examens |
 | **Interrogation** | 3 | Gestion complète des interrogations |
-| **Facture** | 2 | Liste et détails avec relations |
-| **Personnel** | Utilisation existante | Méthode getActifs() |
+| **Facture** | 3 | Liste, détails, enregistrement paiement |
+| **Eleve** | 1 | Éligibles à la réinscription |
+| **Parent** | 2 | Recherche téléphone, lien éléve |
+| **Paiement** | 3 | Récupération par facture avec détails |
+| **Personnel** | Utilisation existante | Méthode getEnseignants() |
+| **Niveau** | Utilisation existante | Méthode getAllWithCycle() |
 
 ### 🎯 Bénéfices mesurables
 
