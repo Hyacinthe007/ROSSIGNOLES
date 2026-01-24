@@ -1,19 +1,26 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Eleve;
+use App\Models\Classe;
+use App\Models\AnneeScolaire;
+use App\Models\EcheancierEcolage;
+use App\Models\ModePaiement;
+use App\Models\Paiement;
+use App\Models\Facture;
+use App\Models\TypeFacture;
+use App\Services\EcheancierService;
+use App\Services\EcolageService;
+use Exception;
+
 /**
  * Contrôleur PaiementMensuelController
  * Gère la saisie des paiements mensuels d'écolage
  */
 
-require_once __DIR__ . '/../Models/Eleve.php';
-require_once __DIR__ . '/../Models/Classe.php';
-require_once __DIR__ . '/../Models/AnneeScolaire.php';
-require_once __DIR__ . '/../Models/EcheancierEcolage.php';
-require_once __DIR__ . '/../Models/ModePaiement.php';
-require_once __DIR__ . '/../Models/Paiement.php';
-require_once __DIR__ . '/../Models/Facture.php';
-require_once __DIR__ . '/../Services/EcheancierService.php';
-
-class PaiementMensuelController {
+class PaiementMensuelController extends BaseController {
     
     private $eleveModel;
     private $classeModel;
@@ -90,11 +97,14 @@ class PaiementMensuelController {
             
             $sql .= " GROUP BY e.id, e.matricule, e.nom, e.prenom, c.nom
                       ORDER BY e.nom ASC, e.prenom ASC";
-            
             $eleves = $this->eleveModel->query($sql, $params);
         }
         
-        require_once __DIR__ . '/../Views/finance/paiement_mensuel.php';
+        $this->view('finance/paiement_mensuel', [
+            'classes' => $classes,
+            'anneesScolaires' => $anneesScolaires,
+            'eleves' => $eleves
+        ]);
     }
     
     /**
@@ -141,10 +151,12 @@ class PaiementMensuelController {
         // Récupérer à nouveau après mise à jour
         $echeances = $this->echeancierModel->getEcheancierEleve($eleveId, $anneeScolaireId);
         
-        // Récupérer les modes de paiement
-        $modesPaiement = $this->modePaiementModel->getAll();
-        
-        require_once __DIR__ . '/../Views/finance/paiement_mensuel_saisir.php';
+        $this->view('finance/paiement_mensuel_saisir', [
+            'eleve' => $eleve,
+            'anneeScolaire' => $anneeScolaire,
+            'echeances' => $echeances,
+            'modesPaiement' => $modesPaiement
+        ]);
     }
     
     /**
@@ -174,7 +186,6 @@ class PaiementMensuelController {
             $this->echeancierModel->beginTransaction();
             
             // Créer une facture pour ce paiement
-            require_once __DIR__ . '/../Models/TypeFacture.php';
             $typeFactureModel = new TypeFacture();
             $typeFacture = $typeFactureModel->queryOne("SELECT id FROM types_facture WHERE code = 'ECOLAGE' LIMIT 1");
             
@@ -257,7 +268,6 @@ class PaiementMensuelController {
             }
             
             // Vérifier si l'élève peut être débloqué
-            require_once __DIR__ . '/../Services/EcolageService.php';
             $ecolageService = new EcolageService();
             
             $inscription = $this->eleveModel->queryOne(

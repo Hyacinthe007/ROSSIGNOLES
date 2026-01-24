@@ -1,13 +1,19 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Inscription;
+use App\Models\Eleve;
+use App\Models\AnneeScolaire;
+use App\Models\BaseModel;
+use App\Models\Classe;
+use PDOException;
+
 /**
  * Contrôleur Parcours Scolaires
  * Gère l'affichage des parcours scolaires des élèves
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Inscription.php';
-require_once APP_PATH . '/Models/Eleve.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class ParcoursController extends BaseController {
     
@@ -39,7 +45,6 @@ class ParcoursController extends BaseController {
         
         // Récupérer les données pour les filtres
         try {
-            require_once APP_PATH . '/Models/BaseModel.php';
             $baseModel = new BaseModel();
             
             $eleves = $baseModel->query(
@@ -51,7 +56,6 @@ class ParcoursController extends BaseController {
             );
             
             // Récupérer les classes
-            require_once APP_PATH . '/Models/Classe.php';
             $classes = $baseModel->query(
                 "SELECT id, nom, code FROM classes WHERE statut = 'actif' ORDER BY nom ASC"
             );
@@ -115,7 +119,6 @@ class ParcoursController extends BaseController {
             
             $sql .= " ORDER BY a.date_debut DESC, e.nom ASC, e.prenom ASC";
             
-            require_once APP_PATH . '/Models/BaseModel.php';
             $model = new BaseModel();
             $parcours = $model->query($sql, $params);
             

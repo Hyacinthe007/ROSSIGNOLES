@@ -1,13 +1,18 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\EcheancierEcolage;
+use App\Models\Eleve;
+use App\Models\Inscription;
+use App\Models\LogActivite;
+use Exception;
+
 /**
  * Service EcolageService
  * Gère les exclusions automatiques pour non-paiement
  */
-
-require_once __DIR__ . '/../Models/EcheancierEcolage.php';
-require_once __DIR__ . '/../Models/Eleve.php';
-require_once __DIR__ . '/../Models/Inscription.php';
-require_once __DIR__ . '/../Services/NotificationService.php';
 
 class EcolageService {
     
@@ -338,8 +343,6 @@ class EcolageService {
      */
     private function enregistrerLog($data) {
         try {
-            require_once __DIR__ . '/../Models/LogActivite.php';
-            
             LogActivite::log(
                 $data['type'], 
                 'Finance', 

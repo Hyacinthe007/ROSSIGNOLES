@@ -1,10 +1,16 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Matiere;
+use App\Models\MatieresSeries;
+use App\Models\MatieresNiveaux;
+use PDOException;
+
 /**
  * Contrôleur des matières
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Matiere.php';
 
 class MatieresController extends BaseController {
     private $matiereModel;

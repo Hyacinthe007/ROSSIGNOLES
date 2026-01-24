@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\ParentModel;
+
 /**
  * Contrôleur des parents
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Parent.php';
 
 class ParentsController extends BaseController {
     private $parentModel;
