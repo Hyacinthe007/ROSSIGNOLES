@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle EmploisTemps
  * Table: emplois_temps
  * Gère les emplois du temps des classes
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class EmploisTemps extends BaseModel {
     protected $table = 'emplois_temps';
