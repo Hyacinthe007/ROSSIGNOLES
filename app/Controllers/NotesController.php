@@ -9,6 +9,8 @@ use App\Models\Classe;
 use App\Models\Periode;
 use App\Models\ExamenFinal;
 use App\Models\Interrogation;
+use App\Models\Bulletin;
+use App\Models\BaseModel;
 use App\Services\EligibiliteService;
 
 /**
@@ -435,15 +437,12 @@ class NotesController extends BaseController {
      * @return array ['eligible' => bool, 'raison' => string, 'eleve' => string]
      */
     private function verifierEligibiliteEleve($eleveId, $anneeScolaireId) {
-        require_once APP_PATH . '/Services/EligibiliteService.php';
-        
         $eligibiliteService = new EligibiliteService();
         
         // Utiliser le service qui appelle la procédure stockée
         $result = $eligibiliteService->verifierEligibilite($eleveId, $anneeScolaireId);
         
         // Récupérer les informations de l'élève pour le message
-        require_once APP_PATH . '/Models/BaseModel.php';
         $model = new BaseModel();
         
         $sql = "SELECT 
@@ -538,16 +537,11 @@ class NotesController extends BaseController {
      * Affiche les moyennes et statistiques
      */
     public function moyennes() {
-        require_once APP_PATH . '/Models/Bulletin.php';
-        require_once APP_PATH . '/Models/Periode.php';
-        require_once APP_PATH . '/Models/Classe.php';
-        
         $bulletinModel = new Bulletin();
         $periodeModel = new Periode();
         $classeModel = new Classe();
         
         // Récupérer l'année scolaire active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : null;
