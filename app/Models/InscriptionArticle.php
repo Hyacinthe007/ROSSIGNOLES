@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle InscriptionArticle
  * Gestion des articles sélectionnés lors de l'inscription
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class InscriptionArticle extends BaseModel {
     protected $table = 'inscriptions_articles';

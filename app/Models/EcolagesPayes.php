@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle EcolagesPayes
  * Correspond à la table 'ecolages_payes'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class EcolagesPayes extends BaseModel {
     protected $table = 'ecolages_payes';

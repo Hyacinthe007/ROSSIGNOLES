@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle InscriptionsHistorique
  * Table: inscriptions_historique
  * Historise les changements de statut des inscriptions
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class InscriptionsHistorique extends BaseModel {
     protected $table = 'inscriptions_historique';

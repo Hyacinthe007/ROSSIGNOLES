@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle ElevesParents
  * Table: eleves_parents
  * Gère la relation entre élèves et parents/tuteurs
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ElevesParents extends BaseModel {
     protected $table = 'eleves_parents';

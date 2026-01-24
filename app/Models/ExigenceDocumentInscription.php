@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle ExigenceDocumentInscription
  * Définit quels documents sont requis par année et type d'inscription
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ExigenceDocumentInscription extends BaseModel {
     protected $table = 'exigences_documents_inscription';
