@@ -1,11 +1,19 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Bulletin;
+use App\Models\AnneeScolaire;
+use App\Models\Classe;
+use App\Models\Periode;
+use App\Models\Eleve;
+use App\Services\BulletinService;
+use App\Services\PdfService;
+
 /**
  * Contrôleur des bulletins
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Bulletin.php';
-require_once APP_PATH . '/Services/BulletinService.php';
 
 class BulletinsController extends BaseController {
     private $bulletinModel;

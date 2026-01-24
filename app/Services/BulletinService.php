@@ -1,16 +1,21 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\BaseModel;
+use App\Models\Note;
+use App\Models\Eleve;
+use App\Models\Classe;
+use App\Models\Matiere;
+use App\Models\AnneeScolaire;
+use App\Models\Periode;
+use Exception;
+
 /**
  * Service BulletinService
  * Gère la génération automatique des bulletins scolaires
  */
-
-require_once __DIR__ . '/../Models/BaseModel.php';
-require_once __DIR__ . '/../Models/Note.php';
-require_once __DIR__ . '/../Models/Eleve.php';
-require_once __DIR__ . '/../Models/Classe.php';
-require_once __DIR__ . '/../Models/Matiere.php';
-require_once __DIR__ . '/../Models/AnneeScolaire.php';
-require_once __DIR__ . '/../Models/Periode.php';
 
 class BulletinService {
     

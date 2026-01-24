@@ -1,4 +1,8 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
 /**
  * Service de génération PDF
  */
