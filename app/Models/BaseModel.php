@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use PDO;
+use PDOException;
+use Exception;
+
 /**
  * Modèle de base avec méthodes CRUD génériques
  */

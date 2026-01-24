@@ -1,4 +1,8 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
 /**
  * Contrôleur de base avec méthodes communes
  */
@@ -179,8 +183,7 @@ class BaseController {
         
         // Mode secours/installation : si le système de rôles n'est pas encore peuplé
         // ou si l'utilisateur est le seul actif dans la base.
-        require_once APP_PATH . '/Models/User.php';
-        $userModel = new User();
+        $userModel = new \App\Models\User();
         
         try {
             $totalUsersResult = $userModel->queryOne("SELECT COUNT(*) as total FROM users WHERE is_active = 1");
