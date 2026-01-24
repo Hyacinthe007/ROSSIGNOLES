@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TypesSanctions
  * Correspond à la table 'types_sanctions'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TypesSanctions extends BaseModel {
     protected $table = 'types_sanctions';

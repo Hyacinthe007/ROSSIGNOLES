@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TypesDocuments
  * Correspond à la table 'types_documents'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TypesDocuments extends BaseModel {
     protected $table = 'types_documents';

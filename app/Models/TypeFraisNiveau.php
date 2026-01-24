@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TypeFraisNiveau
  * Gère les montants des frais par niveau (table types_frais_niveaux)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TypeFraisNiveau extends BaseModel {
     protected $table = 'types_frais_niveaux';

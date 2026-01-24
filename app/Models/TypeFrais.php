@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TypeFrais
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TypeFrais extends BaseModel {
     protected $table = 'types_frais';
