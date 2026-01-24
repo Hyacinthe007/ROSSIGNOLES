@@ -1,11 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\ConseilClasse;
+use App\Models\DecisionConseil;
+use App\Models\BaseModel;
+
 /**
  * Contrôleur des conseils de classe
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/ConseilClasse.php';
-require_once APP_PATH . '/Models/DecisionConseil.php';
 
 class ConseilsController extends BaseController {
     private $conseilModel;
@@ -158,7 +162,6 @@ class ConseilsController extends BaseController {
     }
 
     private function loadFormDependencies($conseil = null) {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $baseModel = new BaseModel();
         
         $classes = $baseModel->query("SELECT id, nom FROM classes WHERE statut = 'actif' ORDER BY nom");
