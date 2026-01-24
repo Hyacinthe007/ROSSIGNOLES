@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle CalendrierScolaire
  * Gère les vacances, jours fériés et autres événements bloquant les cours
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class CalendrierScolaire extends BaseModel {
     protected $table = 'calendrier_scolaire';
