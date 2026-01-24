@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle DecisionsConseil
  * Correspond à la table 'decisions_conseil'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class DecisionsConseil extends BaseModel {
     protected $table = 'decisions_conseil';

@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle BulletinNote
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class BulletinNote extends BaseModel {
     protected $table = 'bulletins_notes';

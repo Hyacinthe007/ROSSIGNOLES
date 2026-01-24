@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Exception;
+
 /**
  * Modèle BulletinAnnuel
  * Gère les bulletins de fin d'année scolaire
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class BulletinAnnuel extends BaseModel {
     

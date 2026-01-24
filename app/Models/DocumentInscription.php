@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle DocumentInscription
  * Gère les fichiers/documents liés à une inscription
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class DocumentInscription extends BaseModel {
     protected $table = 'documents_inscription';
