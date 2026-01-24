@@ -1,12 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Personnel;
+use App\Models\PersonnelEnseignant;
+use App\Models\AnneeScolaire;
+
 /**
  * Contrôleur des enseignants
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Personnel.php';
-require_once APP_PATH . '/Models/PersonnelEnseignant.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class EnseignantsController extends BaseController {
     

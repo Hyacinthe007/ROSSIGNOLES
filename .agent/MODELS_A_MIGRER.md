@@ -43,6 +43,7 @@
 - Message
 - ModeleNotification
 - Annonce
+- EcheancierEcolage
 - ConseilClasse
 - DecisionConseil
 

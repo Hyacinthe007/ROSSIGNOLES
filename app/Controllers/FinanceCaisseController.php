@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Paiement;
+
 /**
  * Contrôleur de la caisse consolidée
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Paiement.php';
 
 class FinanceCaisseController extends BaseController {
     private $paiementModel;

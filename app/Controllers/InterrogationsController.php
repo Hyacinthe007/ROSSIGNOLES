@@ -1,15 +1,19 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Interrogation;
+use App\Models\Classe;
+use App\Models\Matiere;
+use App\Models\Periode;
+use App\Models\AnneeScolaire;
+use Exception;
+
 /**
  * Contrôleur InterrogationsController
  * Gère les interrogations et devoirs
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Interrogation.php';
-require_once APP_PATH . '/Models/Classe.php';
-require_once APP_PATH . '/Models/Matiere.php';
-require_once APP_PATH . '/Models/Periode.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
 
 class InterrogationsController extends BaseController {
     
