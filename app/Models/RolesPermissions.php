@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/BaseModel.php';
+declare(strict_types=1);
+
+namespace App\Models;
 
 class RolesPermissions extends BaseModel {
     protected $table = 'roles_permissions';

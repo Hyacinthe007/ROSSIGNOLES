@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle PostesAdministratifs
  * Correspond à la table 'postes_administratifs'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class PostesAdministratifs extends BaseModel {
     protected $table = 'postes_administratifs';

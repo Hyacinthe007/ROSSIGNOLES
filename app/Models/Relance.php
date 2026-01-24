@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Relance
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Relance extends BaseModel {
     protected $table = 'relances';

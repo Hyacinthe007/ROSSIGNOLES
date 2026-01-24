@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Roles
  * Correspond à la table 'roles'
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Roles extends BaseModel {
     protected $table = 'roles';
