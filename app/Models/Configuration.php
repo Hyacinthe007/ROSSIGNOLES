@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Configuration
  * Gère les paramètres de configuration système
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Configuration extends BaseModel {
     protected $table = 'parametres_ecole';

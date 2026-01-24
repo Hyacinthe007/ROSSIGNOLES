@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Configuration;
+use App\Models\LogActivite;
+
 /**
  * Contrôleur système
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Configuration.php';
-require_once APP_PATH . '/Models/LogActivite.php';
 
 class SystemeController extends BaseController {
     private $configModel;
