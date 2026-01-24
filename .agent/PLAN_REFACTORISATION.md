@@ -8,8 +8,12 @@
 ## 📊 État actuel
 
 ### ✅ Déjà refactorisé :
-- `BulletinsController` → `Bulletin::getAllWithDetails()`
-- `BulletinsController` → `Classe::getAllWithCycleAndNiveau()`
+- `BulletinsController` → `Bulletin::getAllWithDetails()`, `Classe::getAllWithCycleAndNiveau()`
+- `NotesController` → `ExamenFinal` et `Interrogation` (3 méthodes chacun)
+- `NotesController` → `Bulletin` (3 méthodes de statistiques)
+- `FinanceController` → `Facture::getAllWithDetails()`, `Facture::getDetailsWithRelations()`
+
+**Total : ~240 lignes de SQL déplacées vers les modèles**
 
 ### 🔄 À refactoriser (par priorité) :
 

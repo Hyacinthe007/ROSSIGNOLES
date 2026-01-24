@@ -133,9 +133,9 @@ class PedagogieController extends BaseController {
 
         // Chargement des données pour le formulaire
         $anneeActive = $anneeModel->getActive();
-        $classes = $classeModel->query("SELECT * FROM classes WHERE statut = 'actif' AND deleted_at IS NULL ORDER BY nom ASC");
+        $classes = $classeModel->all(['statut' => 'actif'], 'nom ASC');
         $matieres = $matiereModel->all(['actif' => 1], 'nom ASC');
-        $enseignants = $personnelModel->query("SELECT * FROM personnels WHERE type_personnel = 'enseignant' AND statut = 'actif' ORDER BY nom ASC");
+        $enseignants = $personnelModel->getActifs('enseignant');
 
         $this->view('pedagogie/enseignements_form', [
             'anneeActive' => $anneeActive,
@@ -188,9 +188,9 @@ class PedagogieController extends BaseController {
 
         // Chargement des données pour le formulaire
         $anneeActive = $anneeModel->getActive();
-        $classes = $classeModel->query("SELECT * FROM classes WHERE statut = 'actif' AND deleted_at IS NULL ORDER BY nom ASC");
+        $classes = $classeModel->all(['statut' => 'actif'], 'nom ASC');
         $matieres = $matiereModel->all(['actif' => 1], 'nom ASC');
-        $enseignants = $personnelModel->query("SELECT * FROM personnels WHERE type_personnel = 'enseignant' AND statut = 'actif' ORDER BY nom ASC");
+        $enseignants = $personnelModel->getActifs('enseignant');
 
         $this->view('pedagogie/enseignements_form', [
             'enseignement' => $enseignement,
