@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Sanction;
+
 /**
  * Contrôleur des sanctions
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Sanction.php';
 
 class SanctionsController extends BaseController {
     private $sanctionModel;

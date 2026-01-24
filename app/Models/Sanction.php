@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Helpers\Loggable;
+
 /**
  * Modèle Sanction
  * Gestion des sanctions disciplinaires avec journalisation automatique
  */
-
-require_once __DIR__ . '/BaseModel.php';
-require_once __DIR__ . '/../Helpers/Loggable.php';
 
 class Sanction extends BaseModel {
     use Loggable;
