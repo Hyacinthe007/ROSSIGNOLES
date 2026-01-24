@@ -24,8 +24,11 @@ class CsrfMiddleware {
      */
     private static $excludedRoutes = [
         'auth/login',
-        'api/.*' // Exemple pour de futures routes API si nécessaire
+        'finance/paiement-mensuel',
+        'finance/paiement-mensuel/.*',
+        'api/.*'
     ];
+
 
     /**
      * Initialise le token s'il n'existe pas
@@ -61,18 +64,25 @@ class CsrfMiddleware {
 
             $token = $_POST[self::TOKEN_NAME] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
             $sessionToken = $_SESSION[self::SESSION_KEY] ?? null;
+            $sessionId = session_id();
             
             if (!$token) {
-                throw new SecurityException('Sécurité : Token CSRF manquant. Veuillez rafraîchir la page.');
+                error_log("CSRF Missing - Method: $method, URI: $requestUri, SID: $sessionId");
+                throw new SecurityException("Sécurité : Token CSRF [sid:$sessionId] manquant pour la méthode $method. Veuillez rafraîchir la page.");
             }
+
+
             
             if (!$sessionToken) {
-                throw new SecurityException('Sécurité : Session expirée. Veuillez rafraîchir la page.');
+                throw new SecurityException('Sécurité : Session expirée ou invalide. Veuillez vous reconnecter.');
             }
             
             if (!hash_equals($sessionToken, $token)) {
-                throw new SecurityException('Sécurité : Token CSRF invalide. Action non autorisée.');
+                // Loguer pour le debug (sera visible dans les logs PHP)
+                error_log("CSRF Mismatch - URI: $requestUri, POST: " . substr($token, 0, 5) . "..., SESS: " . substr($sessionToken, 0, 5) . "...");
+                throw new SecurityException("Sécurité : Token CSRF invalide pour $requestUri. Action non autorisée.");
             }
+
         }
     }
 

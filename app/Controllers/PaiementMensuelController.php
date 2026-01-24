@@ -103,7 +103,8 @@ class PaiementMensuelController extends BaseController {
         $this->view('finance/paiement_mensuel', [
             'classes' => $classes,
             'anneesScolaires' => $anneesScolaires,
-            'eleves' => $eleves
+            'eleves' => $eleves,
+            'anneeScolaireId' => $anneeScolaireId ?? ($this->anneeScolaireModel->getActive()['id'] ?? null)
         ]);
     }
     
@@ -114,8 +115,14 @@ class PaiementMensuelController extends BaseController {
         $eleveId = $_GET['eleve_id'] ?? null;
         $anneeScolaireId = $_GET['annee_scolaire_id'] ?? null;
         
+        // Si l'année scolaire n'est pas fournie, essayer de prendre l'active
+        if (!$anneeScolaireId) {
+            $activeAnnee = $this->anneeScolaireModel->getActive();
+            $anneeScolaireId = $activeAnnee ? $activeAnnee['id'] : null;
+        }
+        
         if (!$eleveId || !$anneeScolaireId) {
-            $_SESSION['error'] = "Paramètres manquants";
+            $_SESSION['error'] = "Paramètres manquants : élève ou année scolaire non spécifiés.";
             header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
             exit;
         }
@@ -132,7 +139,7 @@ class PaiementMensuelController extends BaseController {
         );
         
         if (!$eleve) {
-            $_SESSION['error'] = "Élève non trouvé ou inscription non validée";
+            $_SESSION['error'] = "Élève non trouvé ou inscription non validée pour cette année scolaire.";
             header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
             exit;
         }
@@ -151,6 +158,9 @@ class PaiementMensuelController extends BaseController {
         // Récupérer à nouveau après mise à jour
         $echeances = $this->echeancierModel->getEcheancierEleve($eleveId, $anneeScolaireId);
         
+        // Récupérer les modes de paiement
+        $modesPaiement = $this->modePaiementModel->all(['actif' => 1]);
+        
         $this->view('finance/paiement_mensuel_saisir', [
             'eleve' => $eleve,
             'anneeScolaire' => $anneeScolaire,
@@ -158,6 +168,7 @@ class PaiementMensuelController extends BaseController {
             'modesPaiement' => $modesPaiement
         ]);
     }
+
     
     /**
      * Enregistrement du paiement

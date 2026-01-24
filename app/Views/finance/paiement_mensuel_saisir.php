@@ -56,7 +56,9 @@ $totalSelectionne = 0;
     </div>
 
     <form method="POST" action="<?= url('finance/paiement-mensuel/enregistrer') ?>" id="paiementForm" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <?= csrf_field() ?>
         <input type="hidden" name="eleve_id" value="<?= $eleve['id'] ?>">
+
         <input type="hidden" name="annee_scolaire_id" value="<?= $anneeScolaire['id'] ?>">
         
         <!-- Colonne gauche : Échéances -->

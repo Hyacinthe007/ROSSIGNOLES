@@ -257,19 +257,7 @@ class Classe extends BaseModel {
      * Récupère les élèves d'une classe avec filtrage sur le statut de paiement
      */
     public function getElevesWithPaymentStatus($classeId = null, $anneeId = null) {
-        $paymentFilter = "";
         $params = [];
-
-        if ($anneeId) {
-            $paymentFilter = " AND NOT EXISTS (
-                SELECT 1 FROM echeanciers_ecolages ee 
-                WHERE ee.eleve_id = e.id 
-                AND ee.annee_scolaire_id = ? 
-                AND ee.statut IN ('retard', 'exclusion') 
-                AND ee.montant_restant > 0
-            )";
-        }
-
         $sql = "SELECT e.*, i.date_inscription, i.statut as inscription_statut, i.type_inscription,
                        c.id as classe_id, c.nom as classe_nom, c.code as classe_code
                 FROM eleves e
@@ -285,18 +273,29 @@ class Classe extends BaseModel {
         if ($anneeId) {
             $sql .= " AND i.annee_scolaire_id = ?";
             $params[] = $anneeId;
-            $params[] = $anneeId; // Pour le paymentFilter
+            
+            // Ajout du filtre de paiement
+            $sql .= " AND NOT EXISTS (
+                SELECT 1 FROM echeanciers_ecolages ee 
+                WHERE ee.eleve_id = e.id 
+                AND ee.annee_scolaire_id = ? 
+                AND ee.statut IN ('retard', 'exclusion') 
+                AND ee.montant_restant > 0
+            )";
+            $params[] = $anneeId;
         } elseif (!$classeId) {
             $sql .= " AND 1=0";
         }
 
+        // Toujours ajouter le ORDER BY à la fin
         if ($classeId) {
             $sql .= " ORDER BY e.nom ASC, e.prenom ASC";
         } else {
             $sql .= " ORDER BY c.nom ASC, e.nom ASC, e.prenom ASC";
         }
 
-        return $this->query($sql . $paymentFilter, $params);
+        return $this->query($sql, $params);
     }
+
 }
 

@@ -29,7 +29,9 @@ require_once __DIR__ . '/../layout/header.php';
         </h2>
         
         <form method="GET" action="<?= url('finance/paiement-mensuel') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <?= csrf_field() ?>
             <div class="md:col-span-7">
+
                 <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -66,6 +68,7 @@ require_once __DIR__ . '/../layout/header.php';
             
             <div class="md:col-span-1">
                 <label class="block text-sm font-medium text-transparent mb-1">Recherche</label>
+                <input type="hidden" name="annee_scolaire_id" value="<?= $anneeScolaireId ?>">
                 <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium h-[37px] rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center">
                     <i class="fas fa-arrow-right"></i>
                 </button>
@@ -131,7 +134,7 @@ require_once __DIR__ . '/../layout/header.php';
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <a href="<?= url('finance/paiement-mensuel/saisir') ?>?eleve_id=<?= $eleve['id'] ?>&annee_scolaire_id=<?= e($_GET['annee_scolaire_id'] ?? '') ?>" 
+                                    <a href="<?= url('finance/paiement-mensuel/saisir') ?>?eleve_id=<?= $eleve['id'] ?>&annee_scolaire_id=<?= $anneeScolaireId ?>" 
                                        class="inline-flex items-center justify-center px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 rounded-lg text-sm font-medium transition-colors shadow-sm">
                                         <i class="fas fa-cash-register mr-2"></i>
                                         Encaisser

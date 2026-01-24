@@ -359,7 +359,7 @@ class BaseModel {
             $nextNumber = (int)$lastIndex + 1;
         }
         
-        return $prefix . $separator . $date . $separator . str_pad($nextNumber, $padding, '0', STR_PAD_LEFT);
+        return $prefix . $separator . $date . $separator . str_pad((string)$nextNumber, $padding, '0', STR_PAD_LEFT);
     }
 }
 
