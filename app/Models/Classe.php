@@ -99,5 +99,52 @@ class Classe extends BaseModel {
             [$anneeId]
         );
     }
+
+    /**
+     * Récupère les détails d'une classe avec son niveau
+     */
+    public function getDetailsWithNiveau($id) {
+        return $this->queryOne(
+            "SELECT c.*, n.ordre as niveau_ordre, n.libelle as niveau_nom
+             FROM {$this->table} c
+             INNER JOIN niveaux n ON c.niveau_id = n.id
+             WHERE c.id = ?",
+            [$id]
+        );
+    }
+
+    /**
+     * Récupère la classe précédente d'un élève
+     */
+    public function getPreviousByEleve($eleveId, $anneeActiveId) {
+        return $this->queryOne(
+            "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre
+             FROM {$this->table} c
+             INNER JOIN inscriptions i ON c.id = i.classe_id
+             INNER JOIN niveaux n ON c.niveau_id = n.id
+             WHERE i.eleve_id = ? 
+             AND i.annee_scolaire_id < ?
+             ORDER BY i.annee_scolaire_id DESC
+             LIMIT 1",
+            [$eleveId, $anneeActiveId]
+        );
+    }
+
+    /**
+     * Suggère une classe basée sur l'ordre du niveau
+     */
+    public function getSuggestedByNiveauOrder($niveauOrdre) {
+        return $this->queryOne(
+            "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre
+             FROM {$this->table} c
+             INNER JOIN niveaux n ON c.niveau_id = n.id
+             WHERE n.ordre = ? 
+             AND c.statut = 'actif' 
+             AND c.deleted_at IS NULL
+             ORDER BY c.nom ASC
+             LIMIT 1",
+            [$niveauOrdre]
+        );
+    }
 }
 

@@ -71,12 +71,7 @@ class InscriptionsController extends BaseController {
         // Récupérer les paiements liés à cette inscription (via Facture)
         $paiements = [];
         if (!empty($inscription['facture_inscription_id'])) {
-             // Si on a l'ID de facture, on cherche les paiements de cette facture
-             // Ou on garde la méthode générique par élève/année
-             $paiements = $paiementModel->query(
-                 "SELECT * FROM paiements WHERE facture_id = ? ORDER BY date_paiement DESC", 
-                 [$inscription['facture_inscription_id']]
-             );
+             $paiements = $paiementModel->getByFacture($inscription['facture_inscription_id']);
         }
         
         $this->view('inscriptions/details', [
@@ -101,26 +96,7 @@ class InscriptionsController extends BaseController {
         
         $paiements = [];
         if (!empty($inscription['facture_inscription_id'])) {
-             $paiements = $paiementModel->query(
-                 "SELECT p.*, lf.designation as type_frais 
-                  FROM paiements p 
-                  LEFT JOIN lignes_facture lf ON p.remarque = lf.designation AND lf.facture_id = p.facture_id
-                  WHERE p.facture_id = ? 
-                  ORDER BY p.date_paiement DESC", 
-                 [$inscription['facture_inscription_id']]
-             );
-             
-             // Si aucun détail n'est trouvé via la remarque, on garde la description de la facture
-             if (empty($paiements)) {
-                 $paiements = $paiementModel->query(
-                     "SELECT p.*, f.description as type_frais 
-                      FROM paiements p 
-                      INNER JOIN factures f ON p.facture_id = f.id 
-                      WHERE p.facture_id = ? 
-                      ORDER BY p.date_paiement DESC", 
-                     [$inscription['facture_inscription_id']]
-                 );
-             }
+             $paiements = $paiementModel->getByFactureWithDetails($inscription['facture_inscription_id']);
         }
         
         require_once __DIR__ . '/../Views/inscriptions/recu_paiement.php';
@@ -395,26 +371,10 @@ class InscriptionsController extends BaseController {
                 
                 if ($anneeActive) {
                     // Classe précédente de l'élève
-                    $classePrecedente = $classeModel->queryOne(
-                        "SELECT c.*, n.ordre as niveau_ordre, n.libelle as niveau_nom
-                         FROM classes c
-                         INNER JOIN inscriptions i ON c.id = i.classe_id
-                         INNER JOIN niveaux n ON c.niveau_id = n.id
-                         WHERE i.eleve_id = ? 
-                         AND i.annee_scolaire_id < ?
-                         ORDER BY i.annee_scolaire_id DESC
-                         LIMIT 1",
-                        [$eleveId, $anneeActive['id']]
-                    );
+                    $classePrecedente = $classeModel->getPreviousByEleve($eleveId, $anneeActive['id']);
                     
                     // Récupérer les infos complètes de la classe choisie avec niveau
-                    $classeChoisieComplete = $classeModel->queryOne(
-                        "SELECT c.*, n.ordre as niveau_ordre, n.libelle as niveau_nom
-                         FROM classes c
-                         INNER JOIN niveaux n ON c.niveau_id = n.id
-                         WHERE c.id = ?",
-                        [$classeIdChoisie]
-                    );
+                    $classeChoisieComplete = $classeModel->getDetailsWithNiveau($classeIdChoisie);
                     
                     // Vérifier que le niveau n'est pas inférieur
                     if ($classePrecedente && $classeChoisieComplete) {
@@ -483,31 +443,11 @@ class InscriptionsController extends BaseController {
             
             if ($anneeActive) {
                 // Récupérer la classe de l'année précédente
-                $classePrecedente = $classeModel->queryOne(
-                    "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre
-                     FROM classes c
-                     INNER JOIN inscriptions i ON c.id = i.classe_id
-                     INNER JOIN niveaux n ON c.niveau_id = n.id
-                     WHERE i.eleve_id = ? 
-                     AND i.annee_scolaire_id < ?
-                     ORDER BY i.annee_scolaire_id DESC
-                     LIMIT 1",
-                    [$eleveId, $anneeActive['id']]
-                );
+                $classePrecedente = $classeModel->getPreviousByEleve($eleveId, $anneeActive['id']);
                 
                 // Suggérer la classe du niveau suivant (même série si possible)
                 if ($classePrecedente) {
-                    $classeSuggeree = $classeModel->queryOne(
-                        "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre
-                         FROM classes c
-                         INNER JOIN niveaux n ON c.niveau_id = n.id
-                         WHERE n.ordre = ? 
-                         AND c.statut = 'actif' 
-                         AND c.deleted_at IS NULL
-                         ORDER BY c.nom ASC
-                         LIMIT 1",
-                        [$classePrecedente['niveau_ordre'] + 1]
-                    );
+                    $classeSuggeree = $classeModel->getSuggestedByNiveauOrder($classePrecedente['niveau_ordre'] + 1);
                 }
             }
         }
@@ -813,6 +753,7 @@ class InscriptionsController extends BaseController {
         }
 
         $model = new Inscription();
+        $paiementModel = new Paiement();
         $inscription = $model->getDetails($inscriptionId);
         
         if (!$inscription) {
@@ -822,21 +763,11 @@ class InscriptionsController extends BaseController {
         }
 
         // Récupérer le dernier paiement lié à cette inscription
-        $paiement = $model->queryOne(
-            "SELECT p.*, mp.libelle as mode_paiement_libelle, a.libelle as annee_scolaire 
-             FROM paiements p 
-             LEFT JOIN factures f ON p.facture_id = f.id 
-             LEFT JOIN modes_paiement mp ON p.mode_paiement_id = mp.id
-             LEFT JOIN annees_scolaires a ON f.annee_scolaire_id = a.id
-             WHERE f.id = ? ORDER BY p.id DESC LIMIT 1",
-            [$inscription['facture_inscription_id']]
-        );
+        $paiement = $paiementModel->getLastByFacture($inscription['facture_inscription_id']);
 
         // Récupérer les lignes de la facture pour le détail du reçu
-        $lignes = $model->query(
-            "SELECT * FROM lignes_facture WHERE facture_id = ?",
-            [$inscription['facture_inscription_id']]
-        );
+        $factureModel = new Facture();
+        $lignes = $factureModel->getLignes($inscription['facture_inscription_id']);
 
         $this->view('inscriptions/etape6_confirmation', [
             'inscription' => $inscription,
@@ -905,10 +836,7 @@ class InscriptionsController extends BaseController {
         }
         
         $tarifModel = new TarifInscription();
-        $tarif = $tarifModel->queryOne(
-            "SELECT * FROM tarifs_inscription WHERE niveau_id = ? AND annee_scolaire_id = ? AND actif = 1 LIMIT 1",
-            [$classe['niveau_id'], $anneeActive['id']]
-        );
+        $tarif = $tarifModel->getByAnneeAndNiveau($anneeActive['id'], $classe['niveau_id']);
         
         if (!$tarif) {
             throw new Exception("Aucun tarif configuré pour ce niveau.");
@@ -936,7 +864,7 @@ class InscriptionsController extends BaseController {
                      'telephone' => $data['parent_data']['telephone'],
                      'adresse' => $data['parent_data']['adresse'] ?? null
                  ]);
-                 $parentModel->query("INSERT INTO eleves_parents (eleve_id, parent_id, lien_parente) VALUES (?, ?, ?)", [$_SESSION['inscription_data']['eleve_id'], $parentId, $data['parent_data']['lien_parente'] ?? 'pere']);
+                 $parentModel->linkToEleve($parentId, $_SESSION['inscription_data']['eleve_id'], $data['parent_data']['lien_parente'] ?? 'pere');
              }
         } else {
             // Élève existant (réinscription) - vérifier que l'eleve_id est bien défini dans la session
@@ -1023,10 +951,7 @@ class InscriptionsController extends BaseController {
                      // Vérifier si un parent avec le même téléphone existe déjà
                      $parentExistant = null;
                      if (!empty($data['parent_data']['telephone'])) {
-                         $parentExistant = $parentModel->queryOne(
-                             "SELECT id FROM parents WHERE telephone = ? LIMIT 1",
-                             [$data['parent_data']['telephone']]
-                         );
+                         $parentExistant = $parentModel->getByTelephone($data['parent_data']['telephone']);
                      }
                      
                      // Créer le parent s'il n'existe pas
@@ -1045,15 +970,7 @@ class InscriptionsController extends BaseController {
                      }
                      
                      // Créer la relation eleves_parents
-                     $parentModel->query(
-                         "INSERT INTO eleves_parents (eleve_id, parent_id, lien_parente) 
-                          VALUES (?, ?, ?)",
-                         [
-                             $data['eleve_id'],
-                             $parentId,
-                             $data['parent_data']['lien_parente'] ?? 'pere'
-                         ]
-                     );
+                     $parentModel->linkToEleve($parentId, $data['eleve_id'], $data['parent_data']['lien_parente'] ?? 'pere');
                      error_log("Relation eleves_parents créée pour élève ID: " . $data['eleve_id'] . " et parent ID: $parentId");
                 }
             } // Fin du ELSE (si l'élève n'existait pas encore)

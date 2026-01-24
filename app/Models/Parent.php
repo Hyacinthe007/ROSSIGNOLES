@@ -23,5 +23,25 @@ class ParentModel extends BaseModel {
             [$parentId]
         );
     }
+
+    /**
+     * Trouve un parent par son numéro de téléphone
+     */
+    public function getByTelephone($telephone) {
+        return $this->queryOne(
+            "SELECT id FROM {$this->table} WHERE telephone = ? LIMIT 1",
+            [$telephone]
+        );
+    }
+
+    /**
+     * Crée un lien entre un parent et un élève
+     */
+    public function linkToEleve($parentId, $eleveId, $lienParente = 'pere') {
+        return $this->query(
+            "INSERT INTO eleves_parents (eleve_id, parent_id, lien_parente) VALUES (?, ?, ?)",
+            [$eleveId, $parentId, $lienParente]
+        );
+    }
 }
 

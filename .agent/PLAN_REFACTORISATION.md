@@ -111,11 +111,19 @@
 - [x] Utilisation de Classe::all() avec filtres
 - [ ] EmploisTemps (déjà bien structuré)
 
-### InscriptionsController ⏳ À FAIRE
-- [ ] À analyser
+### InscriptionsController ✅ TERMINÉ
+- [x] Eleve::getElevesEligiblesReinscription()
+- [x] Classe::getAllWithNiveauAndCount()
+- [x] Classe::getPreviousByEleve()
+- [x] Classe::getDetailsWithNiveau()
+- [x] Classe::getSuggestedByNiveauOrder()
+- [x] ParentModel::getByTelephone()
+- [x] ParentModel::linkToEleve()
+- [x] Paiement::getByFacture()
+- [x] Paiement::getLastByFacture()
+- [x] Paiement::getByFactureWithDetails()
 
 ### ClassesController ⏳ À FAIRE
-- [ ] À analyser
 
 ---
 

@@ -177,5 +177,57 @@ class Paiement extends BaseModel {
         $result = $this->queryOne($sql, $params);
         return $result['total'] ?? 0;
     }
+
+    /**
+     * Obtient les paiements liés à une facture spécifique
+     */
+    public function getByFacture($factureId) {
+        return $this->query(
+            "SELECT * FROM {$this->table} WHERE facture_id = ? ORDER BY date_paiement DESC",
+            [$factureId]
+        );
+    }
+
+    /**
+     * Obtient le dernier paiement d'une facture avec les libellés de mode et d'année
+     */
+    public function getLastByFacture($factureId) {
+        return $this->queryOne(
+            "SELECT p.*, mp.libelle as mode_paiement_libelle, a.libelle as annee_scolaire 
+             FROM {$this->table} p 
+             LEFT JOIN factures f ON p.facture_id = f.id 
+             LEFT JOIN modes_paiement mp ON p.mode_paiement_id = mp.id
+             LEFT JOIN annees_scolaires a ON f.annee_scolaire_id = a.id
+             WHERE f.id = ? ORDER BY p.id DESC LIMIT 1",
+            [$factureId]
+        );
+    }
+
+    /**
+     * Obtient les paiements d'une facture avec détails pour le reçu
+     */
+    public function getByFactureWithDetails($factureId) {
+        $paiements = $this->query(
+            "SELECT p.*, lf.designation as type_frais 
+             FROM {$this->table} p 
+             LEFT JOIN lignes_facture lf ON p.remarque = lf.designation AND lf.facture_id = p.facture_id
+             WHERE p.facture_id = ? 
+             ORDER BY p.date_paiement DESC", 
+            [$factureId]
+        );
+
+        if (empty($paiements)) {
+            $paiements = $this->query(
+                "SELECT p.*, f.description as type_frais 
+                 FROM {$this->table} p 
+                 INNER JOIN factures f ON p.facture_id = f.id 
+                 WHERE p.facture_id = ? 
+                 ORDER BY p.date_paiement DESC", 
+                [$factureId]
+            );
+        }
+
+        return $paiements;
+    }
 }
 

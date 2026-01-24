@@ -135,4 +135,29 @@ class Facture extends BaseModel {
             [$factureId]
         );
     }
+    /**
+     * Enregistre un paiement sur la facture et met à jour le montant payé et le statut
+     * @param float $montant Montant du paiement
+     * @return bool Succès de la mise à jour
+     */
+    public function registerPayment($id, $montant) {
+        $facture = $this->find($id);
+        if (!$facture) return false;
+
+        $nouveauPaye = (float)$facture['montant_paye'] + (float)$montant;
+        $nouveauRestant = max(0, (float)$facture['montant_total'] - $nouveauPaye);
+        
+        $statut = 'impayee';
+        if ($nouveauPaye >= (float)$facture['montant_total']) {
+            $statut = 'payee';
+        } elseif ($nouveauPaye > 0) {
+            $statut = 'partiellement_payee';
+        }
+
+        return $this->update($id, [
+            'montant_paye' => $nouveauPaye,
+            'montant_restant' => $nouveauRestant,
+            'statut' => $statut
+        ]);
+    }
 }
