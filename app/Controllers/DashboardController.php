@@ -1,21 +1,22 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Eleve;
+use App\Models\Personnel;
+use App\Models\Classe;
+use App\Models\Paiement;
+use App\Models\AnneeScolaire;
+
 /**
  * Contrôleur du tableau de bord
  */
-
-require_once __DIR__ . '/BaseController.php';
 
 class DashboardController extends BaseController {
     
     public function index() {
         $this->requireAuth();
-        
-        // Chargement des modèles
-        require_once APP_PATH . '/Models/Eleve.php';
-        require_once APP_PATH . '/Models/Personnel.php';
-        require_once APP_PATH . '/Models/Classe.php';
-        require_once APP_PATH . '/Models/Paiement.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         
         $eleveModel = new Eleve();
         $personnelModel = new Personnel();
