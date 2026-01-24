@@ -1,7 +1,11 @@
 <?php
-/**
- * Service de notifications
- */
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\Notification;
+use App\Models\BaseModel;
+use Exception;
 
 class NotificationService {
     
@@ -9,7 +13,6 @@ class NotificationService {
      * Envoie une notification
      */
     public function send($userId, $canal, $titre, $contenu, $meta = []) {
-        require_once APP_PATH . '/Models/Notification.php';
         $notificationModel = new Notification();
         
         // Mapper le canal vers un type de notification générique
@@ -45,7 +48,6 @@ class NotificationService {
      * Traite l'envoi de la notification
      */
     private function processNotification($id, $canal, $titre, $contenu, $userId = null) {
-        require_once APP_PATH . '/Models/Notification.php';
         $notificationModel = new Notification();
         
         try {
@@ -57,7 +59,6 @@ class NotificationService {
                 case 'sms':
                     if ($userId) {
                         // Récupérer le numéro de téléphone si on a un userId
-                        require_once APP_PATH . '/Models/BaseModel.php';
                         $db = BaseModel::getDBConnection();
                         // Chercher dans parents liés si l'utilisateur est un parent ou lié à un élève
                         $sql = "SELECT p.telephone_principal 
@@ -69,7 +70,6 @@ class NotificationService {
                         $parent = $stmt->fetch();
                         
                         if ($parent && !empty($parent['telephone_principal'])) {
-                            require_once APP_PATH . '/Services/SmsService.php';
                             $sms = new SmsService();
                             $res = $sms->send($parent['telephone_principal'], $contenu);
                             

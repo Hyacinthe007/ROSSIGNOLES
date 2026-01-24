@@ -1,11 +1,18 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Notification;
+use App\Models\Message;
+use App\Models\User;
+use App\Models\ModeleNotification;
+use App\Services\NotificationService;
+use PDOException;
+
 /**
  * Contrôleur des notifications
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Notification.php';
-require_once APP_PATH . '/Services/NotificationService.php';
 
 class NotificationsController extends BaseController {
     private $notificationModel;
@@ -141,13 +148,13 @@ class NotificationsController extends BaseController {
      * Messagerie interne (Boîte de réception)
      */
     public function messagerie() {
-        require_once APP_PATH . '/Models/Message.php';
+        
         $messageModel = new Message();
         
         $userId = $_SESSION['user_id'];
         $messages = $messageModel->getBoiteReception($userId);
         
-        require_once APP_PATH . '/Models/User.php';
+        
         $userModel = new User();
         $users = $userModel->all(['actif' => 1], 'username ASC');
         
@@ -163,7 +170,7 @@ class NotificationsController extends BaseController {
      */
     public function envoyerMessage() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once APP_PATH . '/Models/Message.php';
+            
             $messageModel = new Message();
             
             $data = [
@@ -187,7 +194,7 @@ class NotificationsController extends BaseController {
      * Liste des modèles de notifications
      */
     public function modeles() {
-        require_once APP_PATH . '/Models/ModeleNotification.php';
+        
         $model = new ModeleNotification();
         $modeles = $model->all([], 'nom ASC');
         $this->view('notifications/modeles', ['modeles' => $modeles]);
@@ -198,7 +205,7 @@ class NotificationsController extends BaseController {
      */
     public function addModele() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once APP_PATH . '/Models/ModeleNotification.php';
+            
             $model = new ModeleNotification();
             
             $data = [
@@ -222,7 +229,7 @@ class NotificationsController extends BaseController {
      * Modifier un modèle
      */
     public function editModele($id) {
-        require_once APP_PATH . '/Models/ModeleNotification.php';
+        
         $model = new ModeleNotification();
         $modele = $model->find($id);
         
@@ -254,7 +261,7 @@ class NotificationsController extends BaseController {
      * Supprimer un modèle
      */
     public function deleteModele($id) {
-        require_once APP_PATH . '/Models/ModeleNotification.php';
+        
         $model = new ModeleNotification();
         if ($model->delete($id)) {
             $_SESSION['success_message'] = "Modèle supprimé.";
