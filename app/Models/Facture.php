@@ -72,6 +72,44 @@ class Facture extends BaseModel {
     }
     
     /**
+     * Récupère toutes les factures avec les détails des élèves, types et années
+     * @return array Liste des factures avec détails
+     */
+    public function getAllWithDetails() {
+        return $this->query(
+            "SELECT f.*, 
+                    e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
+                    tf.libelle as type_facture_libelle,
+                    an.libelle as annee_scolaire_libelle
+             FROM {$this->table} f
+             LEFT JOIN eleves e ON f.eleve_id = e.id
+             LEFT JOIN types_facture tf ON f.type_facture_id = tf.id
+             LEFT JOIN annees_scolaires an ON f.annee_scolaire_id = an.id
+             ORDER BY f.date_facture DESC"
+        );
+    }
+    
+    /**
+     * Récupère les détails d'une facture avec toutes les relations
+     * @param int $id ID de la facture
+     * @return array|null Détails de la facture
+     */
+    public function getDetailsWithRelations($id) {
+        return $this->queryOne(
+            "SELECT f.*, 
+                    e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
+                    tf.libelle as type_facture_libelle,
+                    an.libelle as annee_scolaire_libelle
+             FROM {$this->table} f
+             LEFT JOIN eleves e ON f.eleve_id = e.id
+             LEFT JOIN types_facture tf ON f.type_facture_id = tf.id
+             LEFT JOIN annees_scolaires an ON f.annee_scolaire_id = an.id
+             WHERE f.id = ?",
+            [$id]
+        );
+    }
+    
+    /**
      * Obtient les lignes de la facture
      */
     public function getLignes($factureId) {

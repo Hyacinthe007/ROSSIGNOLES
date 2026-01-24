@@ -187,17 +187,7 @@ class FinanceController extends BaseController {
         
         try {
             // Récupérer les factures
-            $factures = $factureModel->query(
-                "SELECT f.*, 
-                        e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
-                        tf.libelle as type_facture_libelle,
-                        an.libelle as annee_scolaire_libelle
-                 FROM factures f
-                 LEFT JOIN eleves e ON f.eleve_id = e.id
-                 LEFT JOIN types_facture tf ON f.type_facture_id = tf.id
-                 LEFT JOIN annees_scolaires an ON f.annee_scolaire_id = an.id
-                 ORDER BY f.date_facture DESC"
-            );
+            $factures = $factureModel->getAllWithDetails();
         } catch (PDOException $e) {
             $factures = [];
         }
@@ -269,18 +259,7 @@ class FinanceController extends BaseController {
         require_once APP_PATH . '/Models/Facture.php';
         $factureModel = new Facture();
         
-        $facture = $factureModel->queryOne(
-            "SELECT f.*, 
-                    e.nom as eleve_nom, e.prenom as eleve_prenom, e.matricule,
-                    tf.libelle as type_facture_libelle,
-                    an.libelle as annee_scolaire_libelle
-             FROM factures f
-             LEFT JOIN eleves e ON f.eleve_id = e.id
-             LEFT JOIN types_facture tf ON f.type_facture_id = tf.id
-             LEFT JOIN annees_scolaires an ON f.annee_scolaire_id = an.id
-             WHERE f.id = ?",
-            [$id]
-        );
+        $facture = $factureModel->getDetailsWithRelations($id);
         
          if (!$facture) {
             http_response_code(404);
