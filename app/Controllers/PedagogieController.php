@@ -15,6 +15,7 @@ use App\Models\EnseignantsClasses;
 use App\Models\MatieresSeries;
 use App\Models\MatieresNiveaux;
 use App\Models\MatieresClasses;
+use App\Models\CalendrierScolaire;
 
 /**
  * Contrôleur Pédagogie
