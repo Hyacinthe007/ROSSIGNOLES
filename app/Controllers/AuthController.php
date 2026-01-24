@@ -15,6 +15,18 @@ class AuthController extends BaseController {
     
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation consistante
+            $validator = new \App\Core\Validator($_POST);
+            $isValid = $validator->validate([
+                'username' => 'required|min:3',
+                'password' => 'required'
+            ]);
+
+            if (!$isValid) {
+                $_SESSION['errors'] = $validator->getErrors();
+                $this->redirect('auth/login');
+            }
+
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
             

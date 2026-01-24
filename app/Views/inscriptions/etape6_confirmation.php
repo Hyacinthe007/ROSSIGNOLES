@@ -107,28 +107,6 @@
 
 
 
-    <!-- Progression -->
-    <div class="mb-8 no-print">
-        <?php 
-        $stepNames = [1 => 'Type', 2 => 'Élève', 3 => 'Classe', 4 => 'Documents', 5 => 'Articles', 6 => 'Paiement', 7 => 'Confirmation'];
-        ?>
-        <div class="flex items-center justify-between mb-2">
-            <?php for($i=1; $i<=7; $i++): ?>
-                <div class="flex-1 <?= $i > 1 ? 'ml-2' : '' ?> text-center">
-                    <span class="text-[10px] md:text-xs font-semibold text-blue-600">
-                        Étape <?= $i ?>: <?= $stepNames[$i] ?>
-                    </span>
-                </div>
-            <?php endfor; ?>
-        </div>
-        <div class="flex items-center justify-between">
-            <?php for($i=1; $i<=7; $i++): ?>
-                <div class="flex-1 <?= $i > 1 ? 'ml-2' : '' ?>">
-                    <div class="h-2 bg-blue-600 rounded"></div>
-                </div>
-            <?php endfor; ?>
-        </div>
-    </div>
 
     <!-- Interface d'impression (Reçu Réel) -->
     <div class="final-receipt">

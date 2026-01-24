@@ -36,9 +36,13 @@
                     <input type="text" 
                            id="nom" 
                            name="nom" 
+                           value="<?= e(old('nom')) ?>"
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           class="w-full px-4 py-2 border <?= error('nom') ? 'border-red-500' : 'border-gray-300' ?> rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            placeholder="Nom de famille">
+                    <?php if ($err = error('nom')): ?>
+                        <p class="text-red-500 text-xs mt-1"><?= e($err[0]) ?></p>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Prénom -->
@@ -49,9 +53,13 @@
                     <input type="text" 
                            id="prenom" 
                            name="prenom" 
+                           value="<?= e(old('prenom')) ?>"
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           class="w-full px-4 py-2 border <?= error('prenom') ? 'border-red-500' : 'border-gray-300' ?> rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            placeholder="Prénom">
+                    <?php if ($err = error('prenom')): ?>
+                        <p class="text-red-500 text-xs mt-1"><?= e($err[0]) ?></p>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Sexe -->
@@ -62,10 +70,13 @@
                     <select id="sexe" 
                             name="sexe" 
                             required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="M">Masculin</option>
-                        <option value="F">Féminin</option>
+                            class="w-full px-4 py-2 border <?= error('sexe') ? 'border-red-500' : 'border-gray-300' ?> rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="M" <?= old('sexe') === 'M' ? 'selected' : '' ?>>Masculin</option>
+                        <option value="F" <?= old('sexe') === 'F' ? 'selected' : '' ?>>Féminin</option>
                     </select>
+                    <?php if ($err = error('sexe')): ?>
+                        <p class="text-red-500 text-xs mt-1"><?= e($err[0]) ?></p>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Date de naissance -->
@@ -76,7 +87,11 @@
                     <input type="date" 
                            id="date_naissance" 
                            name="date_naissance"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           value="<?= e(old('date_naissance')) ?>"
+                           class="w-full px-4 py-2 border <?= error('date_naissance') ? 'border-red-500' : 'border-gray-300' ?> rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <?php if ($err = error('date_naissance')): ?>
+                        <p class="text-red-500 text-xs mt-1"><?= e($err[0]) ?></p>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Lieu de naissance -->

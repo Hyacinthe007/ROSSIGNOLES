@@ -61,6 +61,21 @@ class ElevesController extends BaseController {
     
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation des données
+            $validator = new \App\Core\Validator($_POST);
+            $isValid = $validator->validate([
+                'nom' => 'required|min:2',
+                'prenom' => 'required|min:2',
+                'sexe' => 'required',
+                'date_naissance' => 'date'
+            ]);
+
+            if (!$isValid) {
+                $_SESSION['errors'] = $validator->getErrors();
+                $_SESSION['old'] = $_POST;
+                $this->redirect('eleves/add');
+            }
+
             // Générer le matricule automatiquement si non fourni
             $matricule = $_POST['matricule'] ?? '';
             if (empty($matricule)) {
@@ -74,10 +89,12 @@ class ElevesController extends BaseController {
                 'sexe' => $_POST['sexe'] ?? 'M',
                 'date_naissance' => $_POST['date_naissance'] ?? null,
                 'lieu_naissance' => $_POST['lieu_naissance'] ?? '',
-                'photo' => null, // Gérer l'upload si nécessaire
-                'statut' => 'nouveau', // Statut initial
+                'photo' => null, 
+                'statut' => 'nouveau',
                 'date_inscription' => date('Y-m-d')
             ];
+            
+            // ... (reste du code)
             
             // Upload photo
             if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -116,6 +133,7 @@ class ElevesController extends BaseController {
                 $id
             );
             
+            session_set_flash('success', "L'élève {$data['nom']} {$data['prenom']} a été ajouté avec succès.");
             $this->redirect('eleves/details/' . $id);
         } else {
             $matriculeAuto = generateMatricule('eleve', 'eleves');
@@ -414,16 +432,10 @@ class ElevesController extends BaseController {
             [$id]
         );
 
-        // Rendu HTML simple pour le PDF (peut être amélioré avec un service de template)
-        $html = "<h1>Parcours Scolaire - " . htmlspecialchars($eleve['nom'] . " " . $eleve['prenom']) . "</h1>";
-        $html .= "<p>Matricule : " . htmlspecialchars($eleve['matricule']) . "</p>";
-        
-        $html .= "<h2>Historique des Inscriptions</h2><table border='1' width='100%' cellpadding='5'>";
-        $html .= "<tr><th>Année Scolaire</th><th>Classe</th><th>Date Inscription</th></tr>";
-        foreach($inscriptions as $ins) {
-            $html .= "<tr><td>" . htmlspecialchars($ins['annee_scolaire']) . "</td><td>" . htmlspecialchars($ins['classe_nom']) . "</td><td>" . date('d/m/Y', strtotime($ins['created_at'])) . "</td></tr>";
-        }
-        $html .= "</table>";
+        $html = $this->renderView('pdf/parcours_scolaire', [
+            'eleve' => $eleve,
+            'inscriptions' => $inscriptions
+        ]);
 
         $pdfService = new PdfService();
         $pdfService->generatePdf($html, "Parcours_" . $eleve['matricule'] . ".pdf");
@@ -451,45 +463,12 @@ class ElevesController extends BaseController {
         
         $pdfService = new PdfService();
         
-        $data = [
+        $html = $this->renderView('pdf/certificat_scolaire', [
             'eleve' => $eleve,
             'inscription' => $inscription,
             'annee_scolaire' => $anneeActive['libelle'],
             'date_actuelle' => date('d/m/Y')
-        ];
-        
-        ob_start();
-        ?>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <div style="font-family: 'Outfit', sans-serif; padding: 40px; line-height: 1.6;">
-            <div style="text-align: center; margin-bottom: 50px;">
-                <h1 style="text-transform: uppercase;">Certificat de Scolarité</h1>
-                <p>Année Scolaire : <?= e($data['annee_scolaire']) ?></p>
-            </div>
-            
-            <p>Je soussigné, le Directeur de l'établissement ROSSIGNOLES, certifie par la présente que :</p>
-            
-            <div style="margin: 30px 0; font-weight: bold; font-size: 1.2em;">
-                L'élève <?= e($eleve['nom'] . ' ' . $eleve['prenom']) ?><br>
-                Né(e) le <?= formatDate($eleve['date_naissance']) ?><br>
-                Matricule : <?= e($eleve['matricule']) ?>
-            </div>
-            
-            <p>est régulièrement inscrit(e) dans notre établissement en classe de <strong><?= e($inscription['nom']) ?></strong> 
-            pour le compte de l'année scolaire <?= e($data['annee_scolaire']) ?>.</p>
-            
-            <p>Le présent certificat est délivré à l'intéressé(e) pour servir et valoir ce que de droit.</p>
-            
-            <div style="margin-top: 80px; text-align: right;">
-                Fait à ......................., le <?= $data['date_actuelle'] ?><br><br>
-                <strong>Le Directeur</strong><br>
-                <div style="height: 100px;"></div>
-            </div>
-        </div>
-        <?php
-        $html = ob_get_clean();
+        ]);
         
         $pdfService->generateCertificatScolaire($html, "certificat_scolaire_" . $eleve['matricule'] . ".pdf");
     }

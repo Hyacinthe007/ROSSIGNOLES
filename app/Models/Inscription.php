@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Helpers\Loggable;
 use Exception;
 use PDOException;
+use App\Services\EcheancierService;
 
 /**
  * Modèle Inscription

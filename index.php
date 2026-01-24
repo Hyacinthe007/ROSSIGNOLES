@@ -8,6 +8,13 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
+// Configurer les paramètres de session pour plus de sécurité
+ini_set('session.cookie_httponly', '1');
+ini_set('session.use_only_cookies', '1');
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    ini_set('session.cookie_secure', '1');
+}
+
 // Démarrer la session
 session_start();
 
@@ -77,6 +84,10 @@ if (empty($requestUri)) {
         $requestUri = 'auth/login';
     }
 }
+
+// Initialiser et vérifier le CSRF
+CsrfMiddleware::init();
+CsrfMiddleware::verify();
 
 // Dispatcher la requête
 try {

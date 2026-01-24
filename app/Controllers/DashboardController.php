@@ -66,8 +66,20 @@ class DashboardController extends BaseController {
             'paiements_du_mois' => $paiementsMois,
             'annee_scolaire' => $anneeActive ? $anneeActive['libelle'] : 'N/A'
         ];
+
+        // Dernières activités relatives à l'utilisateur ou globales pour l'admin
+        $logModel = new \App\Models\LogActivite();
+        $recentLogs = $logModel->query(
+            "SELECT l.*, u.username as user_name 
+             FROM logs_activites l 
+             LEFT JOIN users u ON l.user_id = u.id 
+             ORDER BY l.created_at DESC LIMIT 6"
+        );
         
-        $this->view('dashboard/index', ['stats' => $stats]);
+        $this->view('dashboard/index', [
+            'stats' => $stats,
+            'recentLogs' => $recentLogs
+        ]);
     }
 }
 

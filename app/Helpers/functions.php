@@ -4,10 +4,32 @@
  */
 
 /**
+ * Récupère une variable d'environnement
+ */
+function env($key, $default = null) {
+    static $env = null;
+    
+    if ($env === null) {
+        $env = [];
+        $envPath = ROOT_PATH . '/.env';
+        if (file_exists($envPath)) {
+            $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos(trim($line), '#') === 0) continue;
+                list($name, $value) = explode('=', $line, 2);
+                $env[trim($name)] = trim($value, '"\' ');
+            }
+        }
+    }
+    
+    return $env[$key] ?? $default;
+}
+
+/**
  * Échappe les données pour l'affichage HTML
  */
 function e($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)($string ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 /**
@@ -59,6 +81,38 @@ function session($key, $default = null) {
  */
 function session_set($key, $value) {
     $_SESSION[$key] = $value;
+}
+
+/**
+ * Définit une valeur de session (flash message)
+ */
+function session_set_flash($key, $value) {
+    $_SESSION['flash'][$key] = $value;
+}
+
+/**
+ * Récupère et supprime une valeur de session (flash message)
+ */
+function session_flash($key) {
+    $value = $_SESSION['flash'][$key] ?? null;
+    unset($_SESSION['flash'][$key]);
+    return $value;
+}
+
+/**
+ * Récupère l'erreur pour un champ spécifique
+ */
+function error($field) {
+    $errors = $_SESSION['errors'] ?? [];
+    return $errors[$field] ?? null;
+}
+
+/**
+ * Récupère l'ancienne valeur pour un champ spécifique
+ */
+function old($field, $default = '') {
+    $old = $_SESSION['old'] ?? [];
+    return $old[$field] ?? $default;
 }
 
 /**
@@ -129,36 +183,23 @@ function generateMatricule($type, $table = null) {
     $normalizedType = strtolower($type);
     $prefix = $prefixes[$normalizedType] ?? strtoupper(substr($type, 0, 4));
     
-    // Initialisation de la connexion BD via le BaseModel si disponible
-    $pdo = null;
-    $count = 1;
-
     try {
-        if (class_exists('BaseModel')) {
-            $pdo = BaseModel::getDBConnection();
-        } else {
-            $config = require CONFIG_PATH . '/database.php';
-            $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset={$config['charset']}";
-            $pdo = new PDO($dsn, $config['username'], $config['password'], $config['options']);
-        }
+        // Utiliser la connexion centralisée de BaseModel
+        $pdo = \App\Models\BaseModel::getDBConnection();
         
-        // Si une table est fournie, utiliser le MAX(id) pour la suite logique globale
-        // Cela permet que l'incrémentation continue même si l'année scolaire change
         if ($table) {
             $stmt = $pdo->query("SELECT MAX(id) as max_id FROM {$table}");
             $result = $stmt->fetch();
-            // On utilise MAX(id) + 1 pour garantir un matricule unique basé sur l'ID technique
             $count = ($result['max_id'] ?? 0) + 1;
+        } else {
+            $count = rand(1000, 9999);
         }
         
     } catch (Exception $e) {
-        // Fallback en cas d'erreur de connexion
         $count = rand(1000, 9999);
     }
     
-    // Format final : PREFIXE-NUMERO (ex: EL-00001)
-    // Utilise 5 chiffres pour permettre jusqu'à 99999 enregistrements
-    return $prefix . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+    return $prefix . '-' . str_pad((string)$count, 5, '0', STR_PAD_LEFT);
 }
 
 /**

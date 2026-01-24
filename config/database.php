@@ -4,11 +4,11 @@
  */
 
 return [
-    'host' => 'localhost',
-    'database' => 'rossignoles',
-    'username' => 'root',
-    'password' => '',
-    'charset' => 'utf8mb4',
+    'host' => env('DB_HOST', 'localhost'),
+    'database' => env('DB_NAME', 'rossignoles'),
+    'username' => env('DB_USER', 'root'),
+    'password' => env('DB_PASS', ''),
+    'charset' => env('DB_CHARSET', 'utf8mb4'),
     'collation' => 'utf8mb4_unicode_ci',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

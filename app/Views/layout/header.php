@@ -54,6 +54,19 @@
                 <span class="text-xl font-bold text-gray-800 hidden sm:block">École Mandroso</span>
             </a>
         </div>
+
+        <!-- Recherche globale -->
+        <div class="hidden md:flex flex-1 max-w-md mx-8">
+            <div class="relative w-full">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </span>
+                <input type="text" 
+                       id="globalSearch"
+                       placeholder="Rechercher un élève, enseignant..." 
+                       class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm">
+            </div>
+        </div>
         
         <div class="flex items-center gap-3">
             <!-- Notifications -->
@@ -89,3 +102,29 @@
 
 <!-- ====== CONTENU PRINCIPAL ====== -->
 <main class="<?= isLoggedIn() ? 'main-content pt-16' : '' ?>" id="mainContent">
+    <!-- Messages Flash -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <?php if ($success = session_flash('success')): ?>
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded shadow-sm flex justify-between items-center animate-fade-in" role="alert">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <p><?= e($success) ?></p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-green-700 hover:text-green-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($error = session_flash('error')): ?>
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded shadow-sm flex justify-between items-center animate-fade-in" role="alert">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3"></i>
+                    <p><?= e($error) ?></p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-red-700 hover:text-red-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <?php endif; ?>
+    </div>

@@ -6,10 +6,12 @@ storage/logs/*
 storage/cache/*
 storage/temp/*
 storage/pdf/*
+storage/documents/*
 !storage/logs/.gitkeep
 !storage/cache/.gitkeep
 !storage/temp/.gitkeep
 !storage/pdf/.gitkeep
+!storage/documents/.gitkeep
 
 # Uploads
 public/uploads/*
@@ -29,3 +31,5 @@ vendor/
 .DS_Store
 Thumbs.db
 
+# Environnement
+.env

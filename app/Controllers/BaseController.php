@@ -10,6 +10,23 @@ namespace App\Controllers;
 class BaseController {
     
     /**
+     * Retourne le contenu d'une vue sous forme de chaîne (utile pour les PDF/Emails)
+     */
+    protected function renderView($viewPath, $data = []) {
+        extract($data);
+        
+        $viewFile = APP_PATH . '/Views/' . $viewPath . '.php';
+        
+        if (!file_exists($viewFile)) {
+            throw new \Exception("Vue non trouvée : {$viewPath}");
+        }
+        
+        ob_start();
+        require $viewFile;
+        return ob_get_clean();
+    }
+
+    /**
      * Affiche une vue
      */
     protected function view($viewPath, $data = []) {
@@ -97,6 +114,10 @@ class BaseController {
         }
         
         require_once $viewFile;
+        
+        // Nettoyer les messages flash après affichage
+        unset($_SESSION['errors']);
+        unset($_SESSION['old']);
         
         if (!$isIframe) {
             require_once APP_PATH . '/Views/layout/footer.php';

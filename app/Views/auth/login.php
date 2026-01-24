@@ -71,9 +71,14 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="fas fa-user text-gray-400"></i>
           </div>
-          <input type="text" id="username" name="username" placeholder="Nom d'utilisateur ou Email" required
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all bg-white/50 hover:bg-white" />
+          <input type="text" id="username" name="username" placeholder="Nom d'utilisateur ou Email" 
+            value="<?= e(old('username')) ?>"
+            required
+            class="w-full pl-10 pr-4 py-3 border <?= error('username') ? 'border-red-400' : 'border-gray-300' ?> rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all bg-white/50 hover:bg-white" />
         </div>
+        <?php if ($err = error('username')): ?>
+            <p class="text-red-500 text-[11px] mt-1 ml-1"><?= e($err[0]) ?></p>
+        <?php endif; ?>
       </div>
 
       <div>
@@ -83,8 +88,11 @@
             <i class="fas fa-lock text-gray-400"></i>
           </div>
           <input type="password" id="password" name="password" placeholder="••••••••" required
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all bg-white/50 hover:bg-white" />
+            class="w-full pl-10 pr-4 py-3 border <?= error('password') ? 'border-red-400' : 'border-gray-300' ?> rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition-all bg-white/50 hover:bg-white" />
         </div>
+        <?php if ($err = error('password')): ?>
+            <p class="text-red-500 text-[11px] mt-1 ml-1"><?= e($err[0]) ?></p>
+        <?php endif; ?>
       </div>
 
       <div class="flex items-center justify-between text-sm">

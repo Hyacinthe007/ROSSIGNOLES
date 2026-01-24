@@ -2,6 +2,8 @@
 
 namespace App\Middleware;
 
+use App\Core\Exceptions\SecurityException;
+
 /**
  * Middleware de protection CSRF
  */
@@ -16,6 +18,14 @@ class CsrfMiddleware {
      * Nom du champ de formulaire / header
      */
     const TOKEN_NAME = 'csrf_token';
+
+    /**
+     * Liste des routes exclues du contrôle CSRF (patterns regex)
+     */
+    private static $excludedRoutes = [
+        'auth/login',
+        'api/.*' // Exemple pour de futures routes API si nécessaire
+    ];
 
     /**
      * Initialise le token s'il n'existe pas
@@ -33,45 +43,59 @@ class CsrfMiddleware {
     /**
      * Vérifie le token pour les requêtes POST, PUT, DELETE, PATCH
      * 
-     * @throws \Exception Si le token est invalide
+     * @throws SecurityException Si le token est invalide
      */
     public static function verify() {
         $method = $_SERVER['REQUEST_METHOD'];
         
         if (in_array($method, ['POST', 'PUT', 'DELETE', 'PATCH'])) {
-            // Exclure la route de login du CSRF pour le moment si problème
-            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-            if (strpos($requestUri, '/auth/login') !== false) {
-                return;
+            // Récupérer l'URI relative pour la comparaison
+            $requestUri = self::getNormalizedUri();
+
+            // Vérifier si la route est exclue
+            foreach (self::$excludedRoutes as $pattern) {
+                if (preg_match('#^' . $pattern . '$#', $requestUri)) {
+                    return;
+                }
             }
 
             $token = $_POST[self::TOKEN_NAME] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
             $sessionToken = $_SESSION[self::SESSION_KEY] ?? null;
             
-            // Debug logging
-            error_log("=== CSRF VERIFICATION ===");
-            error_log("Request URI: " . ($_SERVER['REQUEST_URI'] ?? 'N/A'));
-            error_log("Method: " . $method);
-            error_log("Token from POST: " . ($token ? substr($token, 0, 10) . '...' : 'MISSING'));
-            error_log("Token from SESSION: " . ($sessionToken ? substr($sessionToken, 0, 10) . '...' : 'MISSING'));
-            error_log("Session ID: " . session_id());
-            error_log("========================");
-            
             if (!$token) {
-                http_response_code(403);
-                die('Erreur de sécurité : Token CSRF manquant dans le formulaire. Veuillez rafraîchir la page et réessayer.');
+                throw new SecurityException('Sécurité : Token CSRF manquant. Veuillez rafraîchir la page.');
             }
             
             if (!$sessionToken) {
-                http_response_code(403);
-                die('Erreur de sécurité : Session expirée. Veuillez rafraîchir la page et réessayer.');
+                throw new SecurityException('Sécurité : Session expirée. Veuillez rafraîchir la page.');
             }
             
-            if ($token !== $sessionToken) {
-                http_response_code(403);
-                die('Erreur de sécurité : Token CSRF invalide. Veuillez rafraîchir la page et réessayer.');
+            if (!hash_equals($sessionToken, $token)) {
+                throw new SecurityException('Sécurité : Token CSRF invalide. Action non autorisée.');
             }
         }
+    }
+
+    /**
+     * Récupère l'URI nettoyée pour le middleware
+     */
+    private static function getNormalizedUri() {
+        $uri = $_SERVER['REQUEST_URI'];
+        $basePath = '/ROSSIGNOLES';
+        
+        if (stripos($uri, $basePath) === 0) {
+            $uri = substr($uri, strlen($basePath));
+        }
+        
+        if (stripos($uri, '/index.php') === 0) {
+            $uri = substr($uri, strlen('/index.php'));
+        }
+        
+        if (($pos = strpos($uri, '?')) !== false) {
+            $uri = substr($uri, 0, $pos);
+        }
+        
+        return trim($uri, '/');
     }
 
     /**
