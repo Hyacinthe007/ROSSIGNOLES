@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Periode
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Periode extends BaseModel {
     protected $table = 'periodes';

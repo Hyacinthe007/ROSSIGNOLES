@@ -1,15 +1,19 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Note;
+use App\Models\AnneeScolaire;
+use App\Models\Classe;
+use App\Models\Periode;
+use App\Models\ExamenFinal;
+use App\Models\Interrogation;
+use App\Services\EligibiliteService;
+
 /**
  * Contrôleur des notes
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Note.php';
-require_once APP_PATH . '/Models/AnneeScolaire.php';
-require_once APP_PATH . '/Models/Classe.php';
-require_once APP_PATH . '/Models/Periode.php';
-require_once APP_PATH . '/Models/ExamenFinal.php';
-require_once APP_PATH . '/Models/Interrogation.php';
 
 class NotesController extends BaseController {
     private $noteModel;

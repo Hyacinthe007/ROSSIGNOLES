@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle ExamenFinal
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ExamenFinal extends BaseModel {
     protected $table = 'examens_finaux';

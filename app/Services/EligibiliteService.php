@@ -1,10 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\BaseModel;
+use Exception;
+
 /**
  * Service EligibiliteService
  * Gère la vérification de l'éligibilité des élèves aux évaluations
  */
-
-require_once __DIR__ . '/../Models/BaseModel.php';
 
 class EligibiliteService {
     

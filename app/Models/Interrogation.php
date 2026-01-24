@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Interrogation
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Interrogation extends BaseModel {
     protected $table = 'interrogations';
