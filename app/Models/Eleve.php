@@ -193,5 +193,38 @@ class Eleve extends BaseModel {
             [$eleveId]
         );
     }
+    
+    /**
+     * Récupère les élèves éligibles à la réinscription pour une année donnée
+     * @param int $anneeActiveId ID de l'année scolaire active
+     * @return array Liste des élèves éligibles avec leur dernière classe
+     */
+    public function getElevesEligiblesReinscription($anneeActiveId) {
+        return $this->query(
+            "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom, e.sexe, e.date_naissance, 
+                    e.lieu_naissance, e.photo, e.statut,
+                    (SELECT c.nom 
+                     FROM inscriptions i2 
+                     INNER JOIN classes c ON i2.classe_id = c.id 
+                     WHERE i2.eleve_id = e.id 
+                     AND i2.annee_scolaire_id < ?
+                     ORDER BY i2.annee_scolaire_id DESC 
+                     LIMIT 1) as classe_actuelle
+             FROM eleves e
+             WHERE e.statut NOT IN ('inactif', 'supprime')
+             AND EXISTS (
+                 SELECT 1 FROM inscriptions i 
+                 WHERE i.eleve_id = e.id 
+                 AND i.annee_scolaire_id < ?
+             )
+             AND NOT EXISTS (
+                 SELECT 1 FROM inscriptions i 
+                 WHERE i.eleve_id = e.id 
+                 AND i.annee_scolaire_id = ?
+             )
+             ORDER BY e.nom ASC, e.prenom ASC",
+            [$anneeActiveId, $anneeActiveId, $anneeActiveId]
+        );
+    }
 }
 

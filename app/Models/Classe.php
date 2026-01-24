@@ -81,5 +81,23 @@ class Classe extends BaseModel {
              ORDER BY cy.ordre ASC, n.ordre ASC, c.nom ASC"
         );
     }
+    
+    /**
+     * Récupère toutes les classes avec niveau, cycle et nombre d'élèves
+     * @param int $anneeId ID de l'année scolaire
+     * @return array Liste des classes avec détails
+     */
+    public function getAllWithNiveauAndCount($anneeId) {
+        return $this->query(
+            "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre, cy.libelle as cycle_nom,
+             (SELECT COUNT(*) FROM inscriptions i WHERE i.classe_id = c.id AND i.annee_scolaire_id = ?) as nb_eleves
+             FROM {$this->table} c
+             INNER JOIN niveaux n ON c.niveau_id = n.id
+             LEFT JOIN cycles cy ON n.cycle_id = cy.id
+             WHERE c.statut = 'actif' AND c.deleted_at IS NULL 
+             ORDER BY n.ordre ASC, c.nom ASC",
+            [$anneeId]
+        );
+    }
 }
 

@@ -287,33 +287,8 @@ class InscriptionsController extends BaseController {
             error_log("Année active: " . ($anneeActive ? json_encode($anneeActive) : "AUCUNE"));
             
             if ($anneeActive) {
-                // Requête simplifiée : récupérer tous les élèves qui ont une inscription dans une année précédente
-                // mais qui n'ont PAS d'inscription pour l'année active
-                // On exclut uniquement les statuts 'inactif' et 'supprime' au lieu de filtrer sur 'actif'
-                $sql = "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom, e.sexe, e.date_naissance, 
-                               e.lieu_naissance, e.photo, e.statut,
-                               (SELECT c.nom 
-                                FROM inscriptions i2 
-                                INNER JOIN classes c ON i2.classe_id = c.id 
-                                WHERE i2.eleve_id = e.id 
-                                AND i2.annee_scolaire_id < ?
-                                ORDER BY i2.annee_scolaire_id DESC 
-                                LIMIT 1) as classe_actuelle
-                        FROM eleves e
-                        WHERE e.statut NOT IN ('inactif', 'supprime')
-                        AND EXISTS (
-                            SELECT 1 FROM inscriptions i 
-                            WHERE i.eleve_id = e.id 
-                            AND i.annee_scolaire_id < ?
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM inscriptions i 
-                            WHERE i.eleve_id = e.id 
-                            AND i.annee_scolaire_id = ?
-                        )
-                        ORDER BY e.nom ASC, e.prenom ASC";
-                
-                $eleves = $eleveModel->query($sql, [$anneeActive['id'], $anneeActive['id'], $anneeActive['id']]);
+                // Utiliser la méthode du modèle pour récupérer les élèves éligibles
+                $eleves = $eleveModel->getElevesEligiblesReinscription($anneeActive['id']);
                 
                 // DEBUG TEMPORAIRE
                 error_log("Nombre d'élèves trouvés: " . count($eleves));
@@ -491,16 +466,7 @@ class InscriptionsController extends BaseController {
         $anneeId = $anneeActive ? $anneeActive['id'] : 0;
 
         // Récupérer toutes les classes actives avec leurs niveaux et le nombre d'élèves
-        $classes = $classeModel->query(
-            "SELECT c.*, n.libelle as niveau_nom, n.ordre as niveau_ordre, cy.libelle as cycle_nom,
-             (SELECT COUNT(*) FROM inscriptions i WHERE i.classe_id = c.id AND i.annee_scolaire_id = ?) as nb_eleves
-             FROM classes c
-             INNER JOIN niveaux n ON c.niveau_id = n.id
-             LEFT JOIN cycles cy ON n.cycle_id = cy.id
-             WHERE c.statut = 'actif' AND c.deleted_at IS NULL 
-             ORDER BY n.ordre ASC, c.nom ASC",
-            [$anneeId]
-        );
+        $classes = $classeModel->getAllWithNiveauAndCount($anneeId);
         
         $classeSuggeree = null;
         $classePrecedente = null;
