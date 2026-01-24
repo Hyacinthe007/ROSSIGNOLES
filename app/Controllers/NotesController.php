@@ -534,8 +534,13 @@ class NotesController extends BaseController {
      * Affiche les moyennes et statistiques
      */
     public function moyennes() {
-        require_once APP_PATH . '/Models/BaseModel.php';
-        $model = new BaseModel();
+        require_once APP_PATH . '/Models/Bulletin.php';
+        require_once APP_PATH . '/Models/Periode.php';
+        require_once APP_PATH . '/Models/Classe.php';
+        
+        $bulletinModel = new Bulletin();
+        $periodeModel = new Periode();
+        $classeModel = new Classe();
         
         // Récupérer l'année scolaire active
         require_once APP_PATH . '/Models/AnneeScolaire.php';
@@ -547,132 +552,18 @@ class NotesController extends BaseController {
         $periodeId = $_GET['periode_id'] ?? null;
         $classeId = $_GET['classe_id'] ?? null;
         
-        // Récupérer les périodes
-        $periodes = [];
-        if ($anneeId) {
-            $periodes = $model->query(
-                "SELECT * FROM periodes WHERE annee_scolaire_id = ? AND actif = 1 ORDER BY numero ASC",
-                [$anneeId]
-            );
-        }
-        
-        // Récupérer les classes
-        $classes = [];
-        if ($anneeId) {
-            $classes = $model->query(
-                "SELECT * FROM classes WHERE annee_scolaire_id = ? AND statut = 'actif' ORDER BY nom ASC",
-                [$anneeId]
-            );
-        }
+        // Récupérer les périodes et classes
+        $periodes = $anneeId ? $periodeModel->all(['annee_scolaire_id' => $anneeId, 'actif' => 1], 'numero ASC') : [];
+        $classes = $anneeId ? $classeModel->all(['annee_scolaire_id' => $anneeId, 'statut' => 'actif'], 'nom ASC') : [];
         
         // Statistiques globales
-        $statsGlobales = [];
-        if ($anneeId) {
-            $where = "b.annee_scolaire_id = ?";
-            $params = [$anneeId];
-            
-            if ($periodeId) {
-                $where .= " AND b.periode_id = ?";
-                $params[] = $periodeId;
-            }
-            
-            if ($classeId) {
-                $where .= " AND b.classe_id = ?";
-                $params[] = $classeId;
-            }
-            
-            $statsGlobales = $model->queryOne(
-                "SELECT 
-                    COUNT(DISTINCT b.id) as nb_bulletins,
-                    COUNT(DISTINCT b.eleve_id) as nb_eleves,
-                    COUNT(DISTINCT b.classe_id) as nb_classes,
-                    AVG(b.moyenne_generale) as moyenne_generale,
-                    MIN(b.moyenne_generale) as moyenne_min,
-                    MAX(b.moyenne_generale) as moyenne_max,
-                    SUM(CASE WHEN b.moyenne_generale >= 16 THEN 1 ELSE 0 END) as nb_excellents,
-                    SUM(CASE WHEN b.moyenne_generale >= 14 AND b.moyenne_generale < 16 THEN 1 ELSE 0 END) as nb_tres_bien,
-                    SUM(CASE WHEN b.moyenne_generale >= 12 AND b.moyenne_generale < 14 THEN 1 ELSE 0 END) as nb_bien,
-                    SUM(CASE WHEN b.moyenne_generale >= 10 AND b.moyenne_generale < 12 THEN 1 ELSE 0 END) as nb_passables,
-                    SUM(CASE WHEN b.moyenne_generale < 10 THEN 1 ELSE 0 END) as nb_insuffisants,
-                    SUM(CASE WHEN b.moyenne_generale >= 10 THEN 1 ELSE 0 END) as nb_admis,
-                    COUNT(b.id) as total
-                 FROM bulletins b
-                 WHERE {$where} AND b.moyenne_generale IS NOT NULL",
-                $params
-            );
-        }
+        $statsGlobales = $anneeId ? $bulletinModel->getStatistiquesGlobales($anneeId, $periodeId, $classeId) : [];
         
         // Statistiques par classe
-        $statsParClasse = [];
-        if ($anneeId) {
-            $whereClasse = "b.annee_scolaire_id = ?";
-            $paramsClasse = [$anneeId];
-            
-            if ($periodeId) {
-                $whereClasse .= " AND b.periode_id = ?";
-                $paramsClasse[] = $periodeId;
-            }
-            
-            $statsParClasse = $model->query(
-                "SELECT 
-                    c.id as classe_id,
-                    c.nom as classe_nom,
-                    c.code as classe_code,
-                    COUNT(DISTINCT b.eleve_id) as nb_eleves,
-                    AVG(b.moyenne_generale) as moyenne_classe,
-                    MIN(b.moyenne_generale) as moyenne_min,
-                    MAX(b.moyenne_generale) as moyenne_max,
-                    SUM(CASE WHEN b.moyenne_generale >= 10 THEN 1 ELSE 0 END) as nb_admis,
-                    COUNT(b.id) as nb_bulletins
-                 FROM bulletins b
-                 INNER JOIN classes c ON b.classe_id = c.id
-                 WHERE {$whereClasse} AND b.moyenne_generale IS NOT NULL
-                 GROUP BY c.id, c.nom, c.code
-                 ORDER BY moyenne_classe DESC",
-                $paramsClasse
-            );
-        }
+        $statsParClasse = $anneeId ? $bulletinModel->getStatistiquesParClasse($anneeId, $periodeId) : [];
         
         // Liste des moyennes par élève
-        $moyennesEleves = [];
-        if ($anneeId) {
-            $whereEleve = "b.annee_scolaire_id = ?";
-            $paramsEleve = [$anneeId];
-            
-            if ($periodeId) {
-                $whereEleve .= " AND b.periode_id = ?";
-                $paramsEleve[] = $periodeId;
-            }
-            
-            if ($classeId) {
-                $whereEleve .= " AND b.classe_id = ?";
-                $paramsEleve[] = $classeId;
-            }
-            
-            $moyennesEleves = $model->query(
-                "SELECT 
-                    b.id as bulletin_id,
-                    e.id as eleve_id,
-                    e.nom as eleve_nom,
-                    e.prenom as eleve_prenom,
-                    e.matricule,
-                    c.nom as classe_nom,
-                    c.code as classe_code,
-                    p.nom as periode_nom,
-                    b.moyenne_generale,
-                    b.rang,
-                    b.total_points,
-                    b.total_coefficients,
-                    b.statut
-                 FROM bulletins b
-                 INNER JOIN eleves e ON b.eleve_id = e.id
-                 INNER JOIN classes c ON b.classe_id = c.id
-                 INNER JOIN periodes p ON b.periode_id = p.id
-                 WHERE {$whereEleve} AND b.moyenne_generale IS NOT NULL
-                 ORDER BY b.moyenne_generale DESC, e.nom ASC, e.prenom ASC",
-                $paramsEleve
-            );
-        }
+        $moyennesEleves = $anneeId ? $bulletinModel->getMoyennesEleves($anneeId, $periodeId, $classeId) : [];
         
         $this->view('notes/moyennes', [
             'periodes' => $periodes,

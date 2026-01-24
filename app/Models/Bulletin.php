@@ -237,4 +237,127 @@ class Bulletin extends BaseModel {
              ORDER BY b.created_at DESC"
         );
     }
+    
+    /**
+     * Récupère les statistiques globales des bulletins
+     * @param int $anneeScolaireId ID de l'année scolaire
+     * @param int|null $periodeId ID de la période (optionnel)
+     * @param int|null $classeId ID de la classe (optionnel)
+     * @return array|null Statistiques globales
+     */
+    public function getStatistiquesGlobales($anneeScolaireId, $periodeId = null, $classeId = null) {
+        $where = "b.annee_scolaire_id = ?";
+        $params = [$anneeScolaireId];
+        
+        if ($periodeId) {
+            $where .= " AND b.periode_id = ?";
+            $params[] = $periodeId;
+        }
+        
+        if ($classeId) {
+            $where .= " AND b.classe_id = ?";
+            $params[] = $classeId;
+        }
+        
+        return $this->queryOne(
+            "SELECT 
+                COUNT(DISTINCT b.id) as nb_bulletins,
+                COUNT(DISTINCT b.eleve_id) as nb_eleves,
+                COUNT(DISTINCT b.classe_id) as nb_classes,
+                AVG(b.moyenne_generale) as moyenne_generale,
+                MIN(b.moyenne_generale) as moyenne_min,
+                MAX(b.moyenne_generale) as moyenne_max,
+                SUM(CASE WHEN b.moyenne_generale >= 16 THEN 1 ELSE 0 END) as nb_excellents,
+                SUM(CASE WHEN b.moyenne_generale >= 14 AND b.moyenne_generale < 16 THEN 1 ELSE 0 END) as nb_tres_bien,
+                SUM(CASE WHEN b.moyenne_generale >= 12 AND b.moyenne_generale < 14 THEN 1 ELSE 0 END) as nb_bien,
+                SUM(CASE WHEN b.moyenne_generale >= 10 AND b.moyenne_generale < 12 THEN 1 ELSE 0 END) as nb_passables,
+                SUM(CASE WHEN b.moyenne_generale < 10 THEN 1 ELSE 0 END) as nb_insuffisants,
+                SUM(CASE WHEN b.moyenne_generale >= 10 THEN 1 ELSE 0 END) as nb_admis,
+                COUNT(b.id) as total
+             FROM {$this->table} b
+             WHERE {$where} AND b.moyenne_generale IS NOT NULL",
+            $params
+        );
+    }
+    
+    /**
+     * Récupère les statistiques par classe
+     * @param int $anneeScolaireId ID de l'année scolaire
+     * @param int|null $periodeId ID de la période (optionnel)
+     * @return array Liste des statistiques par classe
+     */
+    public function getStatistiquesParClasse($anneeScolaireId, $periodeId = null) {
+        $where = "b.annee_scolaire_id = ?";
+        $params = [$anneeScolaireId];
+        
+        if ($periodeId) {
+            $where .= " AND b.periode_id = ?";
+            $params[] = $periodeId;
+        }
+        
+        return $this->query(
+            "SELECT 
+                c.id as classe_id,
+                c.nom as classe_nom,
+                c.code as classe_code,
+                COUNT(DISTINCT b.eleve_id) as nb_eleves,
+                AVG(b.moyenne_generale) as moyenne_classe,
+                MIN(b.moyenne_generale) as moyenne_min,
+                MAX(b.moyenne_generale) as moyenne_max,
+                SUM(CASE WHEN b.moyenne_generale >= 10 THEN 1 ELSE 0 END) as nb_admis,
+                COUNT(b.id) as nb_bulletins
+             FROM {$this->table} b
+             INNER JOIN classes c ON b.classe_id = c.id
+             WHERE {$where} AND b.moyenne_generale IS NOT NULL
+             GROUP BY c.id, c.nom, c.code
+             ORDER BY moyenne_classe DESC",
+            $params
+        );
+    }
+    
+    /**
+     * Récupère la liste des moyennes par élève
+     * @param int $anneeScolaireId ID de l'année scolaire
+     * @param int|null $periodeId ID de la période (optionnel)
+     * @param int|null $classeId ID de la classe (optionnel)
+     * @return array Liste des moyennes par élève
+     */
+    public function getMoyennesEleves($anneeScolaireId, $periodeId = null, $classeId = null) {
+        $where = "b.annee_scolaire_id = ?";
+        $params = [$anneeScolaireId];
+        
+        if ($periodeId) {
+            $where .= " AND b.periode_id = ?";
+            $params[] = $periodeId;
+        }
+        
+        if ($classeId) {
+            $where .= " AND b.classe_id = ?";
+            $params[] = $classeId;
+        }
+        
+        return $this->query(
+            "SELECT 
+                b.id as bulletin_id,
+                e.id as eleve_id,
+                e.nom as eleve_nom,
+                e.prenom as eleve_prenom,
+                e.matricule,
+                c.nom as classe_nom,
+                c.code as classe_code,
+                p.nom as periode_nom,
+                b.moyenne_generale,
+                b.rang,
+                b.total_points,
+                b.total_coefficients,
+                b.statut
+             FROM {$this->table} b
+             INNER JOIN eleves e ON b.eleve_id = e.id
+             INNER JOIN classes c ON b.classe_id = c.id
+             INNER JOIN periodes p ON b.periode_id = p.id
+             WHERE {$where} AND b.moyenne_generale IS NOT NULL
+             ORDER BY b.moyenne_generale DESC, e.nom ASC, e.prenom ASC",
+            $params
+        );
+    }
 }
