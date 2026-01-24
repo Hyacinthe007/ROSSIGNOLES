@@ -15,6 +15,7 @@
 - Personnel
 - PersonnelEnseignant
 - PersonnelAdministratif
+- Absence
 - Document
 - AbsencePersonnel
 - AnneeScolaire
