@@ -1,12 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\LogActivite;
+use App\Models\User;
+use App\Models\Permission;
+
 /**
  * Contrôleur d'authentification
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/LogActivite.php';
-require_once APP_PATH . '/Models/User.php';
-require_once APP_PATH . '/Services/AuthService.php';
 
 class AuthController extends BaseController {
     
@@ -31,7 +34,6 @@ class AuthController extends BaseController {
                 $permissions = [];
                 if (in_array('admin', $roleCodes) || $user['user_type'] === 'admin') {
                     // Les admins ont toutes les permissions
-                    require_once APP_PATH . '/Models/Permission.php';
                     $permModel = new Permission();
                     $allPerms = $permModel->all();
                     $permissions = array_column($allPerms, 'code');
@@ -65,7 +67,6 @@ class AuthController extends BaseController {
     
     public function logout() {
         if (isset($_SESSION['user_id'])) {
-            require_once APP_PATH . '/Models/LogActivite.php';
             LogActivite::log('Déconnexion', 'Authentification', "L'utilisateur {$_SESSION['username']} s'est déconnecté");
         }
         session_destroy();

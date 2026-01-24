@@ -1,11 +1,15 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\UserGroup;
+
 /**
  * Contrôleur des rôles et permissions
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Role.php';
-require_once APP_PATH . '/Models/Permission.php';
 
 class RolesController extends BaseController {
     private $roleModel;
@@ -132,7 +136,6 @@ class RolesController extends BaseController {
      * Lier un groupe à ce rôle
      */
     public function linkGroup($roleId, $groupId) {
-        require_once APP_PATH . '/Models/UserGroup.php';
         $groupModel = new UserGroup();
         $groupModel->addRole($groupId, $roleId);
         $_SESSION['success_message'] = "Groupe rattaché au rôle.";
