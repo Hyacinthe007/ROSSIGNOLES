@@ -43,24 +43,10 @@ class NotesController extends BaseController {
 
         if ($classeId && $periodeId) {
             // Récupérer les examens
-            $examens = $examenModel->query(
-                "SELECT e.*, m.nom as matiere_nom, 'examen' as type 
-                 FROM examens_finaux e 
-                 JOIN matieres m ON e.matiere_id = m.id 
-                 WHERE e.classe_id = ? AND e.periode_id = ? 
-                 ORDER BY e.date_examen DESC",
-                [$classeId, $periodeId]
-            );
+            $examens = $examenModel->getByClassePeriode($classeId, $periodeId);
 
             // Récupérer les interrogations
-            $interros = $interroModel->query(
-                "SELECT i.*, m.nom as matiere_nom, 'interrogation' as type 
-                 FROM interrogations i 
-                 JOIN matieres m ON i.matiere_id = m.id 
-                 WHERE i.classe_id = ? AND i.periode_id = ? 
-                 ORDER BY i.date_interrogation DESC",
-                [$classeId, $periodeId]
-            );
+            $interros = $interroModel->getByClassePeriode($classeId, $periodeId);
 
             $evaluations = array_merge($examens, $interros);
             
@@ -421,14 +407,7 @@ class NotesController extends BaseController {
             die("Évaluation non trouvée");
         }
 
-        $details = $model->queryOne(
-            "SELECT e.*, m.nom as matiere_nom, c.nom as classe_nom 
-             FROM " . $model->getTable() . " e 
-             JOIN matieres m ON e.matiere_id = m.id 
-             JOIN classes c ON e.classe_id = c.id 
-             WHERE e.id = ?", 
-            [$id]
-        );
+        $details = $model->getDetailsWithRelations($id);
 
         return [
             'model' => $model,
@@ -483,15 +462,7 @@ class NotesController extends BaseController {
      * Récupérer les élèves de la classe + notes associées à cette évaluation
      */
     private function getElevesWithNotes($model, $tableNotes, $fkId, $evaluationId, $evaluation) {
-        return $model->query(
-            "SELECT e.id, e.nom, e.prenom, e.matricule, n.note, n.absent, n.appreciation 
-             FROM eleves e 
-             INNER JOIN inscriptions i ON i.eleve_id = e.id 
-             LEFT JOIN $tableNotes n ON (n.eleve_id = e.id AND n.$fkId = ?)
-             WHERE i.classe_id = ? AND i.annee_scolaire_id = ? 
-             ORDER BY e.nom, e.prenom",
-            [$evaluationId, $evaluation['classe_id'], $evaluation['annee_scolaire_id']]
-        );
+        return $model->getElevesWithNotes($evaluationId, $evaluation['classe_id'], $evaluation['annee_scolaire_id']);
     }
 
     /**
