@@ -1,12 +1,18 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Services\FinanceService;
+use App\Models\Facture;
+use App\Models\ModePaiement;
+use App\Models\TypeFacture;
+use App\Models\AnneeScolaire;
+use App\Models\Classe;
+
 /**
  * Contrôleur des finances
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Services/FinanceService.php';
-
-
 
 class FinanceController extends BaseController {
     private $financeService;

@@ -22,22 +22,23 @@ Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés imméd
 - Serie
 - ParentModel
 
+- Bulletin
+- Note
+- Matiere
+- TypeFacture
+- LigneFacture
+- ModePaiement
+- Article
+- TarifArticle
+- DocumentsInscription
+- TarifInscription
+
 ## 🟡 À migrer ensuite
-- [ ] Bulletin.php
-- [ ] Note.php
-- [ ] Matiere.php
-- [ ] ModePaiement.php
-- [ ] TypeFacture.php
-- [ ] LigneFacture.php
-- [ ] TarifInscription.php
-- [ ] Article.php
 - [ ] InscriptionArticle.php
-- [ ] DocumentsInscription.php
 - [ ] EcheancierEcolage.php
 - [ ] Cycle.php
 - [ ] TypeFrais.php
 - [ ] TarifArticle.php
-- [ ] Permission.php
 
 ## 📝 Stratégie
 1. Migrer les 3 modèles critiques (LogActivite, Role, UserGroup)

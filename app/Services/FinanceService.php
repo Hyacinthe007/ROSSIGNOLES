@@ -1,4 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\BaseModel;
+use PDOException;
+
 /**
  * Service financier
  */
@@ -9,7 +16,6 @@ class FinanceService {
      * Obtient les statistiques financières complètes
      */
     public function getStats($anneeScolaireId = null) {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $db = BaseModel::getDBConnection();
         
         if (!$anneeScolaireId) {
@@ -160,7 +166,6 @@ class FinanceService {
      * Obtient la liste des élèves avec leur statut de paiement écolage
      */
     public function getListeEcolage($mois = null, $annee = null, $statut = null, $classeId = null) {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $db = BaseModel::getDBConnection();
         
         $mois = $mois ?? date('n');
@@ -201,7 +206,6 @@ class FinanceService {
      * Obtient la liste des impayés pour le recouvrement (Échéancier)
      */
     public function getEcheancierRecouvrement($anneeScolaireId = null, $statut = null) {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $db = BaseModel::getDBConnection();
         
         if (!$anneeScolaireId) {
