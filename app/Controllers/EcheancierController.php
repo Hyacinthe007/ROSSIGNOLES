@@ -30,7 +30,7 @@ class EcheancierController extends BaseController {
     /**
      * Affiche l'échéancier d'un élève
      */
-    public function view() {
+    public function show() {
         $eleveId = $_GET['eleve_id'] ?? null;
         $anneeScolaireId = $_GET['annee_scolaire_id'] ?? null;
         

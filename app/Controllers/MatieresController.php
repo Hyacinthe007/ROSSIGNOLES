@@ -78,8 +78,6 @@ class MatieresController extends BaseController {
             die("Matière non trouvée");
         }
 
-        require_once APP_PATH . '/Models/MatieresSeries.php';
-        require_once APP_PATH . '/Models/MatieresNiveaux.php';
         $msModel = new MatieresSeries();
         $mnModel = new MatieresNiveaux();
 

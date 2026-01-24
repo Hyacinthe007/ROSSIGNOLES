@@ -186,7 +186,6 @@ class ParcoursController extends BaseController {
                 ORDER BY a.date_debut DESC
             ";
             
-            require_once APP_PATH . '/Models/BaseModel.php';
             $model = new BaseModel();
             $parcours = $model->query($sql, [$eleveId]);
             

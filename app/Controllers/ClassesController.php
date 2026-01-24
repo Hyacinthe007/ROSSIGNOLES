@@ -7,6 +7,9 @@ use App\Models\Classe;
 use App\Models\AnneeScolaire;
 use App\Models\Niveau;
 use App\Models\Serie;
+use App\Models\Personnel;
+use Exception;
+use PDOException;
 
 /**
  * Contrôleur des classes
@@ -28,7 +31,7 @@ class ClassesController extends BaseController {
 
         try {
             // Récupérer l'année scolaire active
-            require_once APP_PATH . '/Models/AnneeScolaire.php';
+
             $anneeModel = new AnneeScolaire();
             $anneeActive = $anneeModel->getActive();
             $anneeId = $anneeActive ? $anneeActive['id'] : null;
@@ -72,17 +75,17 @@ class ClassesController extends BaseController {
             $iframeParam = isset($_GET['iframe']) ? '?iframe=1' : '';
             $this->redirect('classes/list' . $iframeParam);
         } else {
-            require_once APP_PATH . '/Models/Niveau.php';
+
             $niveauModel = new Niveau();
             $niveaux = $niveauModel->getAllWithCycle();
             // Les séries seront chargées via AJAX en fonction du niveau
             $series = [];
             
-            require_once APP_PATH . '/Models/Personnel.php';
+
             $personnelModel = new Personnel();
             $enseignants = $personnelModel->getEnseignants(true);
 
-            require_once APP_PATH . '/Models/AnneeScolaire.php';
+
             $anneeModel = new AnneeScolaire();
             $anneeActive = $anneeModel->getActive();
             
@@ -118,24 +121,24 @@ class ClassesController extends BaseController {
                 die("Classe non trouvée");
             }
             
-            require_once APP_PATH . '/Models/Niveau.php';
+
             $niveauModel = new Niveau();
             $niveaux = $niveauModel->getAllWithCycle();
             
             // Récupérer les séries filtrées par le niveau actuel de la classe
             $series = [];
             if (!empty($classe['niveau_id'])) {
-                require_once APP_PATH . '/Models/Serie.php';
+
                 $serieModel = new Serie();
                 $series = $serieModel->getByNiveau($classe['niveau_id']);
             }
             
-            require_once APP_PATH . '/Models/Personnel.php';
+
             $personnelModel = new Personnel();
             $enseignants = $personnelModel->getEnseignants(true);
             
             // Récupérer les années scolaires
-            require_once APP_PATH . '/Models/AnneeScolaire.php';
+
             $anneeModel = new AnneeScolaire();
             $annees = $anneeModel->all([], 'date_debut DESC');
             
@@ -171,7 +174,7 @@ class ClassesController extends BaseController {
         }
         
         // Récupérer l'année scolaire active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActiveData = $anneeModel->getActive();
         $anneeActive = $anneeActiveData ? $anneeActiveData['id'] : null;
@@ -226,12 +229,12 @@ class ClassesController extends BaseController {
             $classes = $this->classeModel->query("SELECT * FROM classes WHERE statut = 'actif' AND deleted_at IS NULL ORDER BY nom ASC");
             
             // Récupérer les niveaux
-            require_once APP_PATH . '/Models/Niveau.php';
+
             $niveauModel = new Niveau();
             $niveaux = $niveauModel->all(['actif' => 1], 'ordre ASC');
             
             // Récupérer les séries
-            require_once APP_PATH . '/Models/Serie.php';
+
             $serieModel = new Serie();
             $series = $serieModel->all(['actif' => 1], 'libelle ASC');
             
@@ -278,7 +281,7 @@ class ClassesController extends BaseController {
         $classeId = $_GET['classe_id'] ?? null;
         
         // Récupérer l'année scolaire active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : null;
@@ -446,7 +449,7 @@ class ClassesController extends BaseController {
      */
     public function getSeriesByNiveau($id) {
         header('Content-Type: application/json');
-        require_once APP_PATH . '/Models/Serie.php';
+
         $serieModel = new Serie();
         $series = $serieModel->getByNiveau($id);
         echo json_encode($series);

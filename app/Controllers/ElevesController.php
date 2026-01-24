@@ -5,6 +5,9 @@ namespace App\Controllers;
 
 use App\Models\Eleve;
 use App\Models\LogActivite;
+use App\Models\ParentModel;
+use App\Models\AnneeScolaire;
+use App\Services\PdfService;
 
 /**
  * Contrôleur des élèves
@@ -85,7 +88,6 @@ class ElevesController extends BaseController {
             
             // Gestion du parent si fourni
             if (!empty($_POST['parent_nom'])) {
-                require_once APP_PATH . '/Models/Parent.php';
                 $parentModel = new ParentModel();
                 
                 $parentData = [
@@ -138,7 +140,6 @@ class ElevesController extends BaseController {
             
             // Mise à jour des informations du parent (Principal / Tuteur)
             if (!empty($_POST['parent_nom'])) {
-                require_once APP_PATH . '/Models/Parent.php';
                 $parentModel = new ParentModel();
                 
                 // Vérifier si l'élève a déjà un parent lié
@@ -230,7 +231,6 @@ class ElevesController extends BaseController {
         }
         
         // Année scolaire active pour contextes
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : null;
@@ -425,7 +425,6 @@ class ElevesController extends BaseController {
         }
         $html .= "</table>";
 
-        require_once APP_PATH . '/Services/PdfService.php';
         $pdfService = new PdfService();
         $pdfService->generatePdf($html, "Parcours_" . $eleve['matricule'] . ".pdf");
     }
@@ -440,7 +439,6 @@ class ElevesController extends BaseController {
         }
         
         // Récupérer l'inscription active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : null;
@@ -451,7 +449,6 @@ class ElevesController extends BaseController {
             die("L'élève n'est pas inscrit activement pour cette année scolaire.");
         }
         
-        require_once APP_PATH . '/Services/PdfService.php';
         $pdfService = new PdfService();
         
         $data = [

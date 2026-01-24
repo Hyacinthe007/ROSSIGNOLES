@@ -10,6 +10,7 @@ use App\Models\Periode;
 use App\Models\Eleve;
 use App\Services\BulletinService;
 use App\Services\PdfService;
+use Exception;
 
 /**
  * Contrôleur des bulletins
@@ -41,10 +42,6 @@ class BulletinsController extends BaseController {
      * Interface de génération automatique des bulletins
      */
     public function generer() {
-        require_once APP_PATH . '/Models/Classe.php';
-        require_once APP_PATH . '/Models/Periode.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
-        
         $classeModel = new Classe();
         $periodeModel = new Periode();
         $anneeScolaireModel = new AnneeScolaire();
@@ -230,7 +227,6 @@ class BulletinsController extends BaseController {
         
         $html = $this->renderBulletinHtml($bulletin, $matieres);
         
-        require_once APP_PATH . '/Services/PdfService.php';
         $pdfService = new PdfService();
         $pdfService->generateBulletin($html, "Bulletin_{$bulletin['matricule']}_{$bulletin['periode_nom']}.pdf");
     }

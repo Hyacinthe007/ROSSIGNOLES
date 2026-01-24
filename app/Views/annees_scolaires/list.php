@@ -74,8 +74,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <?php
-                                    require_once APP_PATH . '/Models/AnneeScolaire.php';
-                                    $model = new AnneeScolaire();
+                                    $model = new \App\Models\AnneeScolaire();
                                     $stats = $model->getStatistiques($annee['id']);
                                     ?>
                                     <span class="text-gray-900 font-medium"><?= $stats['total_inscriptions'] ?></span> inscriptions

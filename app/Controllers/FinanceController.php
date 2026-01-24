@@ -9,6 +9,13 @@ use App\Models\ModePaiement;
 use App\Models\TypeFacture;
 use App\Models\AnneeScolaire;
 use App\Models\Classe;
+use App\Models\EcheancierEcolage;
+use App\Models\Paiement;
+use App\Models\LigneFacture;
+use App\Models\TypeFrais;
+use App\Models\Eleve;
+use Exception;
+use App\Services\SmsService;
 
 /**
  * Contrôleur des finances
@@ -43,7 +50,6 @@ class FinanceController extends BaseController {
         $echeances = $this->financeService->getListeEcolage($mois, $annee, $statut, $classeId);
         
         // Récupérer les classes pour le filtre
-        require_once APP_PATH . '/Models/Classe.php';
         $classeModel = new Classe();
         $classes = $classeModel->query("SELECT * FROM classes WHERE statut = 'actif' AND deleted_at IS NULL ORDER BY nom ASC");
         
@@ -71,9 +77,6 @@ class FinanceController extends BaseController {
      * Enregistrer un paiement d'écolage
      */
     public function payerEcolage($id) {
-        require_once APP_PATH . '/Models/EcheancierEcolage.php';
-        require_once APP_PATH . '/Models/Paiement.php';
-        
         $echeancierModel = new EcheancierEcolage();
         $paiementModel = new Paiement();
         
@@ -112,7 +115,6 @@ class FinanceController extends BaseController {
                 // Pour l'instant, on suppose qu'on crée une facture à la volée ou qu'on adapte le modèle.
                 
                 // CRÉATION FACTURE POUR LE PAIEMENT (Si nécessaire pour la cohérence)
-                require_once APP_PATH . '/Models/Facture.php';
                 $factureModel = new Facture();
                 
                 // Récupérer type facture Ecolage
@@ -133,8 +135,6 @@ class FinanceController extends BaseController {
                 ]);
                 
                 // CRÉATION DE LA LIGNE DE FACTURE (Important pour le reçu détaillé)
-                require_once APP_PATH . '/Models/LigneFacture.php';
-                require_once APP_PATH . '/Models/TypeFrais.php';
                 $ligneFactureModel = new LigneFacture();
                 $typeFraisModel = new TypeFrais();
                 
@@ -180,7 +180,6 @@ class FinanceController extends BaseController {
         }
         
         // Charger les modes de paiement
-        require_once APP_PATH . '/Models/ModePaiement.php';
         $modePaiementModel = new ModePaiement();
         $modesPaiement = $modePaiementModel->all(['actif' => 1]);
         
@@ -188,7 +187,6 @@ class FinanceController extends BaseController {
     }
     
     public function list() {
-        require_once APP_PATH . '/Models/Facture.php';
         $factureModel = new Facture();
         
         try {
@@ -203,8 +201,6 @@ class FinanceController extends BaseController {
     }
     
     public function add() {
-        require_once APP_PATH . '/Models/Facture.php';
-        require_once APP_PATH . '/Models/LigneFacture.php';
         $factureModel = new Facture();
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -241,10 +237,6 @@ class FinanceController extends BaseController {
              // Similaire à avant mais pointant vers nouvelles tables
              // Je simplifie l'implementation ici pour brevity du diff, mais normalement on charge eleves/types_facture/annees
              
-             require_once APP_PATH . '/Models/Eleve.php';
-             require_once APP_PATH . '/Models/TypeFacture.php';
-             require_once APP_PATH . '/Models/AnneeScolaire.php';
-             
              $eleveModel = new Eleve();
              $typeFactureModel = new TypeFacture();
              $anneeModel = new AnneeScolaire();
@@ -262,7 +254,6 @@ class FinanceController extends BaseController {
     }
     
     public function details($id) {
-        require_once APP_PATH . '/Models/Facture.php';
         $factureModel = new Facture();
         
         $facture = $factureModel->getDetailsWithRelations($id);
@@ -292,7 +283,6 @@ class FinanceController extends BaseController {
      * Gestion des types de frais (sera géré par un contrôleur dédié ou ici)
      */
     public function typesFrais() {
-        require_once APP_PATH . '/Models/TypeFacture.php';
         $model = new TypeFacture();
         $types = $model->all();
 
@@ -300,7 +290,6 @@ class FinanceController extends BaseController {
     }
 
     public function addTypeFrais() {
-        require_once APP_PATH . '/Models/TypeFacture.php';
         $model = new TypeFacture();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -335,7 +324,6 @@ class FinanceController extends BaseController {
     }
 
     public function editTypeFrais($id) {
-        require_once APP_PATH . '/Models/TypeFacture.php';
         $model = new TypeFacture();
         
         $typeFrais = $model->find($id);
@@ -365,7 +353,6 @@ class FinanceController extends BaseController {
     }
 
     public function deleteTypeFrais($id) {
-         require_once APP_PATH . '/Models/TypeFacture.php';
          $model = new TypeFacture();
          
          if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -383,11 +370,6 @@ class FinanceController extends BaseController {
      * Vue détaillée de l'échéancier par élève avec historique paiements
      */
     public function echeancierEleve($eleveId) {
-        require_once APP_PATH . '/Models/EcheancierEcolage.php';
-        require_once APP_PATH . '/Models/Eleve.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
-        require_once APP_PATH . '/Models/Paiement.php';
-
         $echeancierModel = new EcheancierEcolage();
         $eleveModel = new Eleve();
         $anneeModel = new AnneeScolaire();
@@ -463,9 +445,6 @@ class FinanceController extends BaseController {
      * Liste et recherche des reçus de paiement
      */
     public function recus() {
-        require_once APP_PATH . '/Models/Paiement.php';
-        require_once APP_PATH . '/Models/Facture.php';
-        
         $paiementModel = new Paiement();
         $search = $_GET['search'] ?? '';
         $paiementId = $_GET['id'] ?? null;
@@ -496,7 +475,6 @@ class FinanceController extends BaseController {
             // Récupérer les lignes de la facture pour le détail
             $lignes = [];
             if (!empty($paiement['facture_id'])) {
-                require_once APP_PATH . '/Models/LigneFacture.php';
                 $ligneModel = new LigneFacture();
                 $lignes = $ligneModel->query(
                     "SELECT * FROM lignes_facture WHERE facture_id = ?", 
@@ -575,7 +553,6 @@ class FinanceController extends BaseController {
             return;
         }
 
-        require_once APP_PATH . '/Models/Paiement.php';
         $paiementModel = new Paiement();
         $search = $_GET['search'] ?? '';
 
@@ -659,7 +636,6 @@ class FinanceController extends BaseController {
     
     // Placeholder pour la suppression, adapter Facture
     public function delete($id) {
-         require_once APP_PATH . '/Models/Facture.php';
          $factureModel = new Facture();
          if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $factureModel->delete($id);
@@ -672,7 +648,6 @@ class FinanceController extends BaseController {
      * Exporte un reçu en PDF
      */
     public function exportRecuPdf($id) {
-        require_once APP_PATH . '/Models/Paiement.php';
         $paiementModel = new Paiement();
         
         $paiement = $paiementModel->queryOne(
@@ -697,7 +672,6 @@ class FinanceController extends BaseController {
         }
 
         // Récupérer les lignes
-        require_once APP_PATH . '/Models/LigneFacture.php';
         $ligneModel = new LigneFacture();
         $lignes = $ligneModel->query(
             "SELECT * FROM lignes_facture WHERE facture_id = ?", 
@@ -706,7 +680,6 @@ class FinanceController extends BaseController {
 
         $html = $this->renderRecuHtml($paiement, $lignes);
         
-        require_once APP_PATH . '/Services/PdfService.php';
         $pdfService = new PdfService();
         $pdfService->generateRecu($html, "Recu_Paiement_{$paiement['numero_paiement']}.pdf");
     }
@@ -834,7 +807,6 @@ class FinanceController extends BaseController {
      */
     public function echeanciers() {
         // Mettre à jour les statuts d'abord pour être sûr
-        require_once APP_PATH . '/Models/EcheancierEcolage.php';
         $echeancierModel = new EcheancierEcolage();
         
         // On récupère toutes les échéances non soldées qui ne sont pas exonérées
@@ -892,10 +864,6 @@ class FinanceController extends BaseController {
         // Permission check (facultatif si finance_view suffit)
         // $this->requirePermission('finance_sms');
         
-        require_once APP_PATH . '/Models/EcheancierEcolage.php';
-        require_once APP_PATH . '/Models/BaseModel.php';
-        require_once APP_PATH . '/Services/SmsService.php';
-        
         $echeancierModel = new EcheancierEcolage();
         $echeance = $echeancierModel->findById($id);
         
@@ -948,7 +916,6 @@ class FinanceController extends BaseController {
             return;
         }
         
-        require_once APP_PATH . '/Services/SmsService.php';
         $smsService = new SmsService();
         $count = 0;
         

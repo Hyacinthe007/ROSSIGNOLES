@@ -5,6 +5,12 @@ namespace App\Controllers;
 
 use App\Models\Configuration;
 use App\Models\LogActivite;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\UserGroup;
+use App\Models\BaseModel;
+use Exception;
+use PDOException;
 
 /**
  * Contrôleur système
@@ -56,7 +62,6 @@ class SystemeController extends BaseController {
      * Gestion des utilisateurs et rôles
      */
     public function utilisateurs() {
-        require_once APP_PATH . '/Models/User.php';
         $userModel = new User();
         
         try {
@@ -71,12 +76,10 @@ class SystemeController extends BaseController {
             ");
             
             // Récupérer les rôles
-            require_once APP_PATH . '/Models/Role.php';
             $roleModel = new Role();
             $roles = $roleModel->all([], 'nom ASC');
 
             // Récupérer les groupes
-            require_once APP_PATH . '/Models/UserGroup.php';
             $groupModel = new UserGroup();
             $groupes = $groupModel->all([], 'nom ASC');
             
@@ -99,9 +102,6 @@ class SystemeController extends BaseController {
      * Ajouter un utilisateur
      */
     public function addUtilisateur() {
-        require_once APP_PATH . '/Models/User.php';
-        require_once APP_PATH . '/Models/Role.php';
-        require_once APP_PATH . '/Models/UserGroup.php';
         $userModel = new User();
         $roleModel = new Role();
         $groupModel = new UserGroup();
@@ -160,9 +160,6 @@ class SystemeController extends BaseController {
      * Modifier un utilisateur
      */
     public function editUtilisateur($id) {
-        require_once APP_PATH . '/Models/User.php';
-        require_once APP_PATH . '/Models/Role.php';
-        require_once APP_PATH . '/Models/UserGroup.php';
         $userModel = new User();
         $roleModel = new Role();
         $groupModel = new UserGroup();
@@ -241,7 +238,6 @@ class SystemeController extends BaseController {
      */
     public function toggleStatus($id) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once APP_PATH . '/Models/User.php';
             $userModel = new User();
             
             $user = $userModel->find($id);
@@ -263,7 +259,6 @@ class SystemeController extends BaseController {
      */
     public function syncParentsGroup() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once APP_PATH . '/Models/User.php';
             $userModel = new User();
             
             try {
@@ -294,7 +289,6 @@ class SystemeController extends BaseController {
      * Liste des groupes
      */
     public function groupes() {
-        require_once APP_PATH . '/Models/UserGroup.php';
         $groupModel = new UserGroup();
         $groupes = $groupModel->all([], 'nom ASC');
         $this->view('systeme/groupes', ['groupes' => $groupes]);
@@ -304,8 +298,6 @@ class SystemeController extends BaseController {
      * Ajouter un groupe
      */
     public function addGroup() {
-        require_once APP_PATH . '/Models/UserGroup.php';
-        require_once APP_PATH . '/Models/Role.php';
         $groupModel = new UserGroup();
         $roleModel = new Role();
 
@@ -343,8 +335,6 @@ class SystemeController extends BaseController {
      * Modifier un groupe
      */
     public function editGroup($id) {
-        require_once APP_PATH . '/Models/UserGroup.php';
-        require_once APP_PATH . '/Models/Role.php';
         $groupModel = new UserGroup();
         $roleModel = new Role();
 
@@ -383,7 +373,6 @@ class SystemeController extends BaseController {
      * Supprimer un groupe
      */
     public function deleteGroup($id) {
-        require_once APP_PATH . '/Models/UserGroup.php';
         $groupModel = new UserGroup();
         $groupModel->delete($id);
         $_SESSION['success_message'] = "Groupe supprimé.";
@@ -395,7 +384,6 @@ class SystemeController extends BaseController {
      */
     public function deleteUtilisateur($id) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once APP_PATH . '/Models/User.php';
             $userModel = new User();
             
             // Ne pas permettre la suppression de soi-même
@@ -418,7 +406,6 @@ class SystemeController extends BaseController {
      * Affichage des logs système
      */
     public function logs() {
-        require_once APP_PATH . '/Models/BaseModel.php';
         $model = new BaseModel();
         
         try {

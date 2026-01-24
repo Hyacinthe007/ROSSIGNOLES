@@ -16,6 +16,9 @@ use App\Models\MatieresSeries;
 use App\Models\MatieresNiveaux;
 use App\Models\MatieresClasses;
 use App\Models\CalendrierScolaire;
+use App\Models\BaseModel;
+use Exception;
+use PDOException;
 
 /**
  * Contrôleur Pédagogie
@@ -32,7 +35,6 @@ class PedagogieController extends BaseController {
      * Liste des niveaux
      */
     public function niveaux() {
-        require_once APP_PATH . '/Models/Niveau.php';
         $model = new Niveau();
         
         try {
@@ -49,7 +51,6 @@ class PedagogieController extends BaseController {
      * Liste des cycles
      */
     public function cycles() {
-        require_once APP_PATH . '/Models/Cycle.php';
         $model = new Cycle();
         
         try {
@@ -66,8 +67,6 @@ class PedagogieController extends BaseController {
      * Liste des séries avec leurs niveaux associés
      */
     public function series() {
-        require_once APP_PATH . '/Models/Serie.php';
-        require_once APP_PATH . '/Models/Niveau.php';
         
         $serieModel = new Serie();
         $niveauModel = new Niveau();
@@ -95,7 +94,6 @@ class PedagogieController extends BaseController {
      * Liste des cours (Associations Enseignants-Classes-Matières)
      */
     public function enseignements() {
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
         $model = new EnseignantsClasses();
         
         try {
@@ -113,11 +111,6 @@ class PedagogieController extends BaseController {
      * Ajouter une attribution d'enseignement
      */
     public function addEnseignement() {
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
-        require_once APP_PATH . '/Models/Classe.php';
-        require_once APP_PATH . '/Models/Matiere.php';
-        require_once APP_PATH . '/Models/Personnel.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
 
         $ecModel = new EnseignantsClasses();
         $classeModel = new Classe();
@@ -165,11 +158,6 @@ class PedagogieController extends BaseController {
      * Modifier une attribution d'enseignement
      */
     public function editEnseignement($id) {
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
-        require_once APP_PATH . '/Models/Classe.php';
-        require_once APP_PATH . '/Models/Matiere.php';
-        require_once APP_PATH . '/Models/Personnel.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
 
         $ecModel = new EnseignantsClasses();
         $classeModel = new Classe();
@@ -221,7 +209,6 @@ class PedagogieController extends BaseController {
      * Supprimer une attribution d'enseignement
      */
     public function deleteEnseignement($id) {
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
         $ecModel = new EnseignantsClasses();
         
         try {
@@ -301,7 +288,6 @@ class PedagogieController extends BaseController {
                 $emploisTemps = $model->getEmploiTempsMatriciel($anneeId, $classeId, $personnelId);
 
                 // Récupération des vacances/fériés pour cette semaine
-                require_once APP_PATH . '/Models/CalendrierScolaire.php';
                 $calModel = new CalendrierScolaire();
                 $allVacances = $calModel->query("SELECT * FROM calendrier_scolaire WHERE annee_scolaire_id = ? AND bloque_cours = 1 AND (date_debut <= ? AND date_fin >= ?)", [$anneeId, $saturday, $monday]);
                 
@@ -337,9 +323,6 @@ class PedagogieController extends BaseController {
      * Formulaire d'ajout d'un créneau dans l'emploi du temps
      */
     public function addEmploiTemps() {
-        require_once APP_PATH . '/Models/EmploisTemps.php';
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         
         $model = new EmploisTemps();
         $ecModel = new EnseignantsClasses();
@@ -416,9 +399,6 @@ class PedagogieController extends BaseController {
     }
 
     public function editEmploiTemps($id) {
-        require_once APP_PATH . '/Models/EmploisTemps.php';
-        require_once APP_PATH . '/Models/EnseignantsClasses.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
         
         $model = new EmploisTemps();
         $ecModel = new EnseignantsClasses();
@@ -503,9 +483,6 @@ class PedagogieController extends BaseController {
      * Gestion des coefficients pour une série
      */
     public function coefficients($serieId) {
-        require_once APP_PATH . '/Models/BaseModel.php';
-        require_once APP_PATH . '/Models/MatieresSeries.php';
-        require_once APP_PATH . '/Models/Matiere.php';
         
         $model = new BaseModel();
         $msModel = new MatieresSeries();
@@ -547,11 +524,6 @@ class PedagogieController extends BaseController {
      * Mise à jour des coefficients via POST
      */
     public function updateCoefficients() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('pedagogie/series');
-        }
-        
-        require_once APP_PATH . '/Models/MatieresSeries.php';
         $msModel = new MatieresSeries();
         
         $serieId = $_POST['serie_id'];
@@ -608,9 +580,6 @@ class PedagogieController extends BaseController {
      * Gestion des coefficients pour un niveau
      */
     public function coefficientsNiveau($niveauId) {
-        require_once APP_PATH . '/Models/BaseModel.php';
-        require_once APP_PATH . '/Models/MatieresNiveaux.php';
-        require_once APP_PATH . '/Models/Matiere.php';
         
         $model = new BaseModel();
         $mnModel = new MatieresNiveaux();
@@ -646,11 +615,6 @@ class PedagogieController extends BaseController {
      * Mise à jour des coefficients de niveau via POST
      */
     public function updateCoefficientsNiveau() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('pedagogie/niveaux');
-        }
-        
-        require_once APP_PATH . '/Models/MatieresNiveaux.php';
         $mnModel = new MatieresNiveaux();
         
         $niveauId = $_POST['niveau_id'];
@@ -704,8 +668,6 @@ class PedagogieController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('pedagogie/series');
         }
-
-        require_once APP_PATH . '/Models/Serie.php';
         $model = new Serie();
 
         try {
@@ -732,8 +694,6 @@ class PedagogieController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('pedagogie/series');
         }
-
-        require_once APP_PATH . '/Models/Serie.php';
         $model = new Serie();
 
         try {
@@ -757,7 +717,6 @@ class PedagogieController extends BaseController {
      * Supprimer une série
      */
     public function deleteSerie($id) {
-        require_once APP_PATH . '/Models/Serie.php';
         $model = new Serie();
 
         try {
@@ -780,7 +739,6 @@ class PedagogieController extends BaseController {
      * Basculer le statut d'une série
      */
     public function toggleSerie($id) {
-        require_once APP_PATH . '/Models/BaseModel.php'; // Added this line
         $model = new BaseModel(); // Changed from Serie() to BaseModel()
 
         try {
@@ -801,10 +759,6 @@ class PedagogieController extends BaseController {
      * Gestion des coefficients pour une classe spécifique (Override)
      */
     public function coefficientsClasse($classeId) {
-        require_once APP_PATH . '/Models/MatieresClasses.php';
-        require_once APP_PATH . '/Models/Matiere.php';
-        require_once APP_PATH . '/Models/Classe.php';
-        
         $mcModel = new MatieresClasses();
         $matiereModel = new Matiere();
         $classeModel = new Classe();
@@ -842,7 +796,6 @@ class PedagogieController extends BaseController {
             die("Méthode non autorisée");
         }
         
-        require_once APP_PATH . '/Models/MatieresClasses.php';
         $mcModel = new MatieresClasses();
         
         $classeId = $_POST['classe_id'];

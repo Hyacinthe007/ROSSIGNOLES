@@ -31,7 +31,7 @@ class InscriptionsController extends BaseController {
         $model = new Inscription();
         
         // Obtenir l'année scolaire active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : null;
@@ -118,7 +118,7 @@ class InscriptionsController extends BaseController {
      * Démarre une inscription pour un parent existant
      */
     public function parParent($parentId) {
-        require_once APP_PATH . '/Models/Parent.php';
+
         $parentModel = new ParentModel();
         $parent = $parentModel->find($parentId);
         
@@ -263,7 +263,7 @@ class InscriptionsController extends BaseController {
         
         if ($type === 'reinscription') {
             // Récupérer l'année scolaire active
-            require_once APP_PATH . '/Models/AnneeScolaire.php';
+    
             $anneeModel = new AnneeScolaire();
             $anneeActive = $anneeModel->getActive();
             
@@ -374,7 +374,7 @@ class InscriptionsController extends BaseController {
                 $eleveId = $_SESSION['inscription_data']['eleve_id'];
                 
                 // Récupérer la classe de l'année précédente
-                require_once APP_PATH . '/Models/AnneeScolaire.php';
+        
                 $anneeModel = new AnneeScolaire();
                 $anneeActive = $anneeModel->getActive();
                 
@@ -429,7 +429,7 @@ class InscriptionsController extends BaseController {
         
         $classeModel = new Classe();
         
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         $anneeId = $anneeActive ? $anneeActive['id'] : 0;
@@ -483,8 +483,8 @@ class InscriptionsController extends BaseController {
             return;
         }
 
-        require_once APP_PATH . '/Models/DocumentsInscription.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
+
         
         $model = new Inscription();
         $docModel = new DocumentsInscription();
@@ -591,7 +591,7 @@ class InscriptionsController extends BaseController {
         $classe = $classeModel->find($classeId);
         
         // Récupérer l'année active
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         
@@ -602,8 +602,8 @@ class InscriptionsController extends BaseController {
         }
         
         // Récupérer les articles disponibles pour ce niveau
-        require_once APP_PATH . '/Models/Article.php';
-        require_once APP_PATH . '/Models/TarifArticle.php';
+
+
         
         $articleModel = new Article();
         $articles = $articleModel->getAllWithTarifs($anneeActive['id']);
@@ -689,7 +689,7 @@ class InscriptionsController extends BaseController {
         }
         
         // Année
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         
@@ -699,7 +699,7 @@ class InscriptionsController extends BaseController {
             return;
         }
         
-        require_once APP_PATH . '/Models/TarifInscription.php';
+
         $tarifModel = new TarifInscription();
         $tarif = $tarifModel->getByAnneeAndNiveau($anneeActive['id'], $classe['niveau_id']);
         
@@ -719,7 +719,7 @@ class InscriptionsController extends BaseController {
             'mois_debut' => $tarif['mois_debut_annee'] ?? 9
         ];
         
-        require_once APP_PATH . '/Models/ModePaiement.php';
+
         $modeModel = new ModePaiement();
         $modesPaiement = $modeModel->all(['actif' => 1]);
 
@@ -731,7 +731,7 @@ class InscriptionsController extends BaseController {
         $articlesSession = $_SESSION['inscription_data']['articles_optionnels'] ?? [];
         
         if (!empty($articlesSession)) {
-            require_once APP_PATH . '/Models/Article.php';
+    
             $articleModel = new Article();
             foreach ($articlesSession as $articleId) {
                 $art = $articleModel->getWithTarif($articleId, $anneeActive['id']);
@@ -834,7 +834,7 @@ class InscriptionsController extends BaseController {
             return;
         }
         
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         
@@ -865,7 +865,7 @@ class InscriptionsController extends BaseController {
              $_SESSION['inscription_data']['eleve_id'] = $eleveModel->create($data['eleve_data']);
              
              if (!empty($data['parent_data'])) {
-                 require_once APP_PATH . '/Models/Parent.php';
+         
                  $parentModel = new ParentModel();
                  $parentId = $parentModel->create([
                      'nom' => $data['parent_data']['nom'],
@@ -954,7 +954,7 @@ class InscriptionsController extends BaseController {
 
                  // Création du parent et de la relation eleves_parents
                  if (!empty($data['parent_data'])) {
-                     require_once APP_PATH . '/Models/Parent.php';
+             
                      $parentModel = new ParentModel();
                      
                      // Vérifier si un parent avec le même téléphone existe déjà
@@ -986,7 +986,7 @@ class InscriptionsController extends BaseController {
         } // Fin du IF (eleve_nouveau)
              
              // Récupérer année active
-             require_once APP_PATH . '/Models/AnneeScolaire.php';
+     
              $anneeModel = new AnneeScolaire();
              $anneeActive = $anneeModel->getActive();
              
@@ -1066,7 +1066,7 @@ class InscriptionsController extends BaseController {
              }
         }
         
-        require_once APP_PATH . '/Models/ModePaiement.php';
+
         $modeModel = new ModePaiement();
         $modesPaiement = $modeModel->all(['actif' => 1]);
         
@@ -1077,8 +1077,8 @@ class InscriptionsController extends BaseController {
      * Gestion des documents d'inscription
      */
     public function documents($id) {
-        require_once APP_PATH . '/Models/DocumentsInscription.php';
-        require_once APP_PATH . '/Models/AnneeScolaire.php';
+
+
         
         $model = new Inscription();
         $docModel = new DocumentsInscription();
@@ -1165,7 +1165,7 @@ class InscriptionsController extends BaseController {
         if (!$redirectUrl) {
             $redirectUrl = '/inscriptions/documents/' . $inscriptionId;
         }
-        require_once APP_PATH . '/Models/DocumentsInscription.php';
+
         
         if (!isset($_FILES['fichier']) || $_FILES['fichier']['error'] !== UPLOAD_ERR_OK) {
             $_SESSION['error'] = "Erreur lors de l'upload du fichier";

@@ -98,7 +98,7 @@ foreach ($elevesEnRetard as $eleve) {
                     <?php else: ?>
                         <?php foreach ($elevesEnRetard as $eleve): ?>
                             <tr class="hover:bg-gray-50 transition cursor-pointer" 
-                                onclick="window.location.href='<?= url('echeancier/view?eleve_id=' . $eleve['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>'">
+                                onclick="window.location.href='<?= url('echeancier/show?eleve_id=' . $eleve['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>'">
                                 <td class="px-6 py-4 whitespace-nowrap font-mono text-sm text-blue-600 font-bold">
                                     <?= htmlspecialchars($eleve['matricule']) ?>
                                 </td>
@@ -121,7 +121,7 @@ foreach ($elevesEnRetard as $eleve) {
                                     <?= number_format($eleve['total_retard'], 0, ',', ' ') ?> Ar
                                 </td>
                                 <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
-                                    <a href="<?= url('echeancier/view?eleve_id=' . $eleve['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>" 
+                                    <a href="<?= url('echeancier/show?eleve_id=' . $eleve['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>" 
                                        class="text-blue-600 hover:text-blue-800 font-bold text-sm bg-blue-50 px-3 py-2 rounded-lg transition inline-flex items-center gap-2">
                                         <i class="fas fa-eye"></i>
                                         <span>Détails</span>

@@ -208,8 +208,7 @@ sort($classesUniques);
                             ?>
                             <tr class="echeancier-row text-sm hover:bg-gray-50 cursor-pointer transition" 
                                 data-statut="<?= $dataStatut ?>"
-                                data-classe="<?= htmlspecialchars($ech['classe_nom']) ?>"
-                                onclick="window.location.href='<?= url('echeancier/view?eleve_id=' . $ech['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>'">
+                                onclick="window.location.href='<?= url('echeancier/show?eleve_id=' . $ech['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>'">
                                 
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <span class="text-sm font-medium text-gray-900 font-mono"><?= htmlspecialchars($ech['matricule']) ?></span>
@@ -267,7 +266,7 @@ sort($classesUniques);
                                 
                                 <td class="px-4 py-3" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="<?= url('echeancier/view?eleve_id=' . $ech['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>" 
+                                        <a href="<?= url('echeancier/show?eleve_id=' . $ech['eleve_id'] . '&annee_scolaire_id=' . $anneeScolaireId) ?>" 
                                            class="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
                                            title="Voir détails">
                                             <i class="fas fa-eye"></i>
