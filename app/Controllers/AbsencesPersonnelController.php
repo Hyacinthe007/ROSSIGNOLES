@@ -1,11 +1,10 @@
 <?php
-/**
- * Contrôleur des absences du personnel
- */
+declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/AbsencePersonnel.php';
-require_once APP_PATH . '/Models/Personnel.php';
+namespace App\Controllers;
+
+use App\Models\AbsencePersonnel;
+use App\Models\Personnel;
 
 class AbsencesPersonnelController extends BaseController {
     private $absenceModel;

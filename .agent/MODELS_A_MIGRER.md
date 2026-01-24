@@ -1,10 +1,8 @@
-# 🚨 MODÈLES À MIGRER D'URGENCE
+# 🚨 STATUT DE LA MIGRATION PSR-4
 
-Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés immédiatement :
-
-## ✅ Déjà migrés
+## ✅ Déjà migrés (App\Models)
 - BaseModel
-- User  
+- User
 - Eleve
 - Classe
 - Inscription
@@ -15,13 +13,15 @@ Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés imméd
 - Role
 - UserGroup
 - Personnel
+- PersonnelEnseignant
+- PersonnelAdministratif
+- Document
+- AbsencePersonnel
 - AnneeScolaire
 - Permission
-
 - Niveau
 - Serie
 - ParentModel
-
 - Bulletin
 - Note
 - Matiere
@@ -32,15 +32,24 @@ Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés imméd
 - TarifArticle
 - DocumentsInscription
 - TarifInscription
+- EmploisTemps
+- EnseignantsClasses
+- MatieresSeries
+- MatieresNiveaux
+- MatieresClasses
+- CalendrierScolaire
+- ConseilClasse
+- DecisionConseil
 
-## 🟡 À migrer ensuite
+## 🟡 À migrer prochainement
 - [ ] InscriptionArticle.php
 - [ ] EcheancierEcolage.php
 - [ ] Cycle.php
 - [ ] TypeFrais.php
-- [ ] TarifArticle.php
+- [ ] TarifArticle.php (doublon ?)
+- [ ] ... tous les autres fichiers dans app/Models/
 
 ## 📝 Stratégie
-1. Migrer les 3 modèles critiques (LogActivite, Role, UserGroup)
-2. Tester l'application
-3. Migrer le reste par batch de 5
+1. Migration à la demande (lorsqu'une erreur survient)
+2. Validation immédiate par test runtime
+3. Nettoyage des `require_once` dans les contrôleurs associés

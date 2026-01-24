@@ -1,9 +1,7 @@
 <?php
-/**
- * Modèle Absence
- */
+declare(strict_types=1);
 
-require_once __DIR__ . '/BaseModel.php';
+namespace App\Models;
 
 class Absence extends BaseModel {
     protected $table = 'absences';

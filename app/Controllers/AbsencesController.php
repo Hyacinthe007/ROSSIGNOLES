@@ -1,10 +1,11 @@
 <?php
-/**
- * Contrôleur des absences
- */
+declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Absence.php';
+namespace App\Controllers;
+
+use App\Models\Absence;
+use App\Models\Eleve;
+use PDOException;
 
 class AbsencesController extends BaseController {
     private $absenceModel;
@@ -58,7 +59,6 @@ class AbsencesController extends BaseController {
             $eleveId = $_POST['eleve_id'] ?? '';
             
             // Récupérer la classe de l'élève via son inscription active
-            require_once APP_PATH . '/Models/Eleve.php';
             $eleveModel = new Eleve();
             $inscription = $eleveModel->getInscriptionActive($eleveId);
             
