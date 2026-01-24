@@ -1,0 +1,70 @@
+<?php
+/**
+ * Modèle Classe
+ */
+
+require_once __DIR__ . '/BaseModel.php';
+
+class Classe extends BaseModel {
+    protected $table = 'classes';
+    protected $fillable = [
+        'nom', 'code', 'niveau_id', 'serie_id', 'professeur_principal_id', 
+        'annee_scolaire_id', 'capacite', 'seuil_admission', 'effectif_actuel', 
+        'salle', 'statut'
+    ];
+    
+    /**
+     * Récupère les classes actives (non supprimées)
+     */
+    public function getActives($anneeScolaireId = null) {
+        $sql = "SELECT * FROM {$this->table} WHERE statut = 'actif' AND deleted_at IS NULL";
+        $params = [];
+        
+        if ($anneeScolaireId) {
+            $sql .= " AND annee_scolaire_id = ?";
+            $params[] = $anneeScolaireId;
+        }
+        
+        $sql .= " ORDER BY nom ASC";
+        return $this->query($sql, $params);
+    }
+    
+    /**
+     * Obtient les détails complets d'une classe
+     */
+    public function getDetails($id) {
+        return $this->queryOne(
+            "SELECT c.*, n.libelle as niveau_nom, s.libelle as serie_nom,
+                    an.libelle as annee_scolaire
+             FROM {$this->table} c
+             LEFT JOIN niveaux n ON c.niveau_id = n.id
+             LEFT JOIN series s ON c.serie_id = s.id
+             LEFT JOIN annees_scolaires an ON c.annee_scolaire_id = an.id
+             WHERE c.id = ?",
+            [$id]
+        );
+    }
+    
+    /**
+     * Obtient les élèves d'une classe
+     */
+    public function getEleves($classeId, $anneeScolaireId = null) {
+        $sql = "SELECT e.*, i.date_inscription, i.statut as inscription_statut,
+                       i.type_inscription, i.statut_dossier
+                FROM eleves e
+                INNER JOIN inscriptions i ON e.id = i.eleve_id
+                WHERE i.classe_id = ? AND i.statut = 'validee'";
+        
+        $params = [$classeId];
+        
+        if ($anneeScolaireId) {
+            $sql .= " AND i.annee_scolaire_id = ?";
+            $params[] = $anneeScolaireId;
+        }
+        
+        $sql .= " ORDER BY e.nom, e.prenom";
+        
+        return $this->query($sql, $params);
+    }
+}
+

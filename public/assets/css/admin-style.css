@@ -1,0 +1,1446 @@
+/* Styles personnalisés pour l'admin */
+
+/* Typography System */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: 'Outfit', sans-serif !important;
+    color: #374151;
+    /* gray-700 default */
+}
+
+h1,
+.h1 {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    line-height: 1.5;
+}
+
+h2,
+.h2 {
+    font-size: 21px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    line-height: 1.5;
+}
+
+h3,
+.h3 {
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    line-height: 1.5;
+}
+
+h4,
+.h4 {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    line-height: 1.5;
+}
+
+h5,
+.h5 {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #4b5563 !important;
+    line-height: 1.5;
+}
+
+h6,
+.h6 {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    line-height: 1.5;
+}
+
+/* Sidebar */
+.logo-text h2 {
+    font-size: 1.25rem !important;
+    /* Augmenté de 0.875rem à 1.25rem */
+    letter-spacing: 0.025em;
+    text-transform: none;
+    /* Retrait du capitalize forcé */
+    color: #1f2937;
+    /* gray-800 pour plus de présence */
+    font-weight: 700 !important;
+}
+
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    transition: transform 0.3s ease, width 0.3s ease;
+    z-index: 40;
+}
+
+.sidebar.collapsed {
+    width: 64px;
+    overflow-x: hidden;
+    /* Retour au masquage pour supprimer la barre de défilement */
+}
+
+.sidebar.collapsed>div {
+    padding: 0.5rem 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.sidebar.collapsed>div>nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar.collapsed .menu-text,
+.sidebar.collapsed .logo-text {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Espacement uniforme entre tous les éléments en mode collapsed */
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .menu-item-header {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    min-width: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    margin: 8px auto !important;
+    position: relative !important;
+    /* overflow: hidden supprimé pour laisser paraître le tooltip */
+}
+
+/* Forcer le centrage du wrapper interne s'il existe */
+.sidebar.collapsed .menu-item>div,
+.sidebar.collapsed .menu-item-header>div {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sidebar.collapsed .menu-item .menu-text,
+.sidebar.collapsed .menu-item-header .menu-text,
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .fa-chevron-right {
+    display: none !important;
+}
+
+/* Espacement uniforme entre tous les éléments en mode collapsed */
+.sidebar.collapsed nav {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    padding: 8px 0 !important;
+    width: 100% !important;
+}
+
+/* Espacement uniforme pour le dashboard et les modules - CENTRAGE PARFAIT */
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .menu-item-header {
+    margin: 6px auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    min-width: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+}
+
+/* Centrage parfait des icônes - Mode FLEX uniquement pour éviter les décalages */
+.sidebar.collapsed .menu-item i,
+.sidebar.collapsed .menu-item-header i {
+    font-size: 20px !important;
+    width: 20px !important;
+    text-align: center !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    position: static !important;
+    /* On annule l'absolu qui cassait tout */
+    transform: none !important;
+}
+
+/* État actif pour les icônes en mode collapsed */
+.sidebar.collapsed .menu-item.bg-blue-100 i,
+.sidebar.collapsed .menu-item-header.bg-blue-100 i,
+.sidebar.collapsed .menu-item-header.bg-blue-100>div>i:first-child {
+    color: #2563eb !important;
+    /* blue-600 */
+}
+
+.sidebar.collapsed .menu-item.bg-blue-100,
+.sidebar.collapsed .menu-item-header.bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    /* blue-500 avec 0.15 opacité, proche de blue-100 */
+    border-radius: 8px !important;
+}
+
+/* Effet hover sur les icônes en mode collapsed - Dashboard */
+.sidebar.collapsed .menu-item:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.sidebar.collapsed .menu-item:hover i {
+    color: #2563eb !important;
+    /* blue-600 */
+}
+
+/* Effet hover sur les icônes en mode collapsed - Modules */
+.sidebar.collapsed .menu-item-header:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.sidebar.collapsed .menu-item-header:hover>div>i:first-child,
+.sidebar.collapsed .menu-item-header:hover i:first-child {
+    color: #2563eb !important;
+    /* blue-600 */
+}
+
+/* Mobile sidebar */
+@media (max-width: 1023px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+}
+
+/* Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+@media (min-width: 1024px) {
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* Main content */
+.main-content {
+    margin-left: 260px;
+    transition: margin-left 0.3s ease;
+    min-height: calc(100vh - 64px);
+}
+
+.sidebar.collapsed~.main-content {
+    margin-left: 64px;
+}
+
+@media (max-width: 1023px) {
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Menu groups */
+.menu-group {
+    margin-bottom: 0.5rem;
+}
+
+.menu-item-main {
+    position: relative;
+}
+
+/* Styles pour les modules principaux en mode collapsed */
+.sidebar.collapsed .menu-item-main {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    min-width: 48px;
+    width: 48px;
+    height: 48px;
+    margin: 8px 0 !important;
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex !important;
+}
+
+.sidebar.collapsed .menu-item-main .menu-text {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none;
+}
+
+.sidebar.collapsed .menu-item-main .tooltip {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none;
+}
+
+.sidebar.collapsed .menu-item-main i,
+.sidebar.collapsed .menu-item i {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    text-align: center !important;
+    flex-shrink: 0;
+    display: inline-block !important;
+    pointer-events: none;
+    font-size: 20px !important;
+    margin: 0 !important;
+}
+
+/* Uniformiser la taille des icônes dans les items en mode collapsed */
+.sidebar.collapsed .menu-item i,
+.sidebar.collapsed .menu-item-header i {
+    font-size: 20px !important;
+    color: #4b5563;
+    /* gray-600 */
+}
+
+.menu-sub-items {
+    margin-left: 0.5rem;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+/* Masquer les sous-menus en mode collapsed */
+.sidebar.collapsed .menu-sub-items {
+    display: none !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+}
+
+/* Afficher les en-têtes de modules en mode collapsed mais avec seulement l'icône */
+.sidebar.collapsed .menu-item-header {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 6px auto !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    max-height: none !important;
+    height: 48px !important;
+}
+
+/* Masquer le texte et le chevron en mode collapsed */
+.sidebar.collapsed .menu-item-header .menu-text,
+.sidebar.collapsed .menu-item-header .fa-chevron-right {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Suppression des anciens styles de wrappers complexes */
+
+/* Règles déjà définies ci-dessus, cette règle est maintenant redondante */
+
+/* Afficher les sous-menus en mode normal */
+.sidebar:not(.collapsed) .menu-sub-items {
+    display: block !important;
+    opacity: 1 !important;
+    max-height: 2000px !important;
+    visibility: visible !important;
+}
+
+/* Comportement accordéon - Masquer les sous-menus des groupes qui ne sont pas expanded */
+.sidebar:not(.collapsed) .menu-group:not(.expanded) .menu-sub-items {
+    display: none !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Afficher les sous-menus seulement pour les groupes expanded */
+.sidebar:not(.collapsed) .menu-group.expanded .menu-sub-items {
+    display: block !important;
+    opacity: 1 !important;
+    max-height: 2000px !important;
+    visibility: visible !important;
+}
+
+/* Forcer l'affichage même si la classe hidden est présente */
+.sidebar:not(.collapsed) .menu-group.expanded .menu-sub-items.hidden {
+    display: block !important;
+    opacity: 1 !important;
+    max-height: 2000px !important;
+    visibility: visible !important;
+}
+
+/* Animation douce pour l'ouverture/fermeture */
+.menu-sub-items {
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    overflow: hidden !important;
+}
+
+/* Animation spécifique pour l'affichage */
+.sidebar:not(.collapsed) .menu-group.expanded .menu-sub-items {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 2000px;
+    }
+}
+
+/* Curseur pointer pour les en-têtes cliquables */
+.sidebar:not(.collapsed) .menu-item-header,
+.sidebar:not(.collapsed) .menu-item-main {
+    cursor: pointer;
+}
+
+/* Transition par défaut pour le chevron - Sélecteurs très spécifiques */
+.sidebar:not(.collapsed) .menu-item-header i.fa-chevron-right,
+.sidebar:not(.collapsed) .menu-item-header .fas.fa-chevron-right,
+.sidebar:not(.collapsed) .menu-item-header i[class*="chevron-right"],
+.sidebar:not(.collapsed) .menu-group .menu-item-header i.fas.fa-chevron-right {
+    transition: transform 0.3s ease !important;
+    transform: rotate(0deg) !important;
+}
+
+/* Rotation du chevron quand le groupe est expanded - Sélecteurs très spécifiques */
+.sidebar:not(.collapsed) .menu-group.expanded .menu-item-header i.fa-chevron-right,
+.sidebar:not(.collapsed) .menu-group.expanded .menu-item-header .fas.fa-chevron-right,
+.sidebar:not(.collapsed) .menu-group.expanded .menu-item-header i[class*="chevron-right"],
+.sidebar:not(.collapsed) .menu-group.expanded .menu-item-header i.fas.fa-chevron-right {
+    transform: rotate(90deg) !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* Indicateur visuel au survol pour les groupes */
+.sidebar:not(.collapsed) .menu-item-header:hover,
+.sidebar:not(.collapsed) .menu-item-main:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+
+/* Menu items */
+.menu-item {
+    position: relative;
+}
+
+.menu-item .tooltip {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    margin-left: 10px;
+    z-index: 50;
+    font-size: 14px;
+    pointer-events: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item .tooltip::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: #1f2937;
+}
+
+/* Afficher les tooltips uniquement en mode collapse */
+.sidebar.collapsed .menu-item:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* S'assurer que les tooltips ne s'affichent JAMAIS quand la sidebar n'est pas collapsed */
+.sidebar:not(.collapsed) .menu-item-main {
+    position: relative;
+}
+
+.sidebar:not(.collapsed) .menu-item .tooltip,
+.sidebar:not(.collapsed) .menu-item-main .tooltip {
+    /* Retirer complètement du flux flexbox */
+    position: fixed !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    /* Empêcher le tooltip de prendre de l'espace dans flexbox */
+    flex: 0 0 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    /* Clip pour masquer complètement */
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    z-index: -9999 !important;
+}
+
+/* Règle supplémentaire pour les tooltips avec aria-hidden */
+.menu-item-main .tooltip[aria-hidden="true"] {
+    display: none !important;
+    position: fixed !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    flex: 0 0 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+}
+
+/* Tooltips pour les modules principaux - Masqués par défaut */
+.menu-item-main .tooltip {
+    position: absolute;
+    left: -9999px;
+    /* Sortir complètement de la vue */
+    top: -9999px;
+    background-color: #1f2937;
+    color: white;
+    padding: 0;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    margin: 0;
+    z-index: -1;
+    font-size: 0;
+    pointer-events: none;
+    box-shadow: none;
+    /* Retirer complètement du flux pour éviter la répétition */
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    text-indent: -9999px;
+    /* Cacher le texte */
+}
+
+.menu-item-main .tooltip::before {
+    content: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    border: none !important;
+}
+
+/* Masquer le ::before en mode normal */
+.sidebar:not(.collapsed) .menu-item-main .tooltip::before {
+    content: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    border: none !important;
+}
+
+/* Les tooltips des modules principaux sont masqués par les règles plus haut */
+
+/* Stat cards */
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Tables */
+table {
+    width: 100%;
+}
+
+table thead {
+    background-color: #f9fafb;
+}
+
+table tbody tr {
+    transition: background-color 0.2s;
+}
+
+table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Forms */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive Table Typography */
+.table-responsive-text {
+    font-size: 0.875rem;
+    /* 14px */
+}
+
+@media (max-width: 768px) {
+    .table-responsive-text {
+        font-size: 0.8125rem;
+        /* 13px */
+    }
+
+    .table-responsive-text th {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .table-responsive-text {
+        font-size: 0.75rem;
+        /* 12px */
+    }
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-card .text-3xl {
+        font-size: 1.5rem;
+    }
+}
+
+/* Alignement parfait des icônes en mode collapsed - Styles unifiés */
+.sidebar.collapsed nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: 0;
+}
+
+.sidebar.collapsed .menu-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+/* Espacement uniforme entre tous les éléments en mode collapsed */
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .menu-item-main {
+    margin: 8px 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Masquer complètement le logo en mode collapsed */
+.sidebar.collapsed .logo-text {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+}
+
+/* Masquer tous les tooltips par défaut en mode collapsed (mais préparés pour le hover) */
+.sidebar.collapsed .tooltip {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+/* Mode normal - Afficher les modules avec noms et sous-modules */
+.sidebar:not(.collapsed) .menu-item-main,
+.sidebar:not(.collapsed) .menu-item {
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.sidebar:not(.collapsed) .menu-item-main .menu-text,
+.sidebar:not(.collapsed) .menu-item .menu-text {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.sidebar:not(.collapsed) .menu-sub-items {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Règle finale pour masquer complètement les tooltips en mode normal */
+.sidebar:not(.collapsed) .menu-item-main .tooltip,
+.sidebar:not(.collapsed) .menu-item .tooltip,
+.sidebar:not(.collapsed) .menu-item-header .tooltip {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    content: '' !important;
+    z-index: -9999 !important;
+}
+
+
+/* Utility classes for Grade Entry inputs */
+/* Remove spinner arrows from number inputs */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.note-input:focus {
+    z-index: 10;
+}
+
+/* Correction optique pour l'icône graduate qui tire vers la gauche */
+.sidebar.collapsed .fa-user-graduate {
+    margin-left: 1px !important;
+}
+
+/* --- STYLES EXTRAITS DES VUES --- */
+
+/* Emplois du temps (app/Views/pedagogie/emplois_temps.php) */
+.tt-container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.tt-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(5, 1fr);
+}
+
+.tt-cell {
+    padding: 12px 10px;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    position: relative;
+    border-right: 1px solid #F3F4F6;
+    border-bottom: 1px solid #F3F4F6;
+    background: white;
+}
+
+.tt-cell:hover {
+    background-color: #F9FAFB;
+}
+
+.tt-actions {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tt-cell:hover .tt-actions {
+    opacity: 1;
+}
+
+.tt-add-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+}
+
+.tt-cell:hover .tt-add-btn {
+    opacity: 1;
+}
+
+.tt-add-btn a {
+    width: 32px;
+    height: 32px;
+    background: #9333EA;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.2s;
+}
+
+.tt-add-btn a:hover {
+    transform: scale(1.1);
+    background: #7E22CE;
+}
+
+.tt-header-cell {
+    height: 45px;
+    background: #2563EB;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tt-time-col {
+    background: #F9FAFB;
+    color: #4B5563;
+    font-weight: 700;
+    font-size: 0.7rem;
+    border-right: 1px solid #E5E7EB;
+}
+
+.course-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.course-code {
+    font-family: "Outfit", sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.tt-grid>div:last-child {
+    border-right: none;
+}
+
+@media (max-width: 768px) {
+    .tt-grid {
+        grid-template-columns: 80px repeat(5, 1fr);
+    }
+
+    .course-code {
+        font-size: 0.65rem;
+    }
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        padding: 0 !important;
+    }
+
+    .tt-container {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .receipt,
+    .final-receipt {
+        box-shadow: none !important;
+        border: 1px solid #ddd;
+        padding: 20px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    @page {
+        margin: 10mm;
+    }
+}
+
+/* Animations Globales */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animation-fade-in,
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-down {
+    animation: fadeInDown 0.3s ease-out forwards;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+@keyframes pulse-soft {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 0.5s ease-in-out infinite;
+}
+
+/* Formulaires & Inputs */
+input[type=number].no-spin::-webkit-inner-spin-button,
+input[type=number].no-spin::-webkit-outer-spin-button {
+    opacity: 1 !important;
+    height: 24px;
+}
+
+input[type=number].no-spin {
+    -moz-appearance: number-input;
+}
+
+/* �ch�ancier (finance/paiement_mensuel_saisir.php) */
+.echeance-card.selected {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.echeance-card.selected .checkbox-indicator {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.echeance-card.selected .checkbox-indicator i {
+    transform: scale(1);
+    opacity: 1 !important;
+}
+
+/* Inscriptions (articles/confirmation) */
+.final-receipt {
+    background: white;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.header-receipt {
+    text-align: center;
+    border-bottom: 2px solid #10b981;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.header-receipt h1 {
+    color: #059669;
+    font-size: 24px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.info-grid-receipt {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.section-title-receipt {
+    font-size: 14px;
+    font-weight: bold;
+    color: #059669;
+    text-transform: uppercase;
+    border-bottom: 1px solid #10b981;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.table-receipt {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.table-receipt th {
+    background: #059669;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-size: 12px;
+}
+
+.table-receipt td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+}
+
+.total-amount-receipt {
+    font-weight: bold;
+    font-size: 24px;
+    color: #059669;
+}
+
+/* --- Styles pour les Re�us et Documents --- */
+.receipt {
+    background: white;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+}
+
+.receipt-header {
+    text-align: center;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.receipt-header h1 {
+    color: #059669;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 5px 0;
+}
+
+.school-name-receipt {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.info-grid-receipt-alt {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.student-info-receipt h3 {
+    font-size: 15px;
+    border-bottom: 1px solid #10b981;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    color: #059669;
+    text-transform: uppercase;
+}
+
+.receipt-meta-alt {
+    text-align: right;
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.info-row-receipt {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.info-label-receipt {
+    width: 140px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.info-value-receipt {
+    flex: 1;
+    font-weight: 500;
+}
+
+.details-table-receipt {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.details-table-receipt th {
+    background: #059669;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.details-table-receipt td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.amount-col-receipt {
+    text-align: right;
+    width: 150px;
+}
+
+.total-row-receipt {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.total-label-receipt {
+    font-weight: bold;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.total-amount-receipt-alt {
+    font-weight: bold;
+    font-size: 20px;
+    color: #059669;
+}
+
+.in-words-receipt {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+    font-size: 13px;
+}
+
+.signature-section-receipt {
+    margin-top: 50px;
+    display: flex;
+    justify-content: flex-end;
+    page-break-inside: avoid;
+}
+
+.signature-box-receipt {
+    width: 200px;
+    text-align: center;
+}
+
+.signature-line-receipt {
+    border-bottom: 1px solid #000;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+/* --- Styles sp�cifiques Re�u Inscription (inscriptions/recu_paiement.php) --- */
+.receipt-container-alt {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    padding: 25px;
+    border: 2px solid #1f2937;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.header-receipt-centered {
+    text-align: center;
+    border-bottom: 2px double #1f2937;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.school-name-large {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1f2937;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.school-subtitle-small {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.receipt-title-box {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+    padding: 6px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+}
+
+.receipt-number-right {
+    text-align: right;
+    font-size: 10px;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.info-grid-compact {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 4px 15px;
+    font-size: 11px;
+    margin-bottom: 15px;
+}
+
+.info-label-bold {
+    font-weight: bold;
+    color: #374151;
+}
+
+.payment-table-bordered {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.payment-table-bordered th,
+.payment-table-bordered td {
+    border: 1px solid #d1d5db;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 11px;
+}
+
+.payment-table-bordered th {
+    background: #f3f4f6;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.total-row-dark {
+    background: #1f2937 !important;
+    color: white !important;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.amount-words-box {
+    margin: 12px 0;
+    padding: 10px;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    font-size: 11px;
+}
+
+.signature-box-border {
+    border-top: 1px solid #1f2937;
+    margin-top: 40px;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+/* --- Styles Erreurs & Pages Sp�ciales --- */
+.bg-error-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* --- Styles Authentification & Structure --- */
+.html-full-screen,
+.html-full-screen body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+:root {
+    font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+    :root {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 640px) {
+    :root {
+        font-size: 9px;
+    }
+}
+
+/* --- Utilitaires --- */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

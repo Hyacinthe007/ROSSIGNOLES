@@ -1,0 +1,31 @@
+# Fichiers de configuration locaux
+config/database.local.php
+
+# Dossiers de stockage
+storage/logs/*
+storage/cache/*
+storage/temp/*
+storage/pdf/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+!storage/temp/.gitkeep
+!storage/pdf/.gitkeep
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Vendor (si Composer)
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

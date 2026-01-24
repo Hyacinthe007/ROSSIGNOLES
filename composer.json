@@ -1,0 +1,30 @@
+{
+    "name": "rossignoles/erp-ecole",
+    "description": "Système ERP complet pour la gestion d'une école",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Hyacinthe",
+            "email": "contact@rossignoles.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "app/"
+        ],
+        "files": [
+            "app/Helpers/functions.php"
+        ]
+    },
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "dompdf/dompdf": "^3.1",
+        "phpoffice/phpspreadsheet": "^1.29"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

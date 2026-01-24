@@ -1,0 +1,36 @@
+# Configuration Apache pour ERP École ROSSIGNOLES
+# URL propres : /eleves/list au lieu de /index.php?route=eleves/list
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirection vers index.php si le fichier n'existe pas
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+    
+    # Protection des fichiers sensibles
+    <FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql)$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Configuration PHP
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+
+# Protection des dossiers
+Options -Indexes
+
+# Headers de sécurité
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+

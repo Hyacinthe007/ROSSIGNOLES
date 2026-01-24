@@ -1,0 +1,4 @@
+# Protection du dossier storage
+Options -Indexes
+Deny from all
+

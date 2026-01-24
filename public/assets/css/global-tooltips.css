@@ -1,0 +1,27 @@
+/* === SYSTÈME DE TOOLTIPS GLOBAL === */
+/* Tooltips uniformisés pour toute l'application */
+
+.global-tooltip {
+    position: fixed;
+    background-color: #111827 !important;
+    color: white !important;
+    padding: 8px 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 99999 !important;
+
+    /* Animation d'apparition */
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.global-tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+}

@@ -1,0 +1,72 @@
+<?php
+/**
+ * Contrôleur du tableau de bord
+ */
+
+require_once __DIR__ . '/BaseController.php';
+
+class DashboardController extends BaseController {
+    
+    public function index() {
+        $this->requireAuth();
+        
+        // Chargement des modèles
+        require_once APP_PATH . '/Models/Eleve.php';
+        require_once APP_PATH . '/Models/Personnel.php';
+        require_once APP_PATH . '/Models/Classe.php';
+        require_once APP_PATH . '/Models/Paiement.php';
+        require_once APP_PATH . '/Models/AnneeScolaire.php';
+        
+        $eleveModel = new Eleve();
+        $personnelModel = new Personnel();
+        $classeModel = new Classe();
+        $paiementModel = new Paiement();
+        $anneeModel = new AnneeScolaire();
+        
+        // Récupération de l'année active
+        $anneeActive = $anneeModel->getActive();
+        $anneeId = $anneeActive ? $anneeActive['id'] : null;
+        
+        // Statistiques réelles
+        // Pour les élèves, on compte ceux qui ont une inscription validée cette année
+        $elevesCount = 0;
+        if ($anneeId) {
+            $result = $eleveModel->queryOne(
+                "SELECT COUNT(DISTINCT eleve_id) as total FROM inscriptions WHERE annee_scolaire_id = ? AND statut = 'validee'",
+                [$anneeId]
+            );
+            $elevesCount = $result['total'] ?? 0;
+        } else {
+            // Fallback: total élèves actifs
+            $result = $eleveModel->queryOne("SELECT COUNT(*) as total FROM eleves WHERE statut = 'actif'");
+            $elevesCount = $result['total'] ?? 0;
+        }
+        
+        // Total classes de l'année
+        $classesCount = 0;
+        if ($anneeId) {
+            $result = $classeModel->queryOne("SELECT COUNT(*) as total FROM classes WHERE annee_scolaire_id = ?", [$anneeId]);
+            $classesCount = $result['total'] ?? 0;
+        }
+        
+        // Total enseignants actifs
+        $result = $personnelModel->queryOne("SELECT COUNT(*) as total FROM personnels WHERE statut = 'actif' AND type_personnel = 'enseignant'");
+        $ensCount = $result['total'] ?? 0;
+        
+        // Paiements du mois en cours (filtrés par année scolaire)
+        $debutMois = date('Y-m-01');
+        $finMois = date('Y-m-t');
+        $paiementsMois = $paiementModel->getTotalEncaisse($debutMois, $finMois, $anneeId);
+        
+        $stats = [
+            'total_eleves' => $elevesCount,
+            'total_classes' => $classesCount,
+            'total_enseignants' => $ensCount,
+            'paiements_du_mois' => $paiementsMois,
+            'annee_scolaire' => $anneeActive ? $anneeActive['libelle'] : 'N/A'
+        ];
+        
+        $this->view('dashboard/index', ['stats' => $stats]);
+    }
+}
+
