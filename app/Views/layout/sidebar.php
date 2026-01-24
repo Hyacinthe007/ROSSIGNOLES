@@ -81,10 +81,10 @@
                     <?php endif; ?>
                     <?php if (hasPermission('echeanciers.view')): ?>
                     <a href="<?= url('echeancier/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('echeancier/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-calendar-alt w-4 h-4 mr-2"></i><span>Suivi Échéanciers</span>
+                        <i class="fas fa-calendar-check w-4 h-4 mr-2"></i><span>Suivi Échéanciers</span>
                     </a>
                     <a href="<?= url('finance/echeanciers') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= (isExactActiveRoute('finance/echeanciers') && (!isset($_GET['statut']) || $_GET['statut'] === 'retard' || $_GET['statut'] === 'retard_10')) ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-hand-holding-usd w-4 h-4 mr-2"></i><span>Recouvrement</span>
+                        <i class="fas fa-file-invoice-dollar w-4 h-4 mr-2"></i><span>Recouvrement</span>
                     </a>
                     <?php endif; ?>
                     <?php if (hasPermission('recus.view')): ?>
