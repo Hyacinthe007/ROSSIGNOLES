@@ -1,17 +1,26 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Inscription;
+use App\Models\Paiement;
+use App\Models\Facture;
+use App\Models\Eleve;
+use App\Models\Classe;
+use App\Models\TarifInscription;
+use App\Models\LogActivite;
+use App\Models\AnneeScolaire;
+use App\Models\ParentModel;
+use App\Models\Article;
+use App\Models\TarifArticle;
+use App\Models\ModePaiement;
+use App\Models\DocumentsInscription;
+
 /**
  * Contrôleur InscriptionsController
  * Gère le processus unifié d'inscription/réinscription avec paiement
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Inscription.php';
-require_once APP_PATH . '/Models/Paiement.php';
-require_once APP_PATH . '/Models/Facture.php'; // Remplace Frais.php
-require_once APP_PATH . '/Models/Eleve.php';
-require_once APP_PATH . '/Models/Classe.php';
-require_once APP_PATH . '/Models/TarifInscription.php';
-require_once APP_PATH . '/Models/LogActivite.php';
 
 class InscriptionsController extends BaseController {
     

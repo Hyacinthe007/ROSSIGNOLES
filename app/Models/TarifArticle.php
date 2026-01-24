@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TarifArticle
- * Gestion des tarifs des articles par année scolaire
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TarifArticle extends BaseModel {
     protected $table = 'tarifs_articles';

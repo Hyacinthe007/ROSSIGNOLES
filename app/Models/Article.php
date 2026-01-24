@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Article
- * Gestion des articles scolaires (Logo, Tee-shirt, Carnet, etc.)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Article extends BaseModel {
     protected $table = 'articles';

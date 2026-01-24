@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle LigneFacture
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class LigneFacture extends BaseModel {
     protected $table = 'lignes_facture';

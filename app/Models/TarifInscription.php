@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle TarifInscription
  * Table: tarifs_inscription
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class TarifInscription extends BaseModel {
     protected $table = 'tarifs_inscription';

@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Helpers\Loggable;
+
 /**
  * Modèle Bulletin
  * Gestion des bulletins scolaires avec journalisation automatique
  */
-
-require_once __DIR__ . '/BaseModel.php';
-require_once __DIR__ . '/../Helpers/Loggable.php';
 
 class Bulletin extends BaseModel {
     use Loggable;

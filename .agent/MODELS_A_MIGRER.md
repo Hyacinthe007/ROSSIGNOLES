@@ -18,10 +18,11 @@ Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés imméd
 - AnneeScolaire
 - Permission
 
+- Niveau
+- Serie
+- ParentModel
+
 ## 🟡 À migrer ensuite
-- [ ] Niveau.php
-- [ ] Serie.php
-- [ ] ParentModel.php
 - [ ] Bulletin.php
 - [ ] Note.php
 - [ ] Matiere.php
