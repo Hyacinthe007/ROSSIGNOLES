@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Helpers;
+
+use Exception;
+
 /**
  * Trait Loggable
  * Fournit des méthodes de journalisation automatique pour les opérations critiques
@@ -20,8 +26,7 @@ trait Loggable {
      */
     protected function logActivity($action, $module, $description, $entiteType = null, $entiteId = null, $userId = null) {
         try {
-            require_once APP_PATH . '/Models/LogActivite.php';
-            $logModel = new LogActivite();
+            $logModel = new \App\Models\LogActivite();
             
             // Récupérer l'ID utilisateur depuis la session si non fourni
             if ($userId === null && isset($_SESSION['user_id'])) {

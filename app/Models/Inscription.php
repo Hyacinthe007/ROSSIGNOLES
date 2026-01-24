@@ -1,11 +1,16 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Helpers\Loggable;
+use Exception;
+use PDOException;
+
 /**
  * Modèle Inscription
  * Gère les inscriptions et réinscriptions avec journalisation automatique
  */
-
-require_once __DIR__ . '/BaseModel.php';
-require_once __DIR__ . '/../Helpers/Loggable.php';
 
 class Inscription extends BaseModel {
     use Loggable;

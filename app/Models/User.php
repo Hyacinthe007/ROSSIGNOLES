@@ -1,9 +1,13 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use PDOException;
+
 /**
  * Modèle User
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class User extends BaseModel {
     protected $table = 'users';
