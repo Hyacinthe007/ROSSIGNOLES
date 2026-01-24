@@ -1,10 +1,16 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Classe;
+use App\Models\AnneeScolaire;
+use App\Models\Niveau;
+use App\Models\Serie;
+
 /**
  * Contrôleur des classes
  */
-
-require_once __DIR__ . '/BaseController.php';
-require_once APP_PATH . '/Models/Classe.php';
 
 class ClassesController extends BaseController {
     private $classeModel;

@@ -1,10 +1,20 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Models\Niveau;
+use App\Models\Cycle;
+use App\Models\Serie;
+use App\Models\Matiere;
+use App\Models\Personnel;
+use App\Models\Classe;
+use App\Models\AnneeScolaire;
+
 /**
  * Contrôleur Pédagogie
  * Gère les niveaux, cycles, séries, enseignements et emplois du temps
  */
-
-require_once __DIR__ . '/BaseController.php';
 
 class PedagogieController extends BaseController {
     

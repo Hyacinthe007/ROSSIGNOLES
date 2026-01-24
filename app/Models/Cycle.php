@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Cycle
- * Gestion des cycles scolaires (Maternelle, Primaire, Collège, Lycée)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Cycle extends BaseModel {
     protected $table = 'cycles';
