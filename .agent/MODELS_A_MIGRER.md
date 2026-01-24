@@ -10,19 +10,18 @@ Basé sur l'erreur actuelle, voici les modèles qui doivent être migrés imméd
 - Inscription
 - Facture
 - Paiement
-- Configuration ✅ (vient d'être fait)
+- Configuration
+- LogActivite
+- Role
+- UserGroup
+- Personnel
+- AnneeScolaire
+- Permission
 
-## 🔴 À migrer MAINTENANT (utilisés par SystemeController)
-- [ ] LogActivite.php
-- [ ] Role.php
-- [ ] UserGroup.php
-
-## 🟡 À migrer ensuite (utilisés par d'autres contrôleurs)
-- [ ] Personnel.php
-- [ ] AnneeScolaire.php
+## 🟡 À migrer ensuite
 - [ ] Niveau.php
 - [ ] Serie.php
-- [ ] Parent.php (ParentModel.php)
+- [ ] ParentModel.php
 - [ ] Bulletin.php
 - [ ] Note.php
 - [ ] Matiere.php

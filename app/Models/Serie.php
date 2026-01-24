@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Serie
  * Gestion des séries scolaires (S, L, A, etc.)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Serie extends BaseModel {
     protected $table = 'series';

@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Niveau
  * Gestion des niveaux scolaires (PS, MS, GS, CP, CE1, etc.)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class Niveau extends BaseModel {
     protected $table = 'niveaux';

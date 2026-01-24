@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models;
+
 /**
  * Modèle Parent (Tuteur)
  */
-
-require_once __DIR__ . '/BaseModel.php';
 
 class ParentModel extends BaseModel {
     protected $table = 'parents';
