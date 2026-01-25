@@ -60,10 +60,14 @@ class Inscription extends BaseModel {
         return $this->queryOne(
             "SELECT i.*, 
                     e.matricule as eleve_matricule, e.nom as eleve_nom, e.prenom as eleve_prenom,
-                    e.sexe as eleve_sexe, e.date_naissance as eleve_date_naissance,
+                    e.sexe as eleve_sexe, e.date_naissance as eleve_date_naissance, e.lieu_naissance as eleve_lieu_naissance,
                     c.nom as classe_nom, c.code as classe_code,
                     a.libelle as annee_scolaire,
-                    f.numero_facture, f.montant_total as facture_montant, f.montant_paye as facture_paye, f.statut as facture_statut,
+                    f.numero_facture, 
+                    f.montant_total as facture_montant, 
+                    f.montant_paye, 
+                    f.montant_restant as reste_a_payer,
+                    f.statut as facture_statut,
                     mp.libelle as mode_paiement
              FROM {$this->table} i
              INNER JOIN eleves e ON i.eleve_id = e.id
@@ -73,6 +77,7 @@ class Inscription extends BaseModel {
              LEFT JOIN paiements p ON f.id = p.facture_id
              LEFT JOIN modes_paiement mp ON p.mode_paiement_id = mp.id
              WHERE i.id = ?
+             GROUP BY i.id
              LIMIT 1",
             [$id]
         );
@@ -87,7 +92,9 @@ class Inscription extends BaseModel {
                        c.nom as classe_nom, c.code as classe_code,
                        a.libelle as annee_scolaire,
                        f.statut as facture_statut,
-                       f.montant_total, f.montant_paye
+                       f.montant_total, 
+                       f.montant_paye,
+                       f.montant_restant as reste_a_payer
                 FROM {$this->table} i
                 INNER JOIN eleves e ON i.eleve_id = e.id
                 INNER JOIN classes c ON i.classe_id = c.id
@@ -122,7 +129,15 @@ class Inscription extends BaseModel {
             $params[] = $filters['statut'];
         }
         
-        $sql .= " ORDER BY " . $orderBy;
+        if (isset($filters['q']) && !empty($filters['q'])) {
+            $term = '%' . $filters['q'] . '%';
+            $sql .= " AND (e.nom LIKE ? OR e.prenom LIKE ? OR e.matricule LIKE ?)";
+            $params[] = $term;
+            $params[] = $term;
+            $params[] = $term;
+        }
+        
+        $sql .= " GROUP BY i.id ORDER BY " . $orderBy;
         
         return $this->query($sql, $params);
     }
@@ -552,6 +567,17 @@ class Inscription extends BaseModel {
                 // On considère que si le montant total payé couvre les articles, on crée un record
                 if ($montantTotalArticles > 0 && ($paiementInitial['montant'] > ($montantDroit + $montantEcolage))) {
                     $restePortionArticles = $paiementInitial['montant'] - ($montantDroit + $montantEcolage);
+                    
+                    // Construire le détail des articles pour la remarque
+                    $articlesLibelles = [];
+                    foreach ($articlesOptionnels as $artId) {
+                        $artDetails = $articleModel->find($artId);
+                        if ($artDetails) {
+                            $articlesLibelles[] = $artDetails['libelle'];
+                        }
+                    }
+                    $remarqueArticles = "Articles : " . implode(' + ', $articlesLibelles);
+                    
                     $paiementModel->create([
                         'numero_paiement' => 'PAY-' . date('Ymd') . '-' . uniqid() . '-A',
                         'facture_id' => $factureId,
@@ -559,7 +585,7 @@ class Inscription extends BaseModel {
                         'montant' => min($restePortionArticles, $montantTotalArticles),
                         'mode_paiement_id' => $paiementInitial['mode_paiement'],
                         'reference_paiement' => $paiementInitial['reference_externe'],
-                        'remarque' => "Articles scolaires"
+                        'remarque' => !empty($articlesLibelles) ? $remarqueArticles : "Articles scolaires"
                     ]);
                 }
                 

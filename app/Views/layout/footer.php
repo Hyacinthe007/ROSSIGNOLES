@@ -24,6 +24,14 @@
                 this.storageKey = 'sidebarCollapsed';
                 this.isMobile = window.innerWidth < 1024;
 
+                // Helpers Cookie
+                this.setCookie = (name, value, days = 30) => {
+                    const d = new Date();
+                    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                    let expires = "expires=" + d.toUTCString();
+                    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+                };
+
                 // Initialisation
                 this.init();
             }
@@ -47,14 +55,12 @@
              * Restaure l'état précédent (plié/déplié) depuis le LocalStorage
              */
             restoreState() {
-                const isCollapsed = localStorage.getItem(this.storageKey) === 'true';
+                // La classe est déjà appliquée par PHP (via cookie) pour éviter le flash
+                // On s'assure juste que l'icône est synchro
+                const isCollapsed = this.sidebar.classList.contains('collapsed');
+                this.updateToggleIcon(isCollapsed);
 
-                // Sur Desktop uniquement, on respecte le choix utilisateur
-                if (!this.isMobile && isCollapsed) {
-                    this.sidebar.classList.add('collapsed');
-                    this.updateToggleIcon(true);
-                } else if (!isCollapsed) {
-                    // Si déplié, on ouvre automatiquement le menu actif pour l'UX
+                if (!isCollapsed) {
                     this.openActiveRouteGroup();
                 }
             }
@@ -176,28 +182,10 @@
                         return;
                     }
                     
-                    // CAS 2: En mode normal ET c'est un lien (sous-menu OU lien direct comme Dashboard)
-                    // On active automatiquement le mode collapsed IMMÉDIATEMENT
-                    if (menuItem.tagName === 'A') {
-                        console.log('→ Mode NORMAL + Lien cliqué: Auto-collapse activé IMMÉDIATEMENT');
-                        
-                        // Activer le mode collapsed IMMÉDIATEMENT (pas de setTimeout)
-                        this.sidebar.classList.add('collapsed');
-                        localStorage.setItem(this.storageKey, 'true');
-                        
-                        // Mettre à jour l'icône du bouton toggle
-                        if (this.toggleBtn) {
-                            this.updateToggleIcon(true);
-                        }
-                        
-                        // Fermer tous les accordéons
-                        this.closeAllAccordions();
-                        console.log('✓ Sidebar collapsed automatiquement');
-                        
-                        // Le lien fonctionnera normalement après
-                    } else {
-                        console.log('→ Pas de collapse (pas un lien)');
-                    }
+                    // CAS 2: En mode normal
+                    // Suppression de l'auto-collapse automatique pour éviter les mouvements brusques
+                    // demandés par l'utilisateur. La barre reste dans l'état choisi.
+                    return;
                 }
 
                 // B. Clic sur le bouton de bascule (Toggle Sidebar)
@@ -268,8 +256,9 @@
                 // Mise à jour de l'icône
                 this.updateToggleIcon(isCollapsed);
 
-                // Sauvegarde
+                // Sauvegarde (Storage + Cookie)
                 localStorage.setItem(this.storageKey, isCollapsed);
+                this.setCookie(this.storageKey, isCollapsed);
 
                 // Si on réduit, on ferme proprement tous les accordéons pour éviter les bugs visuels
                 if (isCollapsed) {

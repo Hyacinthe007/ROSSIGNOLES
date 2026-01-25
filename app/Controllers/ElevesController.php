@@ -7,6 +7,8 @@ use App\Models\Eleve;
 use App\Models\LogActivite;
 use App\Models\ParentModel;
 use App\Models\AnneeScolaire;
+use App\Models\Paiement;
+use App\Models\Facture;
 use App\Services\PdfService;
 
 /**
@@ -28,10 +30,21 @@ class ElevesController extends BaseController {
         $sql = "SELECT e.*, 
                        p.telephone as parent_telephone, 
                        p.adresse as parent_adresse,
-                       (SELECT c.nom FROM inscriptions i 
+                       (SELECT c.code FROM inscriptions i 
                         INNER JOIN classes c ON i.classe_id = c.id 
                         WHERE i.eleve_id = e.id 
-                        ORDER BY i.created_at DESC LIMIT 1) as derniere_classe
+                        ORDER BY i.id DESC LIMIT 1) as derniere_classe,
+                       (SELECT i.id FROM inscriptions i 
+                        WHERE i.eleve_id = e.id 
+                        ORDER BY i.id DESC LIMIT 1) as derniere_inscription_id,
+                       (SELECT CASE 
+                            WHEN COUNT(CASE WHEN ee.statut = 'exclusion' THEN 1 END) > 0 THEN 'exclusion'
+                            WHEN COUNT(CASE WHEN ee.statut = 'retard' THEN 1 END) > 0 THEN 'retard'
+                            WHEN COUNT(CASE WHEN ee.statut = 'impaye' THEN 1 END) > 0 THEN 'impaye'
+                            ELSE NULL 
+                        END 
+                        FROM echeanciers_ecolages ee 
+                        WHERE ee.eleve_id = e.id AND ee.montant_restant > 0) as statut_financier
                 FROM eleves e
                 LEFT JOIN (
                     SELECT ep.eleve_id, p1.telephone, p1.adresse 
@@ -262,6 +275,21 @@ class ElevesController extends BaseController {
         // Situation financière
         $situationFinanciere = $this->eleveModel->getSituationFinanciere($id, $anneeId);
         
+        // Historique des paiements détaillé
+        $paiementModel = new Paiement();
+        $factureModel = new Facture();
+        
+        $paiements = $paiementModel->getByEleve($id, $anneeId);
+        
+        $lignesFacture = $factureModel->query(
+            "SELECT lf.*, tf.libelle as type_frais 
+             FROM lignes_facture lf
+             INNER JOIN factures f ON lf.facture_id = f.id
+             LEFT JOIN types_frais tf ON lf.type_frais_id = tf.id
+             WHERE f.eleve_id = ? AND f.annee_scolaire_id = ? AND f.statut != 'annulee'",
+            [$id, $anneeId]
+        );
+        
         $this->view('eleves/details', [
             'eleve' => $eleve,
             'classe' => $classe,
@@ -269,7 +297,9 @@ class ElevesController extends BaseController {
             'parents' => $parents,
             'echeancier' => $echeancier,
             'situationFinanciere' => $situationFinanciere,
-            'anneeActive' => $anneeActive
+            'anneeActive' => $anneeActive,
+            'paiements' => $paiements,
+            'lignesFacture' => $lignesFacture
         ]);
     }
     

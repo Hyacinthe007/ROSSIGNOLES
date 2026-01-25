@@ -1,5 +1,6 @@
 <!-- ====== SIDEBAR ====== -->
-<aside id="sidebar" class="sidebar bg-white border-r no-print">
+<?php $isCollapsed = ($_COOKIE['sidebarCollapsed'] ?? 'false') === 'true'; ?>
+<aside id="sidebar" class="sidebar bg-white border-r no-print <?= $isCollapsed ? 'collapsed' : '' ?>">
     <div class="p-4">
         <!-- Logo (caché en mode collapsed) -->
         <div class="logo-text mb-6 px-3">
@@ -20,7 +21,7 @@
             <!-- MODULE 1: Scolarité -->
             <?php if (hasPermission('scolarite.view')): ?>
             <div class="menu-group">
-                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('eleves') || isActiveRoute('parents') || isActiveRoute('classes') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
+                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('parents') || isActiveRoute('classes') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Scolarité">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-user-graduate text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('eleves') || isActiveRoute('parents') || isActiveRoute('classes') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
@@ -40,9 +41,6 @@
                     </a>
                     <?php endif; ?>
                     <?php if (hasPermission('eleves.view')): ?>
-                    <a href="<?= url('eleves/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('eleves/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-list w-4 h-4 mr-2"></i><span>Liste des élèves</span>
-                    </a>
                     <a href="<?= url('classes/eleves') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('classes/eleves') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-chalkboard-user w-4 h-4 mr-2"></i><span>Élèves par classe</span>
                     </a>
@@ -59,7 +57,7 @@
             <!-- MODULE 2: Finance -->
             <?php if (hasPermission('finance.view')): ?>
             <div class="menu-group">
-                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
+                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') || isActiveRoute('eleves') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Finance">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-money-bill-wave text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
@@ -75,6 +73,9 @@
                     </a>
                     <?php endif; ?>
                     <?php if (hasPermission('finance_mensuel.create')): ?>
+                    <a href="<?= url('eleves/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('eleves/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
+                        <i class="fas fa-address-book w-4 h-4 mr-2"></i><span>Liste des élèves</span>
+                    </a>
                     <a href="<?= url('finance/paiement-mensuel') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('finance/paiement-mensuel') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-hand-holding-usd w-4 h-4 mr-2"></i><span>Paiement Mensuel</span>
                     </a>

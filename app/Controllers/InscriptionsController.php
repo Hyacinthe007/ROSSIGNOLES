@@ -41,21 +41,22 @@ class InscriptionsController extends BaseController {
             $filters['annee_scolaire_id'] = $anneeId;
         }
 
-        // Filtre spécifique demandé : Uniquement les élèves ayant payé
-        // On va modifier la requête dans getAllWithDetails ou filtrer ici
-        $allInscriptions = $model->getAllWithDetails($filters);
+        // Récupérer les filtres depuis la requête GET
+        if (isset($_GET['type']) && !empty($_GET['type'])) $filters['type_inscription'] = $_GET['type'];
+        if (isset($_GET['statut']) && !empty($_GET['statut'])) $filters['statut'] = $_GET['statut'];
+        if (isset($_GET['classe_id']) && !empty($_GET['classe_id'])) $filters['classe_id'] = $_GET['classe_id'];
+        if (isset($_GET['q']) && !empty($_GET['q'])) $filters['q'] = $_GET['q'];
+
+        // Obtenir les inscriptions avec les filtres appliqués directement dans la requête
+        $inscriptions = $model->getAllWithDetails($filters);
         
-        // Filtrer pour ne garder que ceux ayant payé (facture_statut = 'payee')
-        $inscriptions = array_filter($allInscriptions, function($i) {
-            return ($i['facture_statut'] === 'payee' || $i['statut'] === 'validee');
-        });
-        
-        // Obtenir les classes pour le filtre (si encore pertinent)
+        // Obtenir les classes pour le filtre
         $classeModel = new Classe();
         $classes = $classeModel->all();
         
         $this->view('inscriptions/liste', [
             'inscriptions' => $inscriptions,
+            'filters' => $filters, // Passer les filtres à la vue
             'statistiques' => null, // Initialisé à null pour éviter le warning
             'classes' => $classes,
             'filters' => $filters,
@@ -77,15 +78,36 @@ class InscriptionsController extends BaseController {
             return;
         }
         
-        // Récupérer les paiements liés à cette inscription (via Facture)
-        $paiements = [];
-        if (!empty($inscription['facture_inscription_id'])) {
-             $paiements = $paiementModel->getByFacture($inscription['facture_inscription_id']);
-        }
+        // Récupérer tous les paiements liés à cet élève pour l'année scolaire en cours
+        $paiements = $paiementModel->getByEleve($inscription['eleve_id'], $inscription['annee_scolaire_id']);
+        
+        // Récupérer toutes les lignes de factures liées à cet élève pour cette année scolaire
+        // (Inscription + Ecolages mensuels + Articles)
+        $factureModel = new Facture();
+        $lignesFacture = $factureModel->query(
+            "SELECT lf.*, tf.libelle as type_frais 
+             FROM lignes_facture lf
+             INNER JOIN factures f ON lf.facture_id = f.id
+             LEFT JOIN types_frais tf ON lf.type_frais_id = tf.id
+             WHERE f.eleve_id = ? AND f.annee_scolaire_id = ? AND f.statut != 'annulee'",
+            [$inscription['eleve_id'], $inscription['annee_scolaire_id']]
+        );
+        
+        // Récupérer les autres élèves de la même classe
+        $elevesMemeClasse = $model->query(
+            "SELECT e.*, i.date_inscription, i.type_inscription, i.id as inscription_id
+             FROM inscriptions i
+             JOIN eleves e ON i.eleve_id = e.id
+             WHERE i.classe_id = ? AND i.annee_scolaire_id = ? AND i.statut = 'validee' AND e.id != ?
+             ORDER BY e.nom ASC, e.prenom ASC",
+            [$inscription['classe_id'], $inscription['annee_scolaire_id'], $inscription['eleve_id']]
+        );
         
         $this->view('inscriptions/details', [
             'inscription' => $inscription,
-            'paiements' => $paiements
+            'paiements' => $paiements,
+            'lignesFacture' => $lignesFacture,
+            'elevesMemeClasse' => $elevesMemeClasse
         ]);
     }
     

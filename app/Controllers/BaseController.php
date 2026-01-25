@@ -159,8 +159,9 @@ class BaseController {
      * Vérifie si l'utilisateur est connecté et gère la déconnexion automatique
      */
     protected function requireAuth() {
-        // Durée d'inactivité autorisée (en secondes) - 15 minutes = 900s
-        $timeout = 900; 
+        // Durée d'inactivité autorisée (en secondes) - 2 heures = 7200s
+        $config = require CONFIG_PATH . '/app.php';
+        $timeout = $config['session']['lifetime'] ?? 7200; 
 
         if (isset($_SESSION['user_id'])) {
             // Vérifier le dernier moment d'activité
@@ -171,7 +172,8 @@ class BaseController {
                 
                 // Redémarrer une session pour porter le message d'erreur
                 session_start();
-                $_SESSION['error'] = "Votre session a expiré après {$timeout} secondes d'inactivité. Veuillez vous reconnecter.";
+                $minutes = round($timeout / 60);
+                $_SESSION['error'] = "Votre session a expiré après {$minutes} minutes d'inactivité. Veuillez vous reconnecter.";
                 
                 $this->redirect('auth/login');
                 return;

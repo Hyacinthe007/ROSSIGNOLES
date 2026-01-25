@@ -74,42 +74,113 @@
 
     <!-- Filtres -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <form method="GET" action="<?= url('inscriptions/liste') ?>" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="<?= url('inscriptions/liste') ?>" id="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <!-- Recherche élève -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Recherche (Nom, Matricule)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </span>
+                    <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" 
+                           class="w-full pl-10 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                           placeholder="Nom, prénom ou matricule..."
+                           oninput="document.getElementById('filterForm').submit()">
+                </div>
+            </div>
+
+            <!-- Filtre Type -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                        onchange="document.getElementById('filterForm').submit()">
                     <option value="">Tous</option>
                     <option value="nouvelle" <?= ($filters['type_inscription'] ?? '') === 'nouvelle' ? 'selected' : '' ?>>Nouvelle</option>
                     <option value="reinscription" <?= ($filters['type_inscription'] ?? '') === 'reinscription' ? 'selected' : '' ?>>Réinscription</option>
                 </select>
             </div>
+
+            <!-- Filtre Statut -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                <select name="statut" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <select name="statut" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        onchange="document.getElementById('filterForm').submit()">
                     <option value="">Tous</option>
                     <option value="validee" <?= ($filters['statut'] ?? '') === 'validee' ? 'selected' : '' ?>>Validée</option>
                     <option value="suspendue" <?= ($filters['statut'] ?? '') === 'suspendue' ? 'selected' : '' ?>>Suspendue</option>
                     <option value="terminee" <?= ($filters['statut'] ?? '') === 'terminee' ? 'selected' : '' ?>>Terminée</option>
                 </select>
             </div>
+
+            <!-- Filtre Classe (Codes) -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Classe</label>
-                <select name="classe_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <select name="classe_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        onchange="document.getElementById('filterForm').submit()">
                     <option value="">Toutes</option>
-                    <?php foreach ($classes as $classe): ?>
-                        <option value="<?= $classe['id'] ?>" <?= ($filters['classe_id'] ?? '') == $classe['id'] ? 'selected' : '' ?>>
-                            <?= e($classe['nom']) ?>
-                        </option>
-                    <?php endforeach; ?>
+                    
+                    <optgroup label="Secondaire">
+                        <?php 
+                        // Tri manuel pour le Secondaire : 6ème, 5ème, 4ème, 3ème
+                        $ordreSecondaire = ['6', '5', '4', '3'];
+                        foreach ($ordreSecondaire as $prefixe) {
+                            foreach ($classes as $classe) {
+                                $code = e($classe['code']);
+                                // On vérifie si le code commence par le chiffre (ex: "6ème 1")
+                                if (strpos($code, $prefixe) === 0) {
+                                    $selected = ($filters['classe_id'] ?? '') == $classe['id'] ? 'selected' : '';
+                                    echo "<option value=\"{$classe['id']}\" $selected>{$code}</option>";
+                                }
+                            }
+                        }
+                        ?>
+                    </optgroup>
+                    
+                    <optgroup label="Lycée">
+                        <?php 
+                        // Tri manuel pour le Lycée : 2nd, 1ère, Term
+                        $ordreLycee = ['2nd', '1', 'T'];
+                        foreach ($ordreLycee as $prefixe) {
+                            foreach ($classes as $classe) {
+                                $code = e($classe['code']);
+                                // Pour 2nd et Term, vérification simple
+                                // Pour 1ère, attention de ne pas confondre avec autre chose, mais ici les codes sont cleans
+                                if (strpos($code, $prefixe) === 0) {
+                                     $selected = ($filters['classe_id'] ?? '') == $classe['id'] ? 'selected' : '';
+                                    echo "<option value=\"{$classe['id']}\" $selected>{$code}</option>";
+                                }
+                            }
+                        }
+                        ?>
+                    </optgroup>
                 </select>
-            </div>
-            <div class="flex items-end">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                    <i class="fas fa-filter mr-2"></i>Filtrer
-                </button>
             </div>
         </form>
     </div>
+
+    <!-- Script pour délais de recherche (debounce) -->
+    <script>
+        let timeout;
+        const input = document.querySelector('input[name="q"]');
+        input.removeAttribute('oninput'); // Supprimer l'attribut inline pour gérer via JS propre
+        input.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                document.getElementById('filterForm').submit();
+            }, 500); // Délai de 500ms pour éviter de submit à chaque touche
+        });
+        
+        // Focus sur l'input après rechargement si une recherche est active
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('q')) {
+            const val = urlParams.get('q');
+            input.value = val;
+            input.focus();
+            // Placer le curseur à la fin
+            const len = input.value.length;
+            input.setSelectionRange(len, len);
+        }
+    </script>
 
     <!-- Liste des inscriptions -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -121,7 +192,7 @@
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Classe</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Type</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Frais</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Montant Payé</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Statut</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -162,14 +233,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php 
-                                    // Utiliser les montants provenant de la facture liée (jointure dans getAllWithDetails)
-                                    $totalFrais = $inscription['montant_total'] ?? 0;
-                                    $totalPaye = $inscription['montant_paye'] ?? 0;
-                                    $resteAPayer = $totalFrais - $totalPaye;
+                                    $montantPaye = $inscription['montant_paye'] ?? 0;
                                     ?>
-                                    <div class="text-sm font-bold text-gray-900"><?= number_format($totalFrais, 0, ',', ' ') ?> MGA</div>
-                                    <div class="text-xs <?= $resteAPayer > 0 ? 'text-orange-600' : 'text-green-600' ?>">
-                                        Reste: <?= number_format($resteAPayer, 0, ',', ' ') ?> MGA
+                                    <div class="text-sm font-bold text-green-700">
+                                        <?= number_format($montantPaye, 0, ',', ' ') ?> MGA
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

@@ -10,6 +10,7 @@ use App\Models\EcheancierEcolage;
 use App\Models\ModePaiement;
 use App\Models\Paiement;
 use App\Models\Facture;
+use App\Models\LigneFacture;
 use App\Models\TypeFacture;
 use App\Services\EcheancierService;
 use App\Services\EcolageService;
@@ -183,7 +184,7 @@ class PaiementMensuelController extends BaseController {
             $eleveId = $_POST['eleve_id'] ?? null;
             $anneeScolaireId = $_POST['annee_scolaire_id'] ?? null;
             $echeancesIds = $_POST['echeances'] ?? [];
-            $montantPaye = $_POST['montant_paye'] ?? 0;
+            $montantPaye = floatval($_POST['montant_paye'] ?? 0);
             $modePaiementId = $_POST['mode_paiement_id'] ?? null;
             $datePaiement = $_POST['date_paiement'] ?? date('Y-m-d');
             $reference = $_POST['reference'] ?? null;
@@ -212,12 +213,23 @@ class PaiementMensuelController extends BaseController {
                 $typeFactureId = $typeFacture['id'];
             }
             
+            // 1. Trouver le type de frais pour l'écolage
+            $typeFraisId = null;
+            $tf = $this->eleveModel->queryOne("SELECT id FROM types_frais WHERE categorie = 'ecolage' OR libelle LIKE '%écolage%' LIMIT 1");
+            if ($tf) $typeFraisId = $tf['id'];
+
             // Calculer le montant total des échéances
-            $montantTotal = 0;
+            $montantTotalAttendu = 0;
+            $lignesDataTemp = [];
             foreach ($echeancesIds as $echeanceId) {
                 $echeance = $this->echeancierModel->findById($echeanceId);
                 if ($echeance) {
-                    $montantTotal += $echeance['montant_restant'];
+                    $montantTotalAttendu += $echeance['montant_restant'];
+                    $lignesDataTemp[] = [
+                        'designation' => 'Écolage ' . ($echeance['mois_libelle'] ?? 'Mois ' . $echeance['mois']),
+                        'prix_unitaire' => $echeance['montant_restant'],
+                        'montant' => $echeance['montant_restant']
+                    ];
                 }
             }
             
@@ -228,12 +240,25 @@ class PaiementMensuelController extends BaseController {
                 'annee_scolaire_id' => $anneeScolaireId,
                 'type_facture_id' => $typeFactureId,
                 'date_facture' => $datePaiement,
-                'montant_total' => $montantTotal,
-                'montant_paye' => min($montantPaye, $montantTotal),
-                'montant_restant' => max(0, $montantTotal - $montantPaye),
-                'statut' => $montantPaye >= $montantTotal ? 'payee' : 'partiellement_payee',
+                'montant_total' => $montantTotalAttendu,
+                'montant_paye' => min($montantPaye, $montantTotalAttendu),
+                'montant_restant' => max(0, $montantTotalAttendu - $montantPaye),
+                'statut' => $montantPaye >= $montantTotalAttendu ? 'payee' : 'partiellement_payee',
                 'description' => 'Paiement écolage - ' . count($echeancesIds) . ' mois'
             ]);
+
+            // Créer les lignes de facture
+            $ligneFactureModel = new LigneFacture();
+            foreach ($lignesDataTemp as $l) {
+                $ligneFactureModel->create([
+                    'facture_id' => $factureId,
+                    'type_frais_id' => $typeFraisId,
+                    'designation' => $l['designation'],
+                    'quantite' => 1,
+                    'prix_unitaire' => $l['prix_unitaire'],
+                    'montant' => $l['montant']
+                ]);
+            }
             
             // Enregistrer le paiement
             $paiementId = $this->paiementModel->create([
@@ -243,7 +268,7 @@ class PaiementMensuelController extends BaseController {
                 'montant' => $montantPaye,
                 'mode_paiement_id' => $modePaiementId,
                 'reference_paiement' => $reference,
-                'remarque' => $remarque
+                'remarque' => $remarque ?: 'Paiement écolage détaillée'
             ]);
             
             // Répartir le paiement sur les échéances

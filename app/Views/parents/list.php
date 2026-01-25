@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Barre de recherche -->
         <div class="bg-white rounded-lg shadow-md p-4">
             <form method="GET" action="<?= url('parents/list') ?>" class="flex flex-col md:flex-row gap-3">

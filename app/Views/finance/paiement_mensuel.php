@@ -15,10 +15,11 @@ require_once __DIR__ . '/../layout/header.php';
             </h1>
             <p class="text-gray-500 mt-1">Gérez les écolages et suivis de paiements des élèves.</p>
         </div>
-        <button onclick="window.print()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 shadow-sm">
-            <i class="fas fa-print"></i>
-            <span>Imprimer</span>
-        </button>
+        <a href="<?= url('finance/dashboard') ?>" 
+            class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md font-medium">
+            <i class="fas fa-arrow-left"></i>
+            <span>Retour</span>
+        </a>
     </div>
 
     <!-- Search Section -->

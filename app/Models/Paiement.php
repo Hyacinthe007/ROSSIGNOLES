@@ -80,7 +80,8 @@ class Paiement extends BaseModel {
      * Obtient les paiements d'un élève (via factures)
      */
     public function getByEleve($eleveId, $anneeScolaireId = null) {
-        $sql = "SELECT p.*, f.numero_facture, mp.libelle as mode_paiement
+        $sql = "SELECT p.*, f.numero_facture, f.description as motif, mp.libelle as mode_paiement, 
+                       p.numero_paiement as numero_recu, p.reference_paiement as reference_externe
                 FROM {$this->table} p
                 INNER JOIN factures f ON p.facture_id = f.id
                 LEFT JOIN modes_paiement mp ON p.mode_paiement_id = mp.id
@@ -186,7 +187,11 @@ class Paiement extends BaseModel {
      */
     public function getByFacture($factureId) {
         return $this->query(
-            "SELECT * FROM {$this->table} WHERE facture_id = ? ORDER BY date_paiement DESC",
+            "SELECT p.*, mp.libelle as mode_paiement, p.numero_paiement as numero_recu, p.reference_paiement as reference_externe
+             FROM {$this->table} p
+             LEFT JOIN modes_paiement mp ON p.mode_paiement_id = mp.id
+             WHERE p.facture_id = ? 
+             ORDER BY p.date_paiement DESC",
             [$factureId]
         );
     }

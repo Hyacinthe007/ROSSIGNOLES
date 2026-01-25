@@ -3,7 +3,7 @@
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-user-graduate text-blue-600 mr-2"></i>
+                <i class="fas fa-address-book text-blue-600 mr-2"></i>
                 Liste des élèves
             </h1>
             <p class="text-gray-600 text-sm md:text-base">Gestion des élèves de l'école</p>
@@ -120,30 +120,44 @@
                                         </div>
                                     </div>
                                 </td>
+                                <!-- sexe -->
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $eleve['sexe'] == 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' ?>">
+                                    <span class="px-2 py-1 text-ls font-semibold rounded-full <?= $eleve['sexe'] == 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' ?>">
                                         <?= e($eleve['sexe']) ?>
                                     </span>
                                 </td>
+                                <!-- classe -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if (!empty($eleve['derniere_classe'])): ?>
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        <span class="px-2 py-1 text-sm font-semibold">
                                             <?= e($eleve['derniere_classe']) ?>
                                         </span>
                                     <?php else: ?>
                                         <span class="text-sm text-gray-400 ">Non inscrit</span>
                                     <?php endif; ?>
                                 </td>
-
+                                <!-- telephone parent -->
                                  <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if (!empty($eleve['parent_telephone'])): ?>
                                         <span class="text-sm text-gray-900">
-                                            <?= e($eleve['parent_telephone']) ?>
+                                            <?php 
+                                            if (!empty($eleve['parent_telephone'])) {
+                                                $tel = preg_replace('/[^0-9]/', '', $eleve['parent_telephone']);
+                                                if (strlen($tel) === 10) {
+                                                    echo e(substr($tel, 0, 3) . ' ' . substr($tel, 3, 2) . ' ' . substr($tel, 5, 3) . ' ' . substr($tel, 8, 2));
+                                                } else {
+                                                    echo e($eleve['parent_telephone']);
+                                                }
+                                            } else {
+                                                echo 'Non renseigné';
+                                            }
+                                            ?>
                                         </span>
                                     <?php else: ?>
                                         <span class="text-sm text-gray-400 ">Non renseigné</span>
                                     <?php endif; ?>
                                 </td>
+                                <!-- adresse parent -->
                                 <td class="px-6 py-4">
                                     <?php if (!empty($eleve['parent_adresse'])): ?>
                                         <span class="text-sm text-gray-900"><?= e($eleve['parent_adresse']) ?></span>
@@ -151,36 +165,52 @@
                                         <span class="text-sm text-gray-400 ">Non renseignée</span>
                                     <?php endif; ?>
                                 </td>
+                                <!-- statut -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php 
                                     $statut = $eleve['statut'] ?? 'actif';
+
+                                    // Déterminer les alertes financières (prioritaires si non parti)
+                                    $alerteFinanciere = null;
+                                    if ($statut !== 'parti') {
+                                        if (($eleve['statut_financier'] ?? '') === 'exclusion') {
+                                            $alerteFinanciere = 'suspendu_finance';
+                                        } elseif (!empty($eleve['statut_financier'])) {
+                                            $alerteFinanciere = 'retard_paiement';
+                                        }
+                                    }
+
                                     $statutLabels = [
                                         'actif' => ['Actif', 'bg-green-100 text-green-800', 'fa-check-circle'],
                                         'nouveau' => ['Nouveau', 'bg-blue-100 text-blue-800', 'fa-plus-circle'],
                                         'suspendu' => ['Suspendu', 'bg-red-100 text-red-800', 'fa-ban'],
-                                        'parti' => ['Parti', 'bg-gray-100 text-gray-800', 'fa-sign-out-alt']
+                                        'suspendu_finance' => ['Exclu (Finance)', 'bg-red-100 text-red-800', 'fa-hand-holding-usd'],
+                                        'retard_paiement' => ['Retard Payé', 'bg-orange-100 text-orange-800', 'fa-clock'],
+                                        'parti' => ['Parti', 'bg-gray-100 text-gray-800', 'fa-sign-out-alt'],
+                                        'inactif' => ['Inactif', 'bg-gray-200 text-gray-600', 'fa-times-circle'],
+                                        'supprime' => ['Supprimé', 'bg-gray-900 text-white', 'fa-trash-alt']
                                     ];
-                                    $label = $statutLabels[$statut] ?? ['Inconnu', 'bg-gray-100 text-gray-800', 'fa-question-circle'];
+
+                                    // Utiliser l'alerte financière si présente, sinon le statut normal
+                                    $cleLabel = $alerteFinanciere ?? $statut;
+                                    $label = $statutLabels[$cleLabel] ?? ['Inconnu (' . e($statut) . ')', 'bg-gray-100 text-gray-800', 'fa-question-circle'];
                                     ?>
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $label[1] ?>">
                                         <i class="fas <?= $label[2] ?> mr-1"></i><?= $label[0] ?>
                                     </span>
                                 </td>
+                                <!-- actions -->
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
                                         <a href="<?= url('eleves/details/' . $eleve['id']) ?>" 
-                                           class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded transition">
+                                           class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded transition"
+                                           title="Détails">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                          <a href="<?= url('eleves/edit/' . $eleve['id']) ?>" 
                                             class="text-green-600 hover:text-green-900 p-2 hover:bg-green-50 rounded transition"
                                             title="Modifier">
                                              <i class="fas fa-edit"></i>
-                                         </a>
-                                         <a href="<?= url('eleves/parcours/' . $eleve['id']) ?>" 
-                                            class="text-purple-600 hover:text-purple-900 p-2 hover:bg-purple-50 rounded transition"
-                                            title="Parcours Scolaire">
-                                             <i class="fas fa-history"></i>
                                          </a>
                                      </div>
                                 </td>

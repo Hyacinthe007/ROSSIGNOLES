@@ -25,23 +25,26 @@
             </div>
         </div>
 
-        <!-- Barre de recherche -->
         <div class="bg-white rounded-lg shadow-md p-4">
-            <form method="GET" action="<?= url('finance/recus') ?>" class="flex flex-col md:flex-row gap-3">
+            <form method="GET" action="<?= url('finance/recus') ?>" id="receiptSearchForm" class="flex flex-col md:flex-row gap-3">
                 <div class="flex-1">
                     <div class="relative">
                         <input type="text" 
+                               id="receiptSearchInput"
                                name="search" 
                                value="<?= e($search ?? '') ?>"
-                               placeholder="Rechercher par nom d'élève, matricule, n° facture..." 
+                               placeholder="Filtrer par élève, matricule, n° facture, classe..." 
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                 </div>
+                <div id="searchLoader" class="hidden flex items-center px-2">
+                    <i class="fas fa-spinner fa-spin text-green-600"></i>
+                </div>
                 <button type="submit" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition flex items-center justify-center gap-2 shadow">
-                    <i class="fas fa-search"></i>
-                    <span>Rechercher</span>
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition flex items-center justify-center gap-2 shadow font-medium">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtrer</span>
                 </button>
                 <?php if (!empty($search)): ?>
                     <a href="<?= url('finance/recus') ?>" 
@@ -150,4 +153,40 @@
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('receiptSearchInput');
+    const loader = document.getElementById('searchLoader');
+    let timeout = null;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const query = this.value.trim();
+            
+            // Afficher le loader
+            if (loader) loader.classList.remove('hidden');
+
+            timeout = setTimeout(() => {
+                // Rediriger vers l'URL avec le paramètre de recherche
+                // On utilise window.location pour recharger la page avec les nouveaux résultats de la DB
+                // C'est le moyen le plus simple d'interroger la base sans refaire toute l'API AJAX
+                const baseUrl = "<?= url('finance/recus') ?>";
+                const url = query ? `${baseUrl}?search=${encodeURIComponent(query)}` : baseUrl;
+                
+                window.location.href = url;
+            }, 800); // Délai de 800ms pour éviter trop de rechargements pendant la frappe
+        });
+
+        // Placer le curseur à la fin du texte si déjà présent (après rechargement)
+        if (searchInput.value) {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+        }
+    }
+});
+</script>
 
