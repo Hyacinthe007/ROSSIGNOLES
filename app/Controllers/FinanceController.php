@@ -131,7 +131,7 @@ class FinanceController extends BaseController {
                     'montant_paye' => $montant,
                     'montant_restant' => 0,
                     'statut' => 'payee',
-                    'description' => "Paiement écolage " . $echeance['mois_libelle']
+                    'description' => "Ecolage " . $echeance['mois_libelle']
                 ]);
                 
                 // CRÉATION DE LA LIGNE DE FACTURE (Important pour le reçu détaillé)
@@ -145,7 +145,7 @@ class FinanceController extends BaseController {
                 $ligneFactureModel->create([
                     'facture_id' => $factureId,
                     'type_frais_id' => $typeFraisId,
-                    'designation' => "Écolage mois de " . $echeance['mois_libelle'], // Ex: Écolage mois de Septembre 2024
+                    'designation' => "Ecolage " . $echeance['mois_libelle'], // Ex: Ecolage Janvier 2026
                     'quantite' => 1,
                     'prix_unitaire' => $montant,
                     'montant' => $montant
@@ -158,7 +158,7 @@ class FinanceController extends BaseController {
                     'montant' => $montant,
                     'mode_paiement_id' => $modePaiement,
                     'reference_paiement' => $reference,
-                    'remarque' => "Paiement écolage " . $echeance['mois_libelle']
+                    'remarque' => "Ecolage " . $echeance['mois_libelle']
                 ];
                 
                 $paiementModel->create($paiementData);
@@ -453,7 +453,7 @@ class FinanceController extends BaseController {
         if ($paiementId) {
             $paiement = $paiementModel->queryOne(
                 "SELECT p.*, 
-                        f.id as facture_id, f.numero_facture, f.description as facture_description,
+                        f.id as facture_id, f.eleve_id, f.numero_facture, f.description as facture_description,
                         e.matricule, e.nom as eleve_nom, e.prenom as eleve_prenom, e.date_inscription,
                         mp.libelle as mode_paiement_libelle,
                         a.libelle as annee_scolaire
@@ -472,15 +472,34 @@ class FinanceController extends BaseController {
                 return;
             }
             
-            // Récupérer les lignes de la facture pour le détail
+            // Récupérer TOUS les paiements effectués le même jour par cet élève
+            $allPaiementsDay = $paiementModel->query(
+                "SELECT p.id, p.montant, p.facture_id 
+                 FROM paiements p
+                 LEFT JOIN factures f ON p.facture_id = f.id
+                 WHERE f.eleve_id = ? AND p.date_paiement = ?",
+                [$paiement['eleve_id'], $paiement['date_paiement']]
+            );
+            
+            $factureIds = array_filter(array_unique(array_column($allPaiementsDay, 'facture_id')));
+            
+            // Récupérer les lignes de TOUTES les factures du jour pour le détail
             $lignes = [];
-            if (!empty($paiement['facture_id'])) {
+            if (!empty($factureIds)) {
+                $placeholders = implode(',', array_fill(0, count($factureIds), '?'));
                 $ligneModel = new LigneFacture();
                 $lignes = $ligneModel->query(
-                    "SELECT * FROM lignes_facture WHERE facture_id = ?", 
-                    [$paiement['facture_id']]
+                    "SELECT * FROM lignes_facture WHERE facture_id IN ($placeholders)", 
+                    $factureIds
                 );
             }
+            
+            // Si on a plusieurs paiements, on peut vouloir sommer le montant pour l'affichage total
+            $totalJour = 0;
+            foreach ($allPaiementsDay as $pDay) {
+                $totalJour += $pDay['montant'];
+            }
+            $paiement['montant'] = $totalJour;
             
             // Afficher le reçu unique (pour impression)
             $this->view('finance/recu_detail', [
@@ -652,7 +671,7 @@ class FinanceController extends BaseController {
         
         $paiement = $paiementModel->queryOne(
             "SELECT p.*, 
-                    f.id as facture_id, f.numero_facture, f.description as facture_description,
+                    f.id as facture_id, f.eleve_id, f.numero_facture, f.description as facture_description,
                     e.matricule, e.nom as eleve_nom, e.prenom as eleve_prenom, e.date_inscription,
                     mp.libelle as mode_paiement_libelle,
                     a.libelle as annee_scolaire
@@ -671,12 +690,34 @@ class FinanceController extends BaseController {
             return;
         }
 
-        // Récupérer les lignes
-        $ligneModel = new LigneFacture();
-        $lignes = $ligneModel->query(
-            "SELECT * FROM lignes_facture WHERE facture_id = ?", 
-            [$paiement['facture_id'] ?? 0]
+        // Récupérer TOUS les paiements effectués le même jour par cet élève
+        $allPaiementsDay = $paiementModel->query(
+            "SELECT p.id, p.montant, p.facture_id 
+             FROM paiements p
+             LEFT JOIN factures f ON p.facture_id = f.id
+             WHERE f.eleve_id = ? AND p.date_paiement = ?",
+            [$paiement['eleve_id'], $paiement['date_paiement']]
         );
+        
+        $factureIds = array_filter(array_unique(array_column($allPaiementsDay, 'facture_id')));
+        
+        // Récupérer les lignes de TOUTES les factures du jour pour le détail
+        $lignes = [];
+        if (!empty($factureIds)) {
+            $placeholders = implode(',', array_fill(0, count($factureIds), '?'));
+            $ligneModel = new LigneFacture();
+            $lignes = $ligneModel->query(
+                "SELECT * FROM lignes_facture WHERE facture_id IN ($placeholders)", 
+                $factureIds
+            );
+        }
+        
+        // Sommer le montant pour l'export total
+        $totalJour = 0;
+        foreach ($allPaiementsDay as $pDay) {
+            $totalJour += $pDay['montant'];
+        }
+        $paiement['montant'] = $totalJour;
 
         $html = $this->renderRecuHtml($paiement, $lignes);
         

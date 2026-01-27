@@ -26,7 +26,7 @@
                 
                 <?php
                 // Trouver l'inscription active pour cet élève
-                $eleveModel = new \Eleve(); 
+                $eleveModel = new \App\Models\Eleve(); 
                 $inscriptionActive = $eleveModel->getInscriptionActive($eleve['id']);
                 ?>
                 
@@ -196,8 +196,29 @@
                         <option value="">Sélectionner</option>
                         <?php 
                         $liens = ['Père', 'Mère', 'Tuteur', 'Tutrice', 'Grand-père', 'Grand-mère', 'Oncle', 'Tante', 'Autre'];
-                        foreach ($liens as $lien): ?>
-                            <option value="<?= $lien ?>" <?= (isset($parent['lien_parente']) && $parent['lien_parente'] === $lien) ? 'selected' : '' ?>><?= $lien ?></option>
+                        // Récupération de la valeur stockée (plusieurs clés possibles selon l'origine de la donnée)
+                        $dbLien = $parent['lien_parente'] ?? $parent['type_parent'] ?? $parent['type_lien'] ?? '';
+                        $currentLien = trim((string)$dbLien);
+                        
+                        foreach ($liens as $lien): 
+                            // Normalisation : Accents -> Lettres de base, Minuscules, Pas d'espaces/tirets
+                            $search  = ['À','Á','Â','Ã','Ä','Å','Ç','È','É','Ê','Ë','Ì','Í','Î','Ï','Ò','Ó','Ô','Õ','Ö','Ù','Ú','Û','Ü','Ý','à','á','â','ã','ä','å','ç','è','é','ê','ë','ì','í','î','ï','ð','ò','ó','ô','õ','ö','ù','ú','û','ü','ý','ÿ'];
+                            $replace = ['A','A','A','A','A','A','C','E','E','E','E','I','I','I','I','O','O','O','O','O','U','U','U','U','Y','a','a','a','a','a','a','c','e','e','e','e','i','i','i','i','o','o','o','o','o','o','u','u','u','u','y','y'];
+                            
+                            $normDB = strtolower(str_replace($search, $replace, $currentLien));
+                            $normDB = str_replace(['-', ' ', '_'], '', $normDB);
+                            
+                            $normItem = strtolower(str_replace($search, $replace, $lien));
+                            $normItem = str_replace(['-', ' ', '_'], '', $normItem);
+                            
+                            // Cas spécifiques techniques ou anglais
+                            if ($normDB === 'father') $normDB = 'pere';
+                            if ($normDB === 'mother') $normDB = 'mere';
+                            if ($normDB === 'grandparent') $normDB = 'grandpere';
+                            
+                            $selected = ($currentLien === $lien) || (!empty($normDB) && $normDB === $normItem);
+                        ?>
+                            <option value="<?= $lien ?>" <?= $selected ? 'selected' : '' ?>><?= $lien ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

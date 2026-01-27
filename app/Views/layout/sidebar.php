@@ -24,7 +24,7 @@
                 <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('parents') || isActiveRoute('classes') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Scolarité">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-user-graduate text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('eleves') || isActiveRoute('parents') || isActiveRoute('classes') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
+                        <i class="fas fa-user-graduate text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('inscriptions') || isActiveRoute('parents') || isActiveRoute('classes') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
                         <span class="menu-text font-medium">Scolarité</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform duration-200"></i>
@@ -60,7 +60,7 @@
                 <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') || isActiveRoute('eleves') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Finance">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-money-bill-wave text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
+                        <i class="fas fa-money-bill-wave text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('finance') || isActiveRoute('echeancier') || isActiveRoute('eleves') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
                         <span class="menu-text font-medium">Finance</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform duration-200"></i>
@@ -81,9 +81,6 @@
                     </a>
                     <?php endif; ?>
                     <?php if (hasPermission('echeanciers.view')): ?>
-                    <a href="<?= url('echeancier/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('echeancier/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-calendar-check w-4 h-4 mr-2"></i><span>Suivi Échéanciers</span>
-                    </a>
                     <a href="<?= url('finance/echeanciers') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= (isExactActiveRoute('finance/echeanciers') && (!isset($_GET['statut']) || $_GET['statut'] === 'retard' || $_GET['statut'] === 'retard_10')) ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-file-invoice-dollar w-4 h-4 mr-2"></i><span>Recouvrement</span>
                     </a>

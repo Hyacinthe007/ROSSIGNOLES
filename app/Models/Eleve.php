@@ -58,7 +58,7 @@ class Eleve extends BaseModel {
      */
     public function getParents($eleveId) {
         return $this->query(
-            "SELECT p.*, ep.lien_parente
+            "SELECT p.*, ep.lien_parente as lien_parente
              FROM parents p
              INNER JOIN eleves_parents ep ON p.id = ep.parent_id
              WHERE ep.eleve_id = ?",

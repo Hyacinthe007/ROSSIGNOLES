@@ -380,7 +380,6 @@ $routes = [
     // ============================================================================
     // GESTION DES ÉCHÉANCIERS D'ÉCOLAGE
     // ============================================================================
-    ['pattern' => 'echeancier/list', 'method' => 'GET', 'handler' => 'EcheancierController@list'],
     ['pattern' => 'echeancier/show', 'method' => 'GET', 'handler' => 'EcheancierController@show'],
     ['pattern' => 'echeancier/retards', 'method' => 'GET', 'handler' => 'EcheancierController@retards'],
     ['pattern' => 'echeancier/generer', 'method' => 'GET', 'handler' => 'EcheancierController@generer'],

@@ -317,65 +317,97 @@ class ElevesController extends BaseController {
      * Export PDF de la liste des élèves
      */
     public function exportPdf() {
-        $eleves = $this->eleveModel->query("SELECT * FROM eleves ORDER BY nom ASC, prenom ASC");
+        $sql = "SELECT e.*, 
+                       p.telephone as parent_telephone, 
+                       p.adresse as parent_adresse,
+                       (SELECT c.code FROM inscriptions i 
+                        INNER JOIN classes c ON i.classe_id = c.id 
+                        WHERE i.eleve_id = e.id 
+                        ORDER BY i.id DESC LIMIT 1) as derniere_classe,
+                       (SELECT CASE 
+                            WHEN COUNT(CASE WHEN ee.statut = 'exclusion' THEN 1 END) > 0 THEN 'exclusion'
+                            WHEN COUNT(CASE WHEN ee.statut = 'retard' THEN 1 END) > 0 THEN 'retard'
+                            WHEN COUNT(CASE WHEN ee.statut = 'impaye' THEN 1 END) > 0 THEN 'impaye'
+                            ELSE NULL 
+                        END 
+                        FROM echeanciers_ecolages ee 
+                        WHERE ee.eleve_id = e.id AND ee.montant_restant > 0) as statut_financier
+                FROM eleves e
+                LEFT JOIN (
+                    SELECT ep.eleve_id, p1.telephone, p1.adresse 
+                    FROM eleves_parents ep
+                    INNER JOIN parents p1 ON ep.parent_id = p1.id
+                    GROUP BY ep.eleve_id
+                ) p ON e.id = p.eleve_id
+                ORDER BY e.nom ASC, e.prenom ASC";
+
+        $eleves = $this->eleveModel->query($sql);
         
         // Générer le contenu HTML pour le PDF
         $html = '<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: \'Outfit\', sans-serif; }
-        h1 { text-align: center; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background-color: #4A5568; color: white; padding: 10px; text-align: left; }
-        td { padding: 8px; border-bottom: 1px solid #ddd; }
-        tr:hover { background-color: #f5f5f5; }
-        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+        @page { margin: 10mm; }
+        body { font-family: sans-serif; font-size: 10pt; color: #333; }
+        h1 { text-align: center; color: #1a4a72; margin-bottom: 5px; }
+        .date { text-align: center; color: #666; font-size: 8pt; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background-color: #f2f2f2; color: #333; font-weight: bold; border: 1px solid #ccc; padding: 6px; font-size: 8pt; }
+        td { border: 1px solid #ccc; padding: 5px; vertical-align: middle; font-size: 8pt; word-wrap: break-word; }
+        tr:nth-child(even) { background-color: #fafafa; }
+        .footer { margin-top: 20px; text-align: right; font-weight: bold; border-top: 2px solid #1a4a72; padding-top: 5px; }
+        .badge { padding: 2px 5px; border-radius: 3px; font-size: 7pt; font-weight: bold; text-transform: uppercase; }
+        .bg-green { background-color: #dcfce7; color: #166534; }
+        .bg-red { background-color: #fee2e2; color: #991b1b; }
+        .bg-orange { background-color: #ffedd5; color: #9a3412; }
     </style>
 </head>
 <body>
     <h1>Liste des Élèves</h1>
-    <p style="text-align: center; color: #666;">Généré le ' . date('d/m/Y à H:i') . '</p>
+    <p class="date">Généré le ' . date('d/m/Y à H:i') . '</p>
     <table>
         <thead>
             <tr>
-                <th>Matricule</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Sexe</th>
-                <th>Date de naissance</th>
+                <th style="width: 12%">Matricule</th>
+                <th style="width: 20%">Nom & Prénom</th>
+                <th style="width: 5%">Sexe</th>
+                <th style="width: 10%">Classe</th>
+                <th style="width: 13%">Téléphone</th>
+                <th style="width: 25%">Adresse</th>
+                <th style="width: 15%">Statut Finance</th>
             </tr>
         </thead>
         <tbody>';
         
         foreach ($eleves as $eleve) {
+            $sf = 'À jour';
+            $badge = 'bg-green';
+            if ($eleve['statut_financier'] === 'exclusion') { $sf = 'Exclu'; $badge = 'bg-red'; }
+            elseif ($eleve['statut_financier'] === 'retard') { $sf = 'Retard'; $badge = 'bg-orange'; }
+            elseif ($eleve['statut_financier'] === 'impaye') { $sf = 'Impayé'; $badge = 'bg-red'; }
+
             $html .= '<tr>
                 <td>' . htmlspecialchars($eleve['matricule']) . '</td>
-                <td>' . htmlspecialchars($eleve['nom']) . '</td>
-                <td>' . htmlspecialchars($eleve['prenom']) . '</td>
-                <td>' . htmlspecialchars($eleve['sexe']) . '</td>
-                <td>' . date('d/m/Y', strtotime($eleve['date_naissance'])) . '</td>
+                <td><strong>' . htmlspecialchars($eleve['nom']) . '</strong> ' . htmlspecialchars($eleve['prenom']) . '</td>
+                <td style="text-align:center">' . htmlspecialchars($eleve['sexe']) . '</td>
+                <td style="text-align:center">' . htmlspecialchars($eleve['derniere_classe'] ?? '-') . '</td>
+                <td>' . htmlspecialchars($eleve['parent_telephone'] ?? '-') . '</td>
+                <td>' . htmlspecialchars($eleve['parent_adresse'] ?? '-') . '</td>
+                <td style="text-align:center"><span class="badge ' . $badge . '">' . $sf . '</span></td>
             </tr>';
         }
         
         $html .= '</tbody>
     </table>
     <div class="footer">
-        <p>Total: ' . count($eleves) . ' élève(s)</p>
+        Total: ' . count($eleves) . ' élève(s)
     </div>
 </body>
 </html>';
         
         // Envoyer les headers pour le téléchargement
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="liste_eleves_' . date('Y-m-d') . '.pdf"');
-        
-        // Pour une vraie génération PDF, il faudrait une bibliothèque comme TCPDF ou DomPDF
-        // Pour l'instant, on envoie le HTML qui peut être imprimé en PDF par le navigateur
         header('Content-Type: text/html; charset=UTF-8');
         header('Content-Disposition: inline; filename="liste_eleves_' . date('Y-m-d') . '.html"');
         echo $html;
@@ -386,7 +418,32 @@ class ElevesController extends BaseController {
      * Export Excel (CSV) de la liste des élèves
      */
     public function exportExcel() {
-        $eleves = $this->eleveModel->query("SELECT * FROM eleves ORDER BY nom ASC, prenom ASC");
+        // Même requête que pour la liste pour avoir toutes les informations
+        $sql = "SELECT e.*, 
+                       p.telephone as parent_telephone, 
+                       p.adresse as parent_adresse,
+                       (SELECT c.code FROM inscriptions i 
+                        INNER JOIN classes c ON i.classe_id = c.id 
+                        WHERE i.eleve_id = e.id 
+                        ORDER BY i.id DESC LIMIT 1) as derniere_classe,
+                       (SELECT CASE 
+                            WHEN COUNT(CASE WHEN ee.statut = 'exclusion' THEN 1 END) > 0 THEN 'exclusion'
+                            WHEN COUNT(CASE WHEN ee.statut = 'retard' THEN 1 END) > 0 THEN 'retard'
+                            WHEN COUNT(CASE WHEN ee.statut = 'impaye' THEN 1 END) > 0 THEN 'impaye'
+                            ELSE NULL 
+                        END 
+                        FROM echeanciers_ecolages ee 
+                        WHERE ee.eleve_id = e.id AND ee.montant_restant > 0) as statut_financier
+                FROM eleves e
+                LEFT JOIN (
+                    SELECT ep.eleve_id, p1.telephone, p1.adresse 
+                    FROM eleves_parents ep
+                    INNER JOIN parents p1 ON ep.parent_id = p1.id
+                    GROUP BY ep.eleve_id
+                ) p ON e.id = p.eleve_id
+                ORDER BY e.nom ASC, e.prenom ASC";
+
+        $eleves = $this->eleveModel->query($sql);
         
         // Générer le fichier CSV
         $filename = 'liste_eleves_' . date('Y-m-d') . '.csv';
@@ -400,18 +457,37 @@ class ElevesController extends BaseController {
         // Ajouter le BOM UTF-8 pour Excel
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
         
-        // En-têtes du CSV
-        fputcsv($output, ['Matricule', 'Nom', 'Prénom', 'Sexe', 'Date de naissance', 'Lieu de naissance'], ';');
+        // En-têtes du CSV (alignés sur l'affichage de la liste)
+        fputcsv($output, [
+            'Matricule', 
+            'Nom', 
+            'Prénom', 
+            'Sexe', 
+            'Classe', 
+            'Contact Parent', 
+            'Adresse Parent', 
+            'Statut Scolaire', 
+            'Statut Financier'
+        ], ';');
         
         // Données
         foreach ($eleves as $eleve) {
+            // Libellé statut financier
+            $statutFinancier = 'À jour';
+            if ($eleve['statut_financier'] === 'exclusion') $statutFinancier = 'Exclu (Finance)';
+            elseif ($eleve['statut_financier'] === 'retard') $statutFinancier = 'Retard de paiement';
+            elseif ($eleve['statut_financier'] === 'impaye') $statutFinancier = 'Impayé';
+
             fputcsv($output, [
                 $eleve['matricule'],
                 $eleve['nom'],
                 $eleve['prenom'],
                 $eleve['sexe'],
-                date('d/m/Y', strtotime($eleve['date_naissance'])),
-                $eleve['lieu_naissance'] ?? '',
+                $eleve['derniere_classe'] ?? 'Non inscrit',
+                $eleve['parent_telephone'] ?? 'Non renseigné',
+                $eleve['parent_adresse'] ?? 'Non renseignée',
+                ucfirst($eleve['statut'] ?? 'actif'),
+                $statutFinancier
             ], ';');
         }
         

@@ -102,11 +102,16 @@ class EcheancierController extends BaseController {
         $anneeScolaire = $this->anneeScolaireModel->findById($anneeScolaireId);
         $annesScolaires = $this->anneeScolaireModel->getAll();
         
+        // Cette vue n'est plus utilisée - redirection vers eleves/list
+        header('Location: /eleves/list');
+        exit;
+        /*
         $this->view('echeancier/list', [
             'echeanciers' => $echeanciers,
             'anneeScolaire' => $anneeScolaire,
             'annesScolaires' => $annesScolaires
         ]);
+        */
     }
     
     /**
@@ -189,7 +194,7 @@ class EcheancierController extends BaseController {
             
             if (!$eleveId || !$anneeScolaireId) {
                 $_SESSION['error'] = "Paramètres manquants";
-                header('Location: /echeancier/list');
+                header('Location: /eleves/list');
                 exit;
             }
             
@@ -200,7 +205,7 @@ class EcheancierController extends BaseController {
                 $_SESSION['error'] = $e->getMessage();
             }
             
-            header('Location: /echeancier/list');
+            header('Location: /eleves/list');
             exit;
         }
     }
@@ -214,7 +219,7 @@ class EcheancierController extends BaseController {
         
         if (!$eleveId || !$anneeScolaireId) {
             $_SESSION['error'] = "Paramètres manquants";
-            header('Location: /echeancier/list');
+            header('Location: /eleves/list');
             exit;
         }
         
