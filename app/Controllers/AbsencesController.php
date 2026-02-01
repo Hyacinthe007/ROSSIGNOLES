@@ -51,6 +51,15 @@ class AbsencesController extends BaseController {
                  et.classe_id = a.classe_id 
                  AND et.heure_debut = a.heure_debut 
                  AND et.heure_fin = a.heure_fin
+                 AND et.jour_semaine = CASE LOWER(DATE_FORMAT(a.date_absence, '%W'))
+                     WHEN 'monday' THEN 'lundi'
+                     WHEN 'tuesday' THEN 'mardi'
+                     WHEN 'wednesday' THEN 'mercredi'
+                     WHEN 'thursday' THEN 'jeudi'
+                     WHEN 'friday' THEN 'vendredi'
+                     WHEN 'saturday' THEN 'samedi'
+                     WHEN 'sunday' THEN 'dimanche'
+                 END
              )
              LEFT JOIN matieres m ON et.matiere_id = m.id
              LEFT JOIN personnels p ON et.personnel_id = p.id

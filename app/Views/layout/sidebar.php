@@ -214,7 +214,7 @@
             <?php endif; ?>
 
             <!-- MODULE 7: Communication -->
-            <?php if (hasPermission('communication.view')): ?>
+             <!--
             <div class="menu-group">
                 <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('annonces') || isActiveRoute('notifications') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Communication">
@@ -236,8 +236,7 @@
                     </a>
                 </div>
             </div>
-            <?php endif; ?>
-
+            -->
             <!-- MODULE 8: Paramètres -->
             <?php if (hasPermission('systeme.config')): ?>
             <div class="menu-group">
