@@ -184,6 +184,16 @@ const tarifDroit = <?= $tarifDroit['montant'] ?>;
 const montantArticles = <?= $montantTotalArticles ?? 0 ?>;
 const moisDebut = <?= $tarifEcolage['mois_debut'] ?>; // Mois de début de l'année scolaire (1-12)
 
+// Articles optionnels sélectionnés
+const articlesData = <?= json_encode(array_map(function($article) {
+    return [
+        'id' => $article['id'],
+        'libelle' => $article['libelle'],
+        'prix' => $article['prix_unitaire']
+    ];
+}, $articlesChoisis)) ?>;
+
+
 // Noms des mois
 const nomsMois = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -218,21 +228,25 @@ function updatePaymentOption(months) {
         </tr>
     `;
 
-    if (montantArticles > 0) {
+    // Ajouter les articles optionnels s'il y en a
+    if (articlesData && articlesData.length > 0) {
         baseHtml += `
             <tr class="border-t border-gray-50">
                 <td colspan="2" class="py-2 text-[10px] font-bold text-blue-600 uppercase tracking-widest">Articles Optionnels</td>
             </tr>
-            <?php foreach ($articlesChoisis as $article): ?>
+        `;
+        
+        articlesData.forEach(article => {
+            baseHtml += `
                 <tr>
                     <td class="py-2 pl-4 text-gray-600 ">
                         <i class="fas fa-shopping-basket text-blue-400 mr-2 text-[10px]"></i>
-                        <?= e($article['libelle']) ?>
+                        ${article.libelle}
                     </td>
-                    <td class="py-2 text-right font-medium text-blue-700"><?= number_format($article['prix_unitaire'], 0, ',', ' ') ?> Ar</td>
+                    <td class="py-2 text-right font-medium text-blue-700">${new Intl.NumberFormat('fr-FR').format(article.prix)} Ar</td>
                 </tr>
-            <?php endforeach; ?>
-        `;
+            `;
+        });
     }
 
     tbody.innerHTML = baseHtml;

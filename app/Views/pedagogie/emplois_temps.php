@@ -270,6 +270,9 @@
                 color: #111827;
                 line-height: 1.2;
             }
+            .vacation-orange {
+                color: #FF6B00;
+            }
             .tt-grid > div:last-child {
                 border-right: none;
             }
@@ -291,7 +294,7 @@
                         <span class="text-[10px]"><?= strtoupper($jour) ?></span>
                         <span class="text-[9px] opacity-70 font-normal"><?= isset($weekDates[$jour]) ? date('d/m', strtotime($weekDates[$jour])) : '' ?></span>
                         <?php if (isset($vacances[$jour])): ?>
-                            <div class="w-1.5 h-1.5 bg-orange-400 rounded-full mt-0.5 animate-pulse"></div>
+                            <div class="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1 animate-pulse"></div>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
@@ -303,9 +306,9 @@
                     <?php foreach ($joursSemaine as $jour): ?>
                         <div class="tt-cell <?= isset($vacances[$jour]) ? 'bg-orange-50/30' : '' ?>">
                             <?php if (isset($vacances[$jour])): ?>
-                                <div class="flex flex-col items-center justify-center h-full w-full pointer-events-none opacity-40">
-                                    <i class="fas fa-umbrella-beach text-orange-400 mb-1 text-xs"></i>
-                                    <span class="text-[9px] font-bold text-orange-600 uppercase tracking-tighter"><?= e($vacances[$jour]['libelle']) ?></span>
+                                <div class="flex flex-col items-center justify-center h-full w-full pointer-events-none opacity-60">
+                                    <i class="fas fa-umbrella-beach vacation-orange mb-1 text-xs"></i>
+                                    <span class="text-[9px] font-bold vacation-orange uppercase tracking-tighter"><?= e($vacances[$jour]['libelle']) ?></span>
                                 </div>
                             <?php else: ?>
                                 <?php if (!empty($grid[$slot][$jour])): ?>

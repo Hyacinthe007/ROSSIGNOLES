@@ -40,10 +40,12 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élève</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code Classe</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Professeur</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motif</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -52,7 +54,7 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php if (empty($absences)): ?>
                         <tr>
-                            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="10" class="px-6 py-8 text-center text-gray-500">
                                 <i class="fas fa-inbox text-4xl mb-4 block"></i>
                                 Aucune absence trouvée
                             </td>
@@ -65,7 +67,9 @@
                                     <div class="text-xs text-gray-500"><?= e($absence['matricule']) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    <?= e($absence['classe_nom']) ?>
+                                    <span class="font-semibold text-purple-700">
+                                        <?= e($absence['classe_code'] ?? 'N/A') ?>
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <?= formatDate($absence['date_absence']) ?>
@@ -83,13 +87,41 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                     <?php
-                                    $periodes = [
-                                        'matin' => 'Matin',
-                                        'apres_midi' => 'Après-midi',
-                                        'journee' => 'Journée'
-                                    ];
-                                    echo e($periodes[$absence['periode']] ?? $absence['periode']);
+                                    // Afficher l'intervalle de temps si disponible
+                                    if (!empty($absence['heure_debut']) && !empty($absence['heure_fin'])) {
+                                        echo '<span class="font-mono text-blue-700">';
+                                        echo e(substr($absence['heure_debut'], 0, 5)) . ' - ' . e(substr($absence['heure_fin'], 0, 5));
+                                        echo '</span>';
+                                    } else {
+                                        // Sinon afficher la période classique
+                                        $periodes = [
+                                            'matin' => 'Matin',
+                                            'apres_midi' => 'Après-midi',
+                                            'journee' => 'Journée'
+                                        ];
+                                        echo '<span class="text-gray-500">' . e($periodes[$absence['periode']] ?? $absence['periode']) . '</span>';
+                                    }
                                     ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <?php if (!empty($absence['matiere_nom'])): ?>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
+                                            <i class="fas fa-book mr-1"></i>
+                                            <?= e($absence['matiere_nom']) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <?php if (!empty($absence['professeur_nom'])): ?>
+                                        <span class="inline-flex items-center text-gray-700">
+                                            <i class="fas fa-user-tie mr-1 text-indigo-500"></i>
+                                            <?= e($absence['professeur_nom']) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
                                     <?= e($absence['motif'] ?: 'Non spécifié') ?>

@@ -95,7 +95,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code classe</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -116,7 +116,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <a href="<?= url('classes/details/' . ($eleve['classe_id'] ?? '')) ?>" 
                                        class="text-blue-600 hover:text-blue-800 hover:underline">
-                                        <?= e($eleve['classe_nom'] ?? 'N/A') ?>
+                                        <?= e($eleve['classe_code'] ?? 'N/A') ?>
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -101,7 +101,7 @@
 
                 <form method="POST" enctype="multipart/form-data" id="uploadForm" class="space-y-4">
                     <input type="hidden" name="action" value="upload">
-                    <?php csrf_field(); ?>
+                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -300,7 +300,7 @@
                                         <?php if ($doc['statut'] === 'en_attente'): ?>
                                             <!-- Valider -->
                                             <form method="POST" class="inline" onsubmit="return confirm('Valider ce document ?')">
-                                                <?php csrf_field(); ?>
+                                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                                 <input type="hidden" name="action" value="valider">
                                                 <input type="hidden" name="document_id" value="<?= $doc['id'] ?>">
                                                 <button type="submit" 
@@ -320,7 +320,7 @@
 
                                         <!-- Supprimer -->
                                         <form method="POST" class="inline" onsubmit="return confirm('Supprimer ce document définitivement ?')">
-                                            <?php csrf_field(); ?>
+                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                             <input type="hidden" name="action" value="supprimer">
                                             <input type="hidden" name="document_id" value="<?= $doc['id'] ?>">
                                             <button type="submit" 
@@ -399,7 +399,7 @@
             Refuser le document
         </h3>
         <form method="POST" id="refuseForm">
-            <?php csrf_field(); ?>
+            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <input type="hidden" name="action" value="refuser">
             <input type="hidden" name="document_id" id="refuseDocId">
             

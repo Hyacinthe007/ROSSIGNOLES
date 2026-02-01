@@ -17,6 +17,7 @@
 
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
             <form action="<?= isset($emploiTemps) ? url('pedagogie/emplois-temps/edit/' . $emploiTemps['id']) : url('pedagogie/emplois-temps/add') ?>" method="POST" class="p-8">
+                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                 
                 <?php if (isset($_SESSION['error'])): ?>
                     <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm animate-bounce">

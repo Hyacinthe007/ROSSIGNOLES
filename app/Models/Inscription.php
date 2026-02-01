@@ -432,48 +432,98 @@ class Inscription extends BaseModel {
                 $nombreMois = $data['nombre_mois'] ?? 1;
                 require_once __DIR__ . '/LigneFacture.php';
                 require_once __DIR__ . '/TypeFrais.php';
+                require_once __DIR__ . '/Classe.php';
+                require_once __DIR__ . '/TarifInscription.php';
+                
                 $ligneFactureModel = new LigneFacture();
                 $typeFraisModel = new TypeFrais();
+                $classeModel = new Classe();
+                $tarifModel = new TarifInscription();
+                
+                // Récupérer les types de frais
+                $typeFraisInscription = $typeFraisModel->queryOne("SELECT id FROM types_frais WHERE categorie = 'inscription' LIMIT 1");
                 $typeFraisEcolage = $typeFraisModel->queryOne("SELECT id FROM types_frais WHERE categorie = 'scolarite' LIMIT 1");
                 
-                if ($typeFraisEcolage) {
-                    $typeFraisEcolageId = $typeFraisEcolage['id'];
-                    $existingEcolageLines = $ligneFactureModel->query("SELECT id FROM lignes_facture WHERE facture_id = ? AND type_frais_id = ?", [$factureId, $typeFraisEcolageId]);
-                    
-                    if (count($existingEcolageLines) != $nombreMois) {
-                        $ligneFactureModel->execute("DELETE FROM lignes_facture WHERE facture_id = ? AND type_frais_id = ?", [$factureId, $typeFraisEcolageId]);
-                        
-                        require_once __DIR__ . '/Classe.php';
-                        require_once __DIR__ . '/TarifInscription.php';
-                        $classeModel = new Classe();
-                        $tarifModel = new TarifInscription();
-                        $classe = $classeModel->find($inscription['classe_id']);
-                        $tarif = $tarifModel->queryOne("SELECT mois_debut_annee, ecolage_mensuel FROM tarifs_inscription WHERE niveau_id = ? AND annee_scolaire_id = ? AND actif = 1 LIMIT 1", [$classe['niveau_id'], $inscription['annee_scolaire_id']]);
-                        
-                        $moisDebut = $tarif['mois_debut_annee'] ?? 9;
-                        $montantParMois = $tarif['ecolage_mensuel'] ?? 0;
-                        $nomsMois = [1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril', 5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août', 9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'];
-                        $anneeActuelle = date('Y', strtotime($inscription['date_inscription']));
-                        
-                        for ($i = 0; $i < $nombreMois; $i++) {
-                            $moisCourant = $moisDebut + $i;
-                            $anneeMois = $anneeActuelle;
-                            if ($moisCourant > 12) { $moisCourant -= 12; $anneeMois++; }
-                            $nomMois = $nomsMois[$moisCourant] ?? 'Mois ' . $moisCourant;
-                            $ligneFactureModel->create([
-                                'facture_id' => $factureId,
-                                'type_frais_id' => $typeFraisEcolageId,
-                                'designation' => "Écolage $nomMois $anneeMois",
-                                'quantite' => 1,
-                                'prix_unitaire' => $montantParMois,
-                                'montant' => $montantParMois
-                            ]);
-                        }
-                        // Mettre à jour le total de base de la facture
-                        $facture['montant_total'] = ($data['frais_inscription_montant'] ?? 0) + ($montantParMois * $nombreMois);
-                        $factureModel->update($factureId, ['montant_total' => $facture['montant_total']]);
-                    }
+                if (!$typeFraisInscription) {
+                    $typeFraisInscriptionId = $typeFraisModel->create([
+                        'libelle' => "Droit d'inscription",
+                        'categorie' => 'inscription',
+                        'actif' => 1,
+                    ]);
+                } else {
+                    $typeFraisInscriptionId = $typeFraisInscription['id'];
                 }
+                
+                if (!$typeFraisEcolage) {
+                    $typeFraisEcolageId = $typeFraisModel->create([
+                        'libelle' => "Écolage mensuel",
+                        'categorie' => 'scolarite',
+                        'actif' => 1,
+                    ]);
+                } else {
+                    $typeFraisEcolageId = $typeFraisEcolage['id'];
+                }
+                
+                // SUPPRIMER TOUTES les anciennes lignes de Droit d'inscription et Écolage
+                // (on garde les articles qui seront ajoutés après)
+                $ligneFactureModel->execute(
+                    "DELETE FROM lignes_facture WHERE facture_id = ? AND type_frais_id IN (?, ?)", 
+                    [$factureId, $typeFraisInscriptionId, $typeFraisEcolageId]
+                );
+                
+                // Récupérer les informations de tarif
+                $classe = $classeModel->find($inscription['classe_id']);
+                $tarif = $tarifModel->queryOne(
+                    "SELECT mois_debut_annee, ecolage_mensuel, frais_inscription FROM tarifs_inscription WHERE niveau_id = ? AND annee_scolaire_id = ? AND actif = 1 LIMIT 1", 
+                    [$classe['niveau_id'], $inscription['annee_scolaire_id']]
+                );
+                
+                $moisDebut = $tarif['mois_debut_annee'] ?? 9;
+                $montantParMois = $tarif['ecolage_mensuel'] ?? 0;
+                $montantDroitInscription = $tarif['frais_inscription'] ?? 0;
+                
+                // Recréer la ligne Droit d'inscription
+                if ($montantDroitInscription > 0) {
+                    $ligneFactureModel->create([
+                        'facture_id' => $factureId,
+                        'type_frais_id' => $typeFraisInscriptionId,
+                        'designation' => "Droit d'inscription",
+                        'quantite' => 1,
+                        'prix_unitaire' => $montantDroitInscription,
+                        'montant' => $montantDroitInscription
+                    ]);
+                }
+                
+                // Recréer les lignes d'écolage (une par mois)
+                $nomsMois = [
+                    1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril', 
+                    5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août', 
+                    9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+                ];
+                $anneeActuelle = date('Y', strtotime($inscription['date_inscription']));
+                
+                for ($i = 0; $i < $nombreMois; $i++) {
+                    $moisCourant = $moisDebut + $i;
+                    $anneeMois = $anneeActuelle;
+                    if ($moisCourant > 12) { 
+                        $moisCourant -= 12; 
+                        $anneeMois++; 
+                    }
+                    $nomMois = $nomsMois[$moisCourant] ?? 'Mois ' . $moisCourant;
+                    $ligneFactureModel->create([
+                        'facture_id' => $factureId,
+                        'type_frais_id' => $typeFraisEcolageId,
+                        'designation' => "Écolage $nomMois $anneeMois",
+                        'quantite' => 1,
+                        'prix_unitaire' => $montantParMois,
+                        'montant' => $montantParMois
+                    ]);
+                }
+                
+                // Mettre à jour le total de base de la facture (sans les articles pour l'instant)
+                $nouveauMontantBase = $montantDroitInscription + ($montantParMois * $nombreMois);
+                $factureModel->update($factureId, ['montant_total' => $nouveauMontantBase]);
+                $facture['montant_total'] = $nouveauMontantBase;
                 
                 // Gérer les articles optionnels
                 $articlesOptionnels = $data['articles_optionnels'] ?? [];
@@ -500,6 +550,18 @@ class Inscription extends BaseModel {
                     } else {
                         $typeFraisArticleId = $typeFraisArticle['id'];
                     }
+                    
+                    // SUPPRIMER les anciennes lignes d'articles pour éviter les doublons
+                    $ligneFactureModel->execute(
+                        "DELETE FROM lignes_facture WHERE facture_id = ? AND type_frais_id = ?", 
+                        [$factureId, $typeFraisArticleId]
+                    );
+                    
+                    // Supprimer aussi les anciennes entrées dans inscriptions_articles
+                    $insArticleModel->execute(
+                        "DELETE FROM inscriptions_articles WHERE inscription_id = ?",
+                        [$inscriptionId]
+                    );
                     
                     $anneeId = $inscription['annee_scolaire_id'];
                     

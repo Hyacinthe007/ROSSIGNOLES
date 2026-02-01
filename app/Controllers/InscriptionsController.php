@@ -48,7 +48,8 @@ class InscriptionsController extends BaseController {
         if (isset($_GET['q']) && !empty($_GET['q'])) $filters['q'] = $_GET['q'];
 
         // Obtenir les inscriptions avec les filtres appliqués directement dans la requête
-        $inscriptions = $model->getAllWithDetails($filters);
+        // Tri par matricule des élèves en ordre croissant
+        $inscriptions = $model->getAllWithDetails($filters, 'e.matricule ASC');
         
         // Obtenir les classes pour le filtre
         $classeModel = new Classe();
@@ -150,6 +151,26 @@ class InscriptionsController extends BaseController {
             return;
         }
         
+        // Mapper le type_parent de la base vers le libellé utilisé dans le formulaire
+        $mappingLiens = [
+            'pere' => 'Père',
+            'père' => 'Père',
+            'mere' => 'Mère',
+            'mère' => 'Mère',
+            'tuteur' => 'Tuteur',
+            'tutrice' => 'Tutrice',
+            'autre' => 'Autre'
+        ];
+        
+        $lienParente = $parent['type_parent'] ?? 'Tuteur';
+        $normalizedLien = mb_strtolower((string)$lienParente, 'UTF-8');
+        if (isset($mappingLiens[$normalizedLien])) {
+            $lienParente = $mappingLiens[$normalizedLien];
+        } else {
+            // Si pas dans le mapping, on met la première lettre en majuscule pour essayer de correspondre
+            $lienParente = mb_convert_case($lienParente, MB_CASE_TITLE, "UTF-8");
+        }
+
         // Initialiser la session d'inscription
         $_SESSION['inscription_data'] = [
             'type_inscription' => 'nouvelle',
@@ -161,10 +182,12 @@ class InscriptionsController extends BaseController {
                 'adresse' => $parent['adresse'],
                 'profession' => $parent['profession'] ?? '',
                 'sexe' => $parent['sexe'] ?? '',
-                'lien_parente' => $parent['type_parent'] ?? 'tuteur'
+                'lien_parente' => $lienParente
             ]
         ];
         
+        // Rediriger directement vers l'étape 2 car les données du parent sont déjà en session
+        $_SESSION['success'] = "Parent sélectionné : " . $parent['nom'] . " " . $parent['prenom'] . ". Veuillez continuer l'inscription.";
         $this->redirect('/inscriptions/nouveau?etape=2');
     }
     
@@ -190,6 +213,13 @@ class InscriptionsController extends BaseController {
     }
     
     private function etape1ChoixType() {
+        // Si les données parent sont déjà en session (venant de la liste des parents),
+        // passer automatiquement à l'étape 2
+        if (isset($_SESSION['inscription_data']['parent_data']) && !empty($_SESSION['inscription_data']['parent_data'])) {
+            $this->redirect('/inscriptions/nouveau?etape=2');
+            return;
+        }
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['inscription_data']['type_inscription'] = $_POST['type_inscription'];
             $this->redirect('/inscriptions/nouveau?etape=2');
@@ -500,8 +530,11 @@ class InscriptionsController extends BaseController {
         }
         
         $inscriptionId = $_SESSION['inscription_data']['inscription_id'] ?? null;
-        if (!$inscriptionId) {
-            $this->redirect('/inscriptions/nouveau?etape=3');
+        $eleveId = $_SESSION['inscription_data']['eleve_id'] ?? null;
+        
+        if (!$eleveId) {
+            $_SESSION['error'] = "Veuillez d'abord identifier l'élève.";
+            $this->redirect('/inscriptions/nouveau?etape=2');
             return;
         }
 
@@ -511,17 +544,12 @@ class InscriptionsController extends BaseController {
         $model = new Inscription();
         $docModel = new DocumentsInscription();
         
-        $inscription = $model->getDetails($inscriptionId);
-        if (!$inscription) {
-            $_SESSION['error'] = "Inscription non trouvée";
-            $this->redirect('/inscriptions/nouveau?etape=3');
-            return;
-        }
+        $inscription = $inscriptionId ? $model->getDetails($inscriptionId) : null;
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
             if ($action === 'upload') {
-                $this->uploadDocument($inscriptionId, $inscription, '/inscriptions/nouveau?etape=4');
+                $this->uploadDocument($inscriptionId, ['eleve_id' => $eleveId], '/inscriptions/nouveau?etape=4');
                 return;
             } else if ($action === 'delete') {
                 $docId = $_POST['document_id'] ?? 0;
@@ -537,17 +565,19 @@ class InscriptionsController extends BaseController {
             return;
         }
 
-        $documents = $docModel->getByInscription($inscriptionId);
+        $documents = $inscriptionId ? $docModel->getByInscription($inscriptionId) : $docModel->getByEleve($eleveId);
         $anneeModel = new AnneeScolaire();
         $anneeActive = $anneeModel->getActive();
         
         // Récupérer le cycle pour les exigences conditionnelles
         $classeModel = new Classe();
-        $classe = $classeModel->getDetails($inscription['classe_id']);
+        $classeId = $_SESSION['inscription_data']['classe_id'] ?? null;
+        $classe = $classeId ? $classeModel->getDetails($classeId) : null;
         $cycle = $classe['cycle_nom'] ?? '';
         $niveau = $classe['niveau_nom'] ?? '';
 
-        $exigences = $anneeActive ? $docModel->getExigences($anneeActive['id'], $inscription['type_inscription']) : [];
+        $typeInscription = $_SESSION['inscription_data']['type_inscription'] ?? 'nouveau';
+        $exigences = ($anneeActive && $typeInscription) ? $docModel->getExigences($anneeActive['id'], $typeInscription) : [];
         
         // Si c'est une nouvelle inscription, on s'assure que les documents de base sont là
         // Si la base de données ne les fournit pas, on les injecte ou on les force
@@ -880,22 +910,52 @@ class InscriptionsController extends BaseController {
         // Création du parent et de l'élève si nouveau
         if ($data['eleve_nouveau'] ?? false) {
              $eleveModel = new Eleve();
-             if (empty($data['eleve_data']['matricule'])) {
-                 if (!function_exists('generateMatricule')) require_once APP_PATH . '/Helpers/functions.php';
-                 $data['eleve_data']['matricule'] = generateMatricule('eleve', 'eleves');
-             }
-             $_SESSION['inscription_data']['eleve_id'] = $eleveModel->create($data['eleve_data']);
              
-             if (!empty($data['parent_data'])) {
+             // CORRECTIF : Si l'élève a déjà été créé lors d'un appel précédent, on ne le recrée pas !
+             if (!empty($_SESSION['inscription_data']['eleve_id'])) {
+                 error_log("Réutilisation de l'élève existant (ID: " . $_SESSION['inscription_data']['eleve_id'] . ")");
+                 // L'élève existe déjà, on ne fait rien
+             } else {
+                 // Générer le matricule si nécessaire
+                 if (empty($data['eleve_data']['matricule'])) {
+                     if (!function_exists('generateMatricule')) require_once APP_PATH . '/Helpers/functions.php';
+                     $data['eleve_data']['matricule'] = generateMatricule('eleve', 'eleves');
+                     $_SESSION['inscription_data']['eleve_data']['matricule'] = $data['eleve_data']['matricule'];
+                 }
+                 
+                 // Créer l'élève
+                 $_SESSION['inscription_data']['eleve_id'] = $eleveModel->create($data['eleve_data']);
+                 error_log("Nouvel élève créé (ID: " . $_SESSION['inscription_data']['eleve_id'] . ")");
+             }
+             
+             // Créer le parent et la relation si nécessaire
+             if (!empty($data['parent_data']) && empty($_SESSION['inscription_data']['parent_created'])) {
          
                  $parentModel = new ParentModel();
-                 $parentId = $parentModel->create([
-                     'nom' => $data['parent_data']['nom'],
-                     'prenom' => $data['parent_data']['prenom'],
-                     'telephone' => $data['parent_data']['telephone'],
-                     'adresse' => $data['parent_data']['adresse'] ?? null
-                 ]);
+                 
+                 // Vérifier si un parent avec le même téléphone existe déjà
+                 $parentExistant = null;
+                 if (!empty($data['parent_data']['telephone'])) {
+                     $parentExistant = $parentModel->getByTelephone($data['parent_data']['telephone']);
+                 }
+                 
+                 // Créer le parent s'il n'existe pas
+                 if ($parentExistant) {
+                     $parentId = $parentExistant['id'];
+                     error_log("Parent existant trouvé (ID: $parentId)");
+                 } else {
+                     $parentId = $parentModel->create([
+                         'nom' => $data['parent_data']['nom'],
+                         'prenom' => $data['parent_data']['prenom'],
+                         'telephone' => $data['parent_data']['telephone'],
+                         'email' => $data['parent_data']['email'] ?? null,
+                         'adresse' => $data['parent_data']['adresse'] ?? null
+                     ]);
+                     error_log("Nouveau parent créé (ID: $parentId)");
+                 }
+                 
                  $parentModel->linkToEleve($parentId, $_SESSION['inscription_data']['eleve_id'], $data['parent_data']['lien_parente'] ?? 'pere');
+                 $_SESSION['inscription_data']['parent_created'] = true;
              }
         } else {
             // Élève existant (réinscription) - vérifier que l'eleve_id est bien défini dans la session
@@ -914,11 +974,12 @@ class InscriptionsController extends BaseController {
             throw new Exception("Impossible de créer l'inscription : ID de l'élève manquant.");
         }
         
-        // Créer l'inscription via le modèle (avec paiement à null)
-        $inscriptionModel = new Inscription();
-        $inscriptionId = $inscriptionModel->creerInscription($_SESSION['inscription_data'], null);
+        // NE PAS créer l'inscription à ce stade (étape 3)
+        // L'inscription sera créée uniquement à l'étape 6 après le paiement
+        // On stocke seulement les données dans la session
+        error_log("Brouillon sauvegardé - Données stockées en session (pas encore en BDD)");
         
-        return $inscriptionId;
+        return null; // Pas d'ID d'inscription pour le moment
     }
     
     public function enregistrer($goToReceipt = false) {
@@ -1019,7 +1080,18 @@ class InscriptionsController extends BaseController {
              $data['annee_scolaire_id'] = $anneeActive['id'];
              
              // Appel modèle
-              $inscriptionId = $data['inscription_id']; // L'ID de l'inscription brouillon est déjà en session
+              $inscriptionId = $data['inscription_id'] ?? null;
+              if (empty($inscriptionId)) {
+                  $inscriptionId = $model->creerInscription($data, null);
+                  $_SESSION['inscription_data']['inscription_id'] = $inscriptionId;
+                  
+                  // Rattacher les documents orphelins (uploadés à l'étape 4 sans ID d'inscription)
+                  $docModel = new DocumentsInscription();
+                  $docModel->execute(
+                      "UPDATE documents_inscription SET inscription_id = ? WHERE eleve_id = ? AND inscription_id IS NULL",
+                      [$inscriptionId, $data['eleve_id']]
+                  );
+              }
               $model->finaliserInscription($inscriptionId, $data, $data['paiement_initial'] ?? null);
               LogActivite::log(
                   'Finalisation Inscription', 
@@ -1216,7 +1288,9 @@ class InscriptionsController extends BaseController {
         }
         
         // Créer le répertoire de stockage si nécessaire
-        $uploadDir = STORAGE_PATH . '/documents/inscriptions/' . $inscriptionId;
+        // Si pas d'inscription_id, on utilise l'ID de l'élève pour le dossier
+        $folderName = $inscriptionId ? 'inscriptions/'.$inscriptionId : 'eleves/'.$inscription['eleve_id'];
+        $uploadDir = STORAGE_PATH . '/documents/' . $folderName;
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }

@@ -32,7 +32,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-600 text-white">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Classe</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Code classe</th>
                         <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Matière</th>
                         <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Enseignant</th>
                         <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Volume horaire</th>
@@ -52,7 +52,7 @@
                         <?php foreach ($enseignements as $enseignement): ?>
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    <?= e($enseignement['classe_libelle'] ?? 'N/A') ?>
+                                    <?= e($enseignement['classe_code'] ?? 'N/A') ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <?= e($enseignement['matiere_libelle'] ?? 'N/A') ?>

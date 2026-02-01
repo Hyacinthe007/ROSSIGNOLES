@@ -39,12 +39,23 @@ class AbsencesController extends BaseController {
         $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
         
         $absences = $this->absenceModel->query(
-            "SELECT a.*, e.matricule, e.nom, e.prenom, c.nom as classe_nom
+            "SELECT a.*, 
+                    e.matricule, e.nom, e.prenom, 
+                    c.code as classe_code,
+                    m.nom as matiere_nom,
+                    CONCAT(p.nom, ' ', p.prenom) as professeur_nom
              FROM absences a
              JOIN eleves e ON a.eleve_id = e.id
              JOIN classes c ON a.classe_id = c.id
+             LEFT JOIN emplois_temps et ON (
+                 et.classe_id = a.classe_id 
+                 AND et.heure_debut = a.heure_debut 
+                 AND et.heure_fin = a.heure_fin
+             )
+             LEFT JOIN matieres m ON et.matiere_id = m.id
+             LEFT JOIN personnels p ON et.personnel_id = p.id
              {$whereClause}
-             ORDER BY a.date_absence DESC",
+             ORDER BY a.date_absence DESC, a.heure_debut DESC",
             $params
         );
         
@@ -56,39 +67,79 @@ class AbsencesController extends BaseController {
     
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $eleveId = $_POST['eleve_id'] ?? '';
+            $classeId = $_POST['classe_id'] ?? '';
+            $dateAbsence = $_POST['date_absence'] ?? '';
+            $absents = $_POST['absents'] ?? [];
+            $emploiTempsId = $_POST['emploi_temps_id'] ?? null;
+            $motif = $_POST['motif'] ?? '';
+            $justifieeDefault = isset($_POST['justifiee_default']) ? 1 : 0;
             
-            // Récupérer la classe de l'élève via son inscription active
-            $eleveModel = new Eleve();
-            $inscription = $eleveModel->getInscriptionActive($eleveId);
-            
-            if (!$inscription) {
-                // Erreur: Élève non inscrit
-                $_SESSION['error'] = "Cet élève n'a pas d'inscription active.";
-                $this->view('absences/add');
+            if (empty($absents)) {
+                $_SESSION['error'] = "Aucun élève sélectionné";
+                $this->redirect('absences/add');
                 return;
             }
 
             $currentUserId = $_SESSION['user_id'] ?? null;
-
-            $data = [
-                'eleve_id' => $eleveId,
-                'classe_id' => $inscription['classe_id'],
-                'date_absence' => $_POST['date_absence'] ?? '',
-                'type' => $_POST['type'] ?? 'absence',
-                'periode' => $_POST['periode'] ?? 'journee',
-                'heure_debut' => !empty($_POST['heure_debut']) ? $_POST['heure_debut'] : null,
-                'heure_fin' => !empty($_POST['heure_fin']) ? $_POST['heure_fin'] : null,
-                'motif' => $_POST['motif'] ?? '',
-                'justifiee' => isset($_POST['justifiee']) ? 1 : 0,
-                'saisi_par' => $currentUserId,
-            ];
             
-            $id = $this->absenceModel->create($data);
-            $this->redirect('absences/details/' . $id);
+            // Récupérer les infos de l'emploi du temps si sélectionné
+            $heureDebut = null;
+            $heureFin = null;
+            if ($emploiTempsId) {
+                $emploiTemps = $this->absenceModel->queryOne(
+                    "SELECT heure_debut, heure_fin FROM emplois_temps WHERE id = ?",
+                    [$emploiTempsId]
+                );
+                if ($emploiTemps) {
+                    $heureDebut = $emploiTemps['heure_debut'];
+                    $heureFin = $emploiTemps['heure_fin'];
+                }
+            }
+
+            // Récupérer l'année scolaire active
+            $anneeScolaire = $this->absenceModel->queryOne(
+                "SELECT id FROM annees_scolaires WHERE actif = 1 LIMIT 1"
+            );
+            $anneeScolaireId = $anneeScolaire['id'] ?? null;
+
+            $count = 0;
+            foreach ($absents as $eleveId) {
+                // Récupérer le motif individuel pour cet élève
+                $motifIndividuel = $_POST["motif_$eleveId"] ?? '';
+                
+                $data = [
+                    'eleve_id' => $eleveId,
+                    'classe_id' => $classeId,
+                    'annee_scolaire_id' => $anneeScolaireId,
+                    'date_absence' => $dateAbsence,
+                    'type' => 'absence',
+                    'periode' => 'journee',
+                    'heure_debut' => $heureDebut,
+                    'heure_fin' => $heureFin,
+                    'motif' => $motifIndividuel,
+                    'justifiee' => $justifieeDefault,
+                    'saisi_par' => $currentUserId,
+                ];
+                
+                $this->absenceModel->create($data);
+                $count++;
+            }
+            
+            $_SESSION['success'] = "$count absence(s) enregistrée(s) avec succès";
+            $this->redirect('absences/list');
         } else {
-            // Plus besoin de charger tous les élèves, l'autocomplete le fera
-            $this->view('absences/add');
+            // Charger les classes pour le formulaire
+            $classes = $this->absenceModel->query(
+                "SELECT c.id, c.code as libelle, cy.libelle as cycle_nom
+                 FROM classes c
+                 JOIN niveaux n ON c.niveau_id = n.id
+                 JOIN cycles cy ON n.cycle_id = cy.id
+                 JOIN annees_scolaires a ON c.annee_scolaire_id = a.id
+                 WHERE a.actif = 1 AND c.statut = 'actif'
+                 ORDER BY cy.ordre, n.ordre, c.code"
+            );
+            
+            $this->view('absences/add', ['classes' => $classes]);
         }
     }
     
@@ -207,6 +258,128 @@ class AbsencesController extends BaseController {
             }
             $this->view('absences/delete', ['absence' => $absence]);
         }
+    }
+
+    /**
+     * Récupère la liste des élèves d'une classe (API JSON)
+     */
+    public function getElevesClasse() {
+        $classeId = $_GET['classe_id'] ?? '';
+        
+        if (!$classeId) {
+            $this->json([]);
+            return;
+        }
+
+        // Essayer d'abord avec inscriptions
+        $eleves = $this->absenceModel->query(
+            "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom
+             FROM eleves e
+             JOIN inscriptions i ON e.id = i.eleve_id
+             WHERE i.classe_id = ? 
+               AND i.statut IN ('active', 'validee', 'en_cours')
+               AND e.statut = 'actif'
+             ORDER BY e.nom, e.prenom",
+            [$classeId]
+        );
+
+        // Si aucun élève trouvé, essayer sans le statut de l'inscription
+        if (empty($eleves)) {
+            $eleves = $this->absenceModel->query(
+                "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom
+                 FROM eleves e
+                 JOIN inscriptions i ON e.id = i.eleve_id
+                 WHERE i.classe_id = ? 
+                   AND e.statut = 'actif'
+                 ORDER BY e.nom, e.prenom",
+                [$classeId]
+            );
+        }
+
+        $this->json($eleves);
+    }
+
+    /**
+     * Récupère les emplois du temps d'une classe pour une date donnée (API JSON)
+     */
+    public function getEmploisTemps() {
+        $classeId = $_GET['classe_id'] ?? '';
+        $date = $_GET['date'] ?? '';
+        
+        if (!$classeId || !$date) {
+            $this->json([]);
+            return;
+        }
+
+        // Déterminer le jour de la semaine
+        $jourSemaine = strtolower(date('l', strtotime($date)));
+        $joursMap = [
+            'monday' => 'lundi',
+            'tuesday' => 'mardi',
+            'wednesday' => 'mercredi',
+            'thursday' => 'jeudi',
+            'friday' => 'vendredi',
+            'saturday' => 'samedi'
+        ];
+        $jour = $joursMap[$jourSemaine] ?? '';
+
+        if (!$jour) {
+            $this->json([]);
+            return;
+        }
+
+        $emploisTemps = $this->absenceModel->query(
+            "SELECT et.id, et.heure_debut, et.heure_fin,
+                    m.nom as matiere_nom,
+                    CONCAT(p.nom, ' ', p.prenom) as enseignant_nom
+             FROM emplois_temps et
+             JOIN matieres m ON et.matiere_id = m.id
+             LEFT JOIN personnels p ON et.personnel_id = p.id
+             JOIN annees_scolaires a ON et.annee_scolaire_id = a.id
+             WHERE et.classe_id = ? 
+               AND et.jour_semaine = ?
+               AND a.actif = 1
+               AND et.actif = 1
+             ORDER BY et.heure_debut",
+            [$classeId, $jour]
+        );
+
+        $this->json($emploisTemps);
+    }
+
+    /**
+     * Récupère les absences récentes des élèves d'une classe (API JSON)
+     */
+    public function getAbsencesRecentes() {
+        $classeId = $_GET['classe_id'] ?? '';
+        $date = $_GET['date'] ?? '';
+        
+        if (!$classeId || !$date) {
+            $this->json([]);
+            return;
+        }
+
+        // Récupérer les absences des 7 derniers jours avant la date donnée
+        $absences = $this->absenceModel->query(
+            "SELECT a.eleve_id, a.motif, a.date_absence
+             FROM absences a
+             WHERE a.classe_id = ? 
+               AND a.date_absence < ?
+               AND a.date_absence >= DATE_SUB(?, INTERVAL 7 DAY)
+               AND a.type = 'absence'
+             ORDER BY a.date_absence DESC",
+            [$classeId, $date, $date]
+        );
+
+        // Garder seulement la dernière absence par élève
+        $absencesParEleve = [];
+        foreach ($absences as $absence) {
+            if (!isset($absencesParEleve[$absence['eleve_id']])) {
+                $absencesParEleve[$absence['eleve_id']] = $absence;
+            }
+        }
+
+        $this->json(array_values($absencesParEleve));
     }
 }
 

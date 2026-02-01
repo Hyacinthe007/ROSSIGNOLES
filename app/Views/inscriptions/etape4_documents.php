@@ -50,8 +50,6 @@
                             <option value="acte_naissance">Acte de naissance</option>
                             <option value="certificat_scolarite">Certificat de scolarité</option>
                             <option value="bulletin_notes">Bulletin de notes</option>
-                            <option value="certificat_medical">Certificat médical</option>
-                            <option value="autre">Autre</option>
                         </select>
                     </div>
 
@@ -138,7 +136,9 @@
             <i class="fas fa-arrow-left mr-2"></i>Précédent
         </a>
         
-        <?php if ($allMandatoryUploaded || ($inscription['type_inscription'] !== 'nouvelle')): ?>
+        <?php 
+        $typeInsc = $_SESSION['inscription_data']['type_inscription'] ?? ($inscription['type_inscription'] ?? 'nouvelle');
+        if ($allMandatoryUploaded || ($typeInsc !== 'nouvelle')): ?>
             <a href="<?= url('inscriptions/nouveau?etape=5') ?>" class="flex-1 px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg text-center flex items-center justify-center">
                 <span>Continuer vers le paiement</span>
                 <i class="fas fa-arrow-right ml-2"></i>
