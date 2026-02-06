@@ -16,6 +16,7 @@ use App\Models\TypeFrais;
 use App\Models\Eleve;
 use Exception;
 use App\Services\SmsService;
+use App\Services\PdfService;
 
 /**
  * Contrôleur des finances
@@ -644,7 +645,7 @@ class FinanceController extends BaseController {
                     $m ?? '-',
                     $p['numero_facture'],
                     $p['mode_paiement_libelle'],
-                    number_format($montantParMois, 0, ',', ' ')
+                    number_format((float)$montantParMois, 0, ',', ' ')
                 ], ';');
             }
         }
@@ -803,20 +804,20 @@ class FinanceController extends BaseController {
                             <?php foreach ($lignes as $ligne): ?>
                             <tr>
                                 <td><?= htmlspecialchars($ligne['designation'] ?? $ligne['libelle']) ?></td>
-                                <td class="right"><?= number_format($ligne['montant'], 0, ',', ' ') ?></td>
+                                <td class="right"><?= number_format((float)$ligne['montant'], 0, ',', ' ') ?></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
                                 <td><?= htmlspecialchars($paiement['facture_description'] ?? 'Paiement scolarité') ?></td>
-                                <td class="right"><?= number_format($paiement['montant'], 0, ',', ' ') ?></td>
+                                <td class="right"><?= number_format((float)$paiement['montant'], 0, ',', ' ') ?></td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                     <tfoot>
                         <tr>
                             <td class="right" style="font-weight: bold;">TOTAL PAYÉ</td>
-                            <td class="right total-amount"><?= number_format($paiement['montant'], 0, ',', ' ') ?> Ar</td>
+                            <td class="right total-amount"><?= number_format((float)$paiement['montant'], 0, ',', ' ') ?> Ar</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -933,7 +934,7 @@ class FinanceController extends BaseController {
         }
         
         $smsService = new SmsService();
-        $message = "ROSSIGNOLES: Rappel paiement écolage {$echeance['mois_libelle']} pour l'élève {$eleve['nom']}. Reste à payer: " . number_format($echeance['montant_restant'], 0, ',', ' ') . " Ar. Merci de régulariser.";
+        $message = "ROSSIGNOLES: Rappel paiement écolage {$echeance['mois_libelle']} pour l'élève {$eleve['nom']}. Reste à payer: " . number_format((float)$echeance['montant_restant'], 0, ',', ' ') . " Ar. Merci de régulariser.";
         
         if ($smsService->send($eleve['parent_telephone'], $message)) {
             $_SESSION['success_message'] = "SMS envoyé avec succès au parent ({$eleve['parent_telephone']}).";
@@ -962,7 +963,7 @@ class FinanceController extends BaseController {
         
         foreach ($echeances as $e) {
             if (!empty($e['parent_telephone'])) {
-                $message = "ROSSIGNOLES: Rappel paiement écolage {$e['mois_libelle']} pour l'élève {$e['eleve_nom']}. Reste: " . number_format($e['montant_restant'], 0, ',', ' ') . " Ar. Merci de régulariser.";
+                $message = "ROSSIGNOLES: Rappel paiement écolage {$e['mois_libelle']} pour l'élève {$e['eleve_nom']}. Reste: " . number_format((float)$e['montant_restant'], 0, ',', ' ') . " Ar. Merci de régulariser.";
                 if ($smsService->send($e['parent_telephone'], $message)) {
                     $count++;
                 }

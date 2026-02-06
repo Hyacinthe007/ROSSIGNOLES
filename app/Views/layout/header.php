@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="<?= url('public/assets/css/admin-style.css') ?>">
     <link rel="stylesheet" href="<?= url('public/assets/css/global-tooltips.css') ?>">
     <script src="<?= url('public/assets/js/global-tooltips.js') ?>" defer></script>
+    <meta name="csrf-token" content="<?= csrf_token() ?>">
 </head>
 <body class="bg-gray-50">
 

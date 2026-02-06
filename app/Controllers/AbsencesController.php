@@ -68,9 +68,22 @@ class AbsencesController extends BaseController {
             $params
         );
         
+        // Compter le nombre total d'absences et de retards
+        $countAbsences = $this->absenceModel->query(
+            "SELECT COUNT(*) as count FROM absences WHERE type = 'absence'",
+            []
+        )[0]['count'] ?? 0;
+        
+        $countRetards = $this->absenceModel->query(
+            "SELECT COUNT(*) as count FROM absences WHERE type = 'retard'",
+            []
+        )[0]['count'] ?? 0;
+        
         $this->view('absences/list', [
             'absences' => $absences,
-            'type_filtre' => $type
+            'type_filtre' => $type,
+            'count_absences' => $countAbsences,
+            'count_retards' => $countRetards
         ]);
     }
     
@@ -389,6 +402,51 @@ class AbsencesController extends BaseController {
         }
 
         $this->json(array_values($absencesParEleve));
+    }
+
+    /**
+     * Toggle le statut justifié/non justifié d'une absence (API JSON)
+     */
+    public function toggleJustifiee() {
+        // Vérifier les permissions
+        $this->requirePermission('absences.update');
+
+        // Vérifier que c'est une requête POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['success' => false, 'message' => 'Méthode non autorisée'], 405);
+            return;
+        }
+
+        // Récupérer les données JSON
+        $input = json_decode(file_get_contents('php://input'), true);
+        $absenceId = $input['absence_id'] ?? null;
+        $justifiee = isset($input['justifiee']) ? (int)$input['justifiee'] : null;
+
+        // Validation
+        if (!$absenceId || $justifiee === null) {
+            $this->json(['success' => false, 'message' => 'Données manquantes']);
+            return;
+        }
+
+        // Vérifier que l'absence existe
+        $absence = $this->absenceModel->find($absenceId);
+        if (!$absence) {
+            $this->json(['success' => false, 'message' => 'Absence non trouvée']);
+            return;
+        }
+
+        // Mettre à jour le statut
+        try {
+            $this->absenceModel->update($absenceId, ['justifiee' => $justifiee]);
+            $this->json([
+                'success' => true,
+                'message' => 'Statut mis à jour avec succès',
+                'justifiee' => $justifiee
+            ]);
+        } catch (\Exception $e) {
+            error_log("Erreur toggle justifiee: " . $e->getMessage());
+            $this->json(['success' => false, 'message' => 'Erreur lors de la mise à jour']);
+        }
     }
 }
 

@@ -90,6 +90,11 @@
                         <i class="fas fa-file-invoice w-4 h-4 mr-2"></i><span>Reçus de paiement</span>
                     </a>
                     <?php endif; ?>
+                    <?php if (hasPermission('paie.read')): ?>
+                    <a href="<?= url('paie') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isActiveRoute('paie') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
+                        <i class="fas fa-wallet w-4 h-4 mr-2"></i><span>Salaires</span>
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>
@@ -97,10 +102,10 @@
             <!-- MODULE 3: Pédagogie -->
             <?php if (hasPermission('pedagogie.view')): ?>
             <div class="menu-group">
-                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('pedagogie') || isActiveRoute('conseils') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
+                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('pedagogie') || isActiveRoute('absences') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Pédagogie">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-door-open text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('pedagogie') || isActiveRoute('conseils') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
+                        <i class="fas fa-door-open text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('pedagogie') || isActiveRoute('absences') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
                         <span class="menu-text font-medium">Pédagogie</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform duration-200"></i>
@@ -111,14 +116,16 @@
                         <i class="fas fa-calendar-alt w-4 h-4 mr-2"></i><span>Emplois du temps</span>
                     </a>
                     <?php endif; ?>
+                    <!-- Pas encore implémenté
                     <?php if (hasPermission('parcours.view')): ?>
                     <a href="<?= url('eleves/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('eleves/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-history w-4 h-4 mr-2"></i><span>Parcours Scolaires</span>
                     </a>
                     <?php endif; ?>
-                    <?php if (hasPermission('conseils.view')): ?>
-                    <a href="<?= url('conseils/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('conseils/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-comments w-4 h-4 mr-2"></i><span>Conseils de classe</span>
+                    -->
+                    <?php if (hasPermission('absences.view')): ?>
+                    <a href="<?= url('absences/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('absences/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
+                        <i class="fas fa-calendar-check w-4 h-4 mr-2"></i><span>Assiduité</span>
                     </a>
                     <?php endif; ?>
                 </div>
@@ -184,24 +191,21 @@
             </div>
             <?php endif; ?>
 
-            <!-- MODULE 6: Vie scolaire -->
+            <!-- MODULE 6: Vie scolaire
             <?php if (hasPermission('viescolaire.view')): ?>
             <div class="menu-group">
-                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('absences') || isActiveRoute('sanctions') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
+                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('conseils') || isActiveRoute('sanctions') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Vie scolaire">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-calendar-check text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('absences') || isActiveRoute('sanctions') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
+                        <i class="fas fa-calendar-check text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('conseils') || isActiveRoute('sanctions') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
                         <span class="menu-text font-medium">Vie scolaire</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform duration-200"></i>
                 </div>
                 <div class="menu-sub-items hidden overflow-hidden transition-all duration-300">
-                    <?php if (hasPermission('absences.view')): ?>
-                    <a href="<?= url('absences/list?type=absence') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= (isExactActiveRoute('absences/list') && (!isset($_GET['type']) || $_GET['type'] === 'absence')) ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-user-times w-4 h-4 mr-2"></i><span>Absences</span>
-                    </a>
-                    <a href="<?= url('absences/list?type=retard') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= (isExactActiveRoute('absences/list') && isset($_GET['type']) && $_GET['type'] === 'retard') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
-                        <i class="fas fa-clock w-4 h-4 mr-2"></i><span>Retards</span>
+                    <?php if (hasPermission('conseils.view')): ?>
+                    <a href="<?= url('conseils/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('conseils/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
+                        <i class="fas fa-comments w-4 h-4 mr-2"></i><span>Conseils de classe</span>
                     </a>
                     <?php endif; ?>
                     <?php if (hasPermission('sanctions.view')): ?>
@@ -212,10 +216,9 @@
                 </div>
             </div>
             <?php endif; ?>
-
-            <!-- MODULE 7: Communication -->
-             <!--
-            <div class="menu-group">
+            -->
+            <!-- MODULE 7: Communication 
+             <div class="menu-group">
                 <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('annonces') || isActiveRoute('notifications') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Communication">
                     <div class="flex items-center gap-3">
@@ -237,6 +240,7 @@
                 </div>
             </div>
             -->
+
             <!-- MODULE 8: Paramètres -->
             <?php if (hasPermission('systeme.config')): ?>
             <div class="menu-group">

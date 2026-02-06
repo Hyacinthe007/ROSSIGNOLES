@@ -44,7 +44,6 @@
                         <th class="p-4">Matricule</th>
                         <th class="p-4">Nom & Prénom</th>
                         <th class="p-4">Sexe</th>
-                        <th class="p-4">Catégorie</th>
                         <th class="p-4">Fonction</th>
                         <th class="p-4">Contact</th>
                         <th class="p-4">Statut</th>
@@ -54,7 +53,7 @@
                 <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="personnelTableBody">
                     <?php if (empty($list)): ?>
                     <tr>
-                        <td colspan="8" class="p-8 text-center text-gray-500">Aucun personnel trouvé</td>
+                        <td colspan="7" class="p-8 text-center text-gray-500">Aucun personnel trouvé</td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($list as $p): ?>
@@ -82,11 +81,10 @@
                             <td class="p-4"><?= htmlspecialchars($p['sexe']) ?></td>
                             <td class="p-4">
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold 
-                                    <?= $p['categorie'] == 'Enseignant' ? 'bg-indigo-100 text-indigo-700' : 'bg-teal-100 text-teal-700' ?>">
-                                    <?= htmlspecialchars($p['categorie']) ?>
+                                    <?= $p['fonction'] == 'Enseignant' ? 'bg-indigo-100 text-indigo-700' : 'bg-teal-100 text-teal-700' ?>">
+                                    <?= htmlspecialchars($p['fonction']) ?>
                                 </span>
                             </td>
-                            <td class="p-4"><?= htmlspecialchars($p['fonction']) ?></td>
                             <td class="p-4">
                                 <!-- Téléphone au-dessus (sans icône), Email en-dessous -->
                                 <div class="text-gray-900"><?= htmlspecialchars($p['telephone']) ?></div>

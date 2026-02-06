@@ -219,7 +219,15 @@ class FinanceService {
             $statutSql = "AND e.statut = 'exclusion'";
         } elseif ($statut === 'retard') {
             // Le recouvrement inclut les impayés simples (après le 10) et les retards plus longs
-            $statutSql = "AND e.statut IN ('impayee', 'retard')";
+            // MAIS exclut les élèves qui ont au moins une échéance en statut 'exclusion'
+            $statutSql = "AND e.statut IN ('impayee', 'retard')
+                          AND NOT EXISTS (
+                              SELECT 1 FROM echeanciers_ecolages ee
+                              WHERE ee.eleve_id = e.eleve_id
+                              AND ee.annee_scolaire_id = e.annee_scolaire_id
+                              AND ee.statut = 'exclusion'
+                              AND ee.montant_restant > 0
+                          )";
         } else {
             // Par défaut, tout ce qui n'est pas payé/exonéré
             $statutSql = "AND e.statut IN ('impayee', 'retard', 'exclusion')";

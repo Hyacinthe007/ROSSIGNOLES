@@ -17,58 +17,37 @@ class ListePersonnelController extends BaseController {
         // Obtenir tous les personnels actifs
         $allPersonnel = $this->personnelModel->all(['statut' => 'actif']);
         
-        // Précharger les détails pour éviter N+1
-        // Enseignants
-        $enseignantsData = $this->personnelModel->query("SELECT * FROM personnels_enseignants");
-        $enseignantMap = [];
-        foreach ($enseignantsData as $ens) {
-            $enseignantMap[$ens['personnel_id']] = $ens;
-        }
-
-        // Administratifs (avec poste)
-        $adminsData = $this->personnelModel->query(
-            "SELECT pa.*, po.libelle as poste_libelle 
-             FROM personnels_administratifs pa 
-             LEFT JOIN postes_administratifs po ON pa.poste_id = po.id"
-        );
-        $adminMap = [];
-        foreach ($adminsData as $admin) {
-            $adminMap[$admin['personnel_id']] = $admin;
-        }
-        
         $combinedList = [];
         
         foreach ($allPersonnel as $pers) {
             $type = $pers['type_personnel'] ?? 'autre';
+            $matricule = $pers['matricule'] ?? '';
+            $telephone = $pers['telephone'] ?? '';
             
+            // 1°/ Formater la colonne fonction : ENS => Enseignant, sinon => Administration
+            $fonction = (strpos(strtoupper($matricule), 'ENS') !== false) ? 'Enseignant' : 'Administration';
+
+            // 2°/ Formater le téléphone en 03X XX XXX XX
+            $formattedPhone = $telephone;
+            $digits = preg_replace('/\D/', '', $telephone);
+            if (strlen($digits) === 10) {
+                $formattedPhone = substr($digits, 0, 3) . ' ' . substr($digits, 3, 2) . ' ' . substr($digits, 5, 3) . ' ' . substr($digits, 8, 2);
+            }
+
             $item = [
                 'id' => $pers['id'],
-                'matricule' => $pers['matricule'],
+                'matricule' => $matricule,
                 'nom' => $pers['nom'],
                 'prenom' => $pers['prenom'],
                 'sexe' => $pers['sexe'],
                 'photo' => $pers['photo'] ?? '',
-                'telephone' => $pers['telephone'] ?? '',
+                'telephone' => $formattedPhone,
                 'email' => $pers['email'] ?? '',
                 'statut' => ucfirst($pers['statut'] ?? 'Inactif'),
-                'type_raw' => $type
+                'type_raw' => $type,
+                'type' => ($type === 'enseignant') ? 'enseignants' : 'personnel',
+                'fonction' => $fonction
             ];
-
-            if ($type === 'enseignant') {
-                $details = $enseignantMap[$pers['id']] ?? [];
-                $item['categorie'] = 'Enseignant';
-                $item['type'] = 'enseignants'; // pour les liens d'édition legacy si nécessaire, ou utiliser personnel
-                $item['fonction'] = $details['specialite'] ?? 'N/A';
-            } elseif ($type === 'administratif') {
-                $details = $adminMap[$pers['id']] ?? [];
-                $item['categorie'] = 'Administratif';
-                $item['type'] = 'personnel';
-                $item['fonction'] = $details['poste_libelle'] ?? 'N/A';
-            } else {
-                $item['categorie'] = 'Autre';
-                $item['type'] = 'personnel';
-                $item['fonction'] = 'N/A';
-            }
             
             $combinedList[] = $item;
         }
@@ -122,7 +101,7 @@ class ListePersonnelController extends BaseController {
         
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM for Excel
         
-        fputcsv($output, ['Matricule', 'Nom', 'Prénom', 'Sexe', 'Catégorie', 'Fonction', 'Téléphone', 'Email', 'Statut'], ';');
+        fputcsv($output, ['Matricule', 'Nom', 'Prénom', 'Sexe', 'Fonction', 'Téléphone', 'Email', 'Statut'], ';');
         
         $list = $this->getCombinedList();
         
@@ -132,7 +111,6 @@ class ListePersonnelController extends BaseController {
                 $p['nom'],
                 $p['prenom'],
                 $p['sexe'],
-                $p['categorie'],
                 $p['fonction'],
                 $p['telephone'],
                 $p['email'],
@@ -170,7 +148,6 @@ class ListePersonnelController extends BaseController {
                        <th>Matricule</th>
                        <th>Nom & Prénom</th>
                        <th>Sexe</th>
-                       <th>Catégorie</th>
                        <th>Fonction</th>
                        <th>Téléphone</th>
                    </tr>
@@ -182,7 +159,6 @@ class ListePersonnelController extends BaseController {
                 <td>' . htmlspecialchars($pers['matricule']) . '</td>
                 <td>' . htmlspecialchars($pers['nom'] . ' ' . $pers['prenom']) . '</td>
                 <td>' . htmlspecialchars($pers['sexe']) . '</td>
-                <td>' . htmlspecialchars($pers['categorie']) . '</td>
                 <td>' . htmlspecialchars($pers['fonction']) . '</td>
                 <td>' . htmlspecialchars($pers['telephone']) . '</td>
             </tr>';

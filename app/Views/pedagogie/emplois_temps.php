@@ -46,7 +46,7 @@
 
             <div class="flex-1 w-full md:w-auto">
                 <label for="classe_id" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
-                    <i class="fas fa-door-open mr-1 text-purple-500"></i>Par Classe
+                    <i class="fas fa-door-open mr-1 text-purple-500"></i>Classe
                 </label>
                 <select id="classe_id" 
                         name="classe_id"
@@ -73,7 +73,7 @@
 
             <div class="flex-1 w-full md:w-auto">
                 <label for="personnel_id" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
-                    <i class="fas fa-chalkboard-teacher mr-1 text-blue-500"></i>Par Enseignant
+                    <i class="fas fa-chalkboard-teacher mr-1 text-blue-500"></i>Enseignant
                 </label>
                 <select id="personnel_id" 
                         name="personnel_id"

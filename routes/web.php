@@ -220,6 +220,7 @@ $routes = [
     ['pattern' => 'absences/details/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@details'],
     ['pattern' => 'absences/delete/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@delete'],
     ['pattern' => 'absences/delete/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@delete'],
+    ['pattern' => 'absences/toggle-justifiee', 'method' => 'POST', 'handler' => 'AbsencesController@toggleJustifiee'],
     
     // Retards (redirigés vers Absences avec type='retard')
     ['pattern' => 'retards/list', 'method' => 'GET', 'handler' => 'AbsencesController@list'], // Utilisera ?type=retard
@@ -274,6 +275,24 @@ $routes = [
     ['pattern' => 'finance/paiement-mensuel/generer', 'method' => 'GET', 'handler' => 'PaiementMensuelController@generer'],
     ['pattern' => 'finance/paiement-mensuel/enregistrer', 'method' => 'POST', 'handler' => 'PaiementMensuelController@enregistrer'],
     
+    // ============================================================================
+    // GESTION DE LA PAIE
+    // ============================================================================
+    ['pattern' => 'paie', 'method' => 'GET', 'handler' => 'PaieController@index'],
+    ['pattern' => 'paie/configuration', 'method' => 'GET', 'handler' => 'PaieController@configuration'],
+    ['pattern' => 'paie/configuration/update', 'method' => 'POST', 'handler' => 'PaieController@updateCotisations'],
+    ['pattern' => 'paie/configuration/update-irsa', 'method' => 'POST', 'handler' => 'PaieController@updateIrsa'],
+    
+    // Contrats de paie
+    ['pattern' => 'paie/contrats', 'method' => 'GET', 'handler' => 'PaieController@contrats'],
+    ['pattern' => 'paie/contrats/form', 'method' => 'GET', 'handler' => 'PaieController@contratForm'],
+    ['pattern' => 'paie/contrats/save', 'method' => 'POST', 'handler' => 'PaieController@saveContrat'],
+    
+    // Bulletins de paie
+    ['pattern' => 'paie/bulletins', 'method' => 'GET', 'handler' => 'PaieController@bulletins'],
+    ['pattern' => 'paie/bulletins/generer', 'method' => 'POST', 'handler' => 'PaieController@genererBulletins'],
+    ['pattern' => 'paie/bulletins/detail', 'method' => 'GET', 'handler' => 'PaieController@bulletinDetail'],
+    ['pattern' => 'paie/bulletins/valider', 'method' => 'POST', 'handler' => 'PaieController@validerBulletin'],
    
     // Notifications
     ['pattern' => 'notifications/messagerie', 'method' => 'GET', 'handler' => 'NotificationsController@messagerie'],

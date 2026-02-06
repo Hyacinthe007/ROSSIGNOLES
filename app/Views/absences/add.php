@@ -1,11 +1,19 @@
 <div class="p-4 md:p-8">
     <!-- En-tête -->
-    <div class="mb-6">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            <i class="fas fa-user-times text-red-600 mr-2"></i>
-            Enregistrer les absences
-        </h1>
-        <p class="text-gray-600 text-sm md:text-base">Sélectionnez une classe et marquez les élèves absents</p>
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-user-times text-red-600 mr-2"></i>
+                Enregistrer les absences
+            </h1>
+            <p class="text-gray-600 text-sm md:text-base">Sélectionnez une classe et marquez les élèves absents</p>
+        </div>
+        <div>
+            <a href="<?= url('absences/list') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
+                <i class="fas fa-arrow-left"></i>
+                <span class="text-sm font-medium">Retour à la liste</span>
+            </a>
+        </div>
     </div>
 
     <!-- Formulaire -->

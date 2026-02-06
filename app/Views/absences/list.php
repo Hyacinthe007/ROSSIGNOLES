@@ -2,35 +2,45 @@
     <!-- En-tête -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <?php
-            // Déterminer le titre et l'icône selon le type filtré
-            $titre = 'Liste des absences et retards';
-            $icone = 'fa-user-times';
-            $couleur = 'red';
-            $description = 'Gestion des absences et retards des élèves';
-            
-            if (isset($type_filtre) && $type_filtre === 'retard') {
-                $titre = 'Liste des retards';
-                $icone = 'fa-clock';
-                $couleur = 'orange';
-                $description = 'Gestion des retards des élèves';
-            } elseif (isset($type_filtre) && $type_filtre === 'absence') {
-                $titre = 'Liste des absences';
-                $icone = 'fa-user-times';
-                $couleur = 'red';
-                $description = 'Gestion des absences des élèves';
-            }
-            ?>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                <i class="fas <?= $icone ?> text-<?= $couleur ?>-600 mr-2"></i>
-                <?= $titre ?>
+                <i class="fas fa-calendar-check text-blue-600 mr-2"></i>
+                Assiduité
             </h1>
-            <p class="text-gray-600 text-sm md:text-base"><?= $description ?></p>
+            <p class="text-gray-600 text-sm md:text-base">Gestion des absences et retards des élèves</p>
         </div>
-        <a href="<?= url('absences/add') ?>" class="bg-<?= $couleur ?>-600 hover:bg-<?= $couleur ?>-700 text-white px-6 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
+        <?php
+        // Déterminer l'onglet actif
+        $type_actif = $_GET['type'] ?? 'absence';
+        $texte_bouton = $type_actif === 'retard' ? 'Ajouter retard' : 'Ajouter absence';
+        ?>
+        <a href="<?= url('absences/add') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
             <i class="fas fa-plus"></i>
-            <span>Ajouter <?= isset($type_filtre) && $type_filtre === 'retard' ? 'un retard' : 'une absence' ?></span>
+            <span><?= $texte_bouton ?></span>
         </a>
+    </div>
+
+    <!-- Onglets -->
+    <div class="mb-6">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <a href="<?= url('absences/list?type=absence') ?>" 
+                   class="<?= $type_actif === 'absence' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-user-times mr-2"></i>
+                    Absences
+                    <?php if (isset($count_absences) && $count_absences > 0): ?>
+                        <span class="ml-2 bg-red-100 text-red-600 py-1 px-2 rounded-full text-xs font-semibold"><?= $count_absences ?></span>
+                    <?php endif; ?>
+                </a>
+                <a href="<?= url('absences/list?type=retard') ?>" 
+                   class="<?= $type_actif === 'retard' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-clock mr-2"></i>
+                    Retards
+                    <?php if (isset($count_retards) && $count_retards > 0): ?>
+                        <span class="ml-2 bg-orange-100 text-orange-600 py-1 px-2 rounded-full text-xs font-semibold"><?= $count_retards ?></span>
+                    <?php endif; ?>
+                </a>
+            </nav>
+        </div>
     </div>
 
     <!-- Tableau -->
@@ -127,15 +137,18 @@
                                     <?= e($absence['motif'] ?: 'Non spécifié') ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <?php if ($absence['justifiee']): ?>
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Justifiée
+                                    <div class="flex items-center gap-2">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" 
+                                                   class="sr-only peer toggle-justifiee" 
+                                                   data-absence-id="<?= $absence['id'] ?>"
+                                                   <?= $absence['justifiee'] ? 'checked' : '' ?>>
+                                            <div class="w-11 h-6 bg-red-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                        </label>
+                                        <span class="text-xs font-medium toggle-label-<?= $absence['id'] ?> <?= $absence['justifiee'] ? 'text-green-700' : 'text-red-700' ?>">
+                                            <?= $absence['justifiee'] ? 'Justifiée' : 'Non justifiée' ?>
                                         </span>
-                                    <?php else: ?>
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>Non justifiée
-                                        </span>
-                                    <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
@@ -157,3 +170,93 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gérer les toggles de statut justifié/non justifié
+    const toggles = document.querySelectorAll('.toggle-justifiee');
+    
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const absenceId = this.dataset.absenceId;
+            const isJustifiee = this.checked;
+            const label = document.querySelector(`.toggle-label-${absenceId}`);
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            
+            // Désactiver le toggle pendant la requête
+            this.disabled = true;
+            
+            // Envoyer la requête AJAX
+            fetch('<?= url('absences/toggle-justifiee') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    absence_id: absenceId,
+                    justifiee: isJustifiee ? 1 : 0
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour le label
+                    if (label) {
+                        label.textContent = isJustifiee ? 'Justifiée' : 'Non justifiée';
+                        label.className = `text-xs font-medium toggle-label-${absenceId} ${isJustifiee ? 'text-green-700' : 'text-red-700'}`;
+                    }
+                    
+                    // Afficher un message de succès
+                    showNotification('Statut mis à jour avec succès', 'success');
+                } else {
+                    // En cas d'erreur, revenir à l'état précédent
+                    this.checked = !isJustifiee;
+                    showNotification(data.message || 'Erreur lors de la mise à jour', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                // En cas d'erreur, revenir à l'état précédent
+                this.checked = !isJustifiee;
+                showNotification('Erreur de connexion : ' + error.message, 'error');
+            })
+            .finally(() => {
+                // Réactiver le toggle
+                this.disabled = false;
+            });
+        });
+    });
+    
+    // Fonction pour afficher les notifications
+    function showNotification(message, type = 'success') {
+        // Supprimer les notifications existantes pour éviter l'empilement
+        const existing = document.querySelectorAll('.dynamic-notification');
+        existing.forEach(el => el.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `dynamic-notification fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-[9999] transition-all transform duration-300 translate-y-0 opacity-100 ${
+            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.innerHTML = `
+            <div class="flex items-center gap-2">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Retirer après 3 secondes
+        setTimeout(() => {
+            notification.classList.add('opacity-0', 'translate-y-[-20px]');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+});
+</script>

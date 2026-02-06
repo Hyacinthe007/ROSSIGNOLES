@@ -152,10 +152,11 @@ $colorClass = $isEnseignant ? 'indigo' : 'teal';
 
                     <div>
                         <label for="situation_matrimoniale" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-heart mr-2 text-gray-500"></i>Situation matrimoniale
+                            <i class="fas fa-heart mr-2 text-gray-500"></i>Situation matrimoniale *
                         </label>
-                        <select id="situation_matrimoniale" name="situation_matrimoniale"
+                        <select id="situation_matrimoniale" name="situation_matrimoniale" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-<?= $colorClass ?>-500">
+                            <option value="">Sélectionner</option>
                             <option value="celibataire">Célibataire</option>
                             <option value="marie">Marié(e)</option>
                             <option value="divorce">Divorcé(e)</option>
@@ -212,17 +213,17 @@ $colorClass = $isEnseignant ? 'indigo' : 'teal';
 
                     <div>
                         <label for="annee_obtention_diplome" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-graduation-cap mr-2 text-gray-500"></i>Année d'obtention
+                            <i class="fas fa-graduation-cap mr-2 text-gray-500"></i>Année d'obtention *
                         </label>
-                        <input type="number" id="annee_obtention_diplome" name="annee_obtention_diplome" min="1950" max="<?= date('Y') ?>"
+                        <input type="number" id="annee_obtention_diplome" name="annee_obtention_diplome" min="1950" max="<?= date('Y') ?>" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-<?= $colorClass ?>-500">
                     </div>
 
                     <div>
                         <label for="nb_enfants" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-child mr-2 text-gray-500"></i>Nombre d'enfants
+                            <i class="fas fa-child mr-2 text-gray-500"></i>Nombre d'enfants *
                         </label>
-                        <input type="number" id="nb_enfants" name="nb_enfants" min="0" value="0"
+                        <input type="number" id="nb_enfants" name="nb_enfants" min="0" value="0" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-<?= $colorClass ?>-500">
                     </div>
                 </div>
@@ -246,10 +247,11 @@ $colorClass = $isEnseignant ? 'indigo' : 'teal';
 
                     <div>
                         <label for="type_contrat" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-handshake mr-2 text-gray-500"></i>Type de contrat
+                            <i class="fas fa-handshake mr-2 text-gray-500"></i>Type de contrat *
                         </label>
-                        <select id="type_contrat" name="type_contrat"
+                        <select id="type_contrat" name="type_contrat" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-<?= $colorClass ?>-500">
+                            <option value="">Sélectionner...</option>
                             <option value="cdi">CDI</option>
                             <option value="cdd">CDD</option>
                             <option value="stage">Stage</option>
@@ -284,9 +286,9 @@ $colorClass = $isEnseignant ? 'indigo' : 'teal';
                     </div>
                     <div>
                         <label for="grade" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-layer-group mr-2 text-gray-500"></i>Grade
+                            <i class="fas fa-layer-group mr-2 text-gray-500"></i>Grade *
                         </label>
-                        <input type="text" id="grade" name="grade" placeholder="Ex: Principal, Senior..."
+                        <input type="text" id="grade" name="grade" placeholder="Ex: Principal, Senior..." required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <?php else: ?>
