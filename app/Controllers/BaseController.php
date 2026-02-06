@@ -140,12 +140,25 @@ class BaseController {
      * Redirige vers une URL
      */
     protected function redirect($url) {
+        // Nettoyage de l'URL pour éviter l'injection de caractères de contrôle
+        $url = str_replace(["\r", "\n"], '', $url);
+
         // Si l'URL ne commence pas par http, utiliser la fonction url()
         if (strpos($url, 'http') !== 0) {
             $url = url($url);
+        } else {
+            // Validation de l'URL externe : on accepte uniquement si c'est le même domaine
+            $appUrl = env('APP_URL', 'http://localhost');
+            $host = parse_url($url, PHP_URL_HOST);
+            $appHost = parse_url($appUrl, PHP_URL_HOST);
+            
+            if ($host !== $appHost && $host !== 'localhost' && $host !== $_SERVER['HTTP_HOST']) {
+                // Redirection vers le dashboard par sécurité si le domaine est suspect
+                $url = url('dashboard');
+            }
         }
 
-        // Préserver le paramètre iframe lors des redirections
+        // Préserver le paramètre iframe lors des redirections si c'est une URL locale
         if (isset($_GET['iframe']) && $_GET['iframe'] == '1') {
             $separator = (strpos($url, '?') !== false) ? '&' : '?';
             $url .= $separator . 'iframe=1';

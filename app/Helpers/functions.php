@@ -65,6 +65,20 @@ function public_url($path = '') {
  * Redirige vers une URL
  */
 function redirect($url) {
+    // Nettoyage de l'URL
+    $url = str_replace(["\r", "\n"], '', $url);
+    
+    // Si l'URL est externe, vérifier si elle appartient au même domaine
+    if (strpos($url, 'http') === 0) {
+        $host = parse_url($url, PHP_URL_HOST);
+        $serverHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        
+        if ($host !== $serverHost && $host !== 'localhost') {
+            // Par défaut, rediriger vers la racine
+            $url = url('/');
+        }
+    }
+    
     header("Location: {$url}");
     exit;
 }

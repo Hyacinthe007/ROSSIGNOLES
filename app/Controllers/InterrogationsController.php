@@ -147,10 +147,7 @@ class InterrogationsController extends BaseController {
                 
                 if ($this->interrogationModel->create($data)) {
                     $_SESSION['success'] = "Interrogation ajoutée avec succès";
-                    $redirectUrl = '/ROSSIGNOLES/interrogations/list';
-                    if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-                    header('Location: ' . $redirectUrl);
-                    exit;
+                    $this->redirect('interrogations/list');
                 } else {
                     $_SESSION['error'] = "Erreur lors de l'ajout en base de données";
                 }
@@ -178,10 +175,7 @@ class InterrogationsController extends BaseController {
         
         if (!$interrogation) {
             $_SESSION['error'] = "Interrogation introuvable";
-            $redirectUrl = '/ROSSIGNOLES/interrogations/list';
-            if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-            header('Location: ' . $redirectUrl);
-            exit;
+            $this->redirect('interrogations/list');
         }
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -211,10 +205,7 @@ class InterrogationsController extends BaseController {
                 
                 if ($this->interrogationModel->update($id, $data)) {
                     $_SESSION['success'] = "Interrogation modifiée avec succès";
-                    $redirectUrl = '/ROSSIGNOLES/interrogations/list';
-                    if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-                    header('Location: ' . $redirectUrl);
-                    exit;
+                    $this->redirect('interrogations/list');
                 } else {
                     $_SESSION['error'] = "Erreur lors de la modification";
                 }
@@ -244,10 +235,7 @@ class InterrogationsController extends BaseController {
         
         if ($notes[0]['count'] > 0) {
             $_SESSION['error'] = "Impossible de supprimer : des notes sont déjà saisies";
-            $redirectUrl = '/ROSSIGNOLES/interrogations/list';
-            if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-            header('Location: ' . $redirectUrl);
-            exit;
+            $this->redirect('interrogations/list');
         }
         
         if ($this->interrogationModel->delete($id)) {
@@ -256,8 +244,6 @@ class InterrogationsController extends BaseController {
             $_SESSION['error'] = "Erreur lors de la suppression";
         }
         
-        $redirectUrl = '/ROSSIGNOLES/interrogations/list';
-        if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-        header('Location: ' . $redirectUrl);
+        $this->redirect('interrogations/list');
     }
 }

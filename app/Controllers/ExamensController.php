@@ -144,10 +144,7 @@ class ExamensController extends BaseController {
                 
                 if ($this->examenModel->create($data)) {
                     $_SESSION['success'] = "Examen ajouté avec succès";
-                    $redirectUrl = '/ROSSIGNOLES/examens/list';
-                    if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-                    header('Location: ' . $redirectUrl);
-                    exit;
+                    $this->redirect('examens/list');
                 } else {
                     $_SESSION['error'] = "Erreur lors de l'ajout en base de données";
                 }
@@ -175,10 +172,7 @@ class ExamensController extends BaseController {
         
         if (!$examen) {
             $_SESSION['error'] = "Examen introuvable";
-            $redirectUrl = '/ROSSIGNOLES/examens/list';
-            if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-            header('Location: ' . $redirectUrl);
-            exit;
+            $this->redirect('examens/list');
         }
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -207,10 +201,7 @@ class ExamensController extends BaseController {
 
                 if ($this->examenModel->update($id, $data)) {
                     $_SESSION['success'] = "Examen modifié avec succès";
-                    $redirectUrl = '/ROSSIGNOLES/examens/list';
-                    if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-                    header('Location: ' . $redirectUrl);
-                    exit;
+                    $this->redirect('examens/list');
                 } else {
                     $_SESSION['error'] = "Erreur lors de la modification";
                 }
@@ -240,10 +231,7 @@ class ExamensController extends BaseController {
         
         if ($notes[0]['count'] > 0) {
             $_SESSION['error'] = "Impossible de supprimer : des notes sont déjà saisies";
-            $redirectUrl = '/ROSSIGNOLES/examens/list';
-            if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-            header('Location: ' . $redirectUrl);
-            exit;
+            $this->redirect('examens/list');
         }
         
         if ($this->examenModel->delete($id)) {
@@ -252,8 +240,6 @@ class ExamensController extends BaseController {
             $_SESSION['error'] = "Erreur lors de la suppression";
         }
         
-        $redirectUrl = '/ROSSIGNOLES/examens/list';
-        if (isset($_GET['iframe'])) $redirectUrl .= '?iframe=1';
-        header('Location: ' . $redirectUrl);
+        $this->redirect('examens/list');
     }
 }

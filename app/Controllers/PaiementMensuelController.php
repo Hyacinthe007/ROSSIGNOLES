@@ -124,8 +124,7 @@ class PaiementMensuelController extends BaseController {
         
         if (!$eleveId || !$anneeScolaireId) {
             $_SESSION['error'] = "Paramètres manquants : élève ou année scolaire non spécifiés.";
-            header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
-            exit;
+            $this->redirect('finance/paiement-mensuel');
         }
         
         // Récupérer l'élève
@@ -141,8 +140,7 @@ class PaiementMensuelController extends BaseController {
         
         if (!$eleve) {
             $_SESSION['error'] = "Élève non trouvé ou inscription non validée pour cette année scolaire.";
-            header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
-            exit;
+            $this->redirect('finance/paiement-mensuel');
         }
         
         // Récupérer l'année scolaire
@@ -176,8 +174,7 @@ class PaiementMensuelController extends BaseController {
      */
     public function enregistrer() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
-            exit;
+            $this->redirect('finance/paiement-mensuel');
         }
         
         try {
@@ -318,14 +315,11 @@ class PaiementMensuelController extends BaseController {
             $this->echeancierModel->commit();
             
             $_SESSION['success'] = "Paiement enregistré avec succès";
-            header('Location: /ROSSIGNOLES/finance/recus?paiement_id=' . $paiementId);
-            exit;
-            
+            $this->redirect('finance/recus?paiement_id=' . $paiementId);
         } catch (Exception $e) {
             $this->echeancierModel->rollback();
             $_SESSION['error'] = "Erreur lors de l'enregistrement : " . $e->getMessage();
-            header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
-            exit;
+            $this->redirect('finance/paiement-mensuel');
         }
     }
     /**
@@ -337,8 +331,7 @@ class PaiementMensuelController extends BaseController {
         
         if (!$eleveId || !$anneeScolaireId) {
             $_SESSION['error'] = "Paramètres manquants";
-            header('Location: /ROSSIGNOLES/finance/paiement-mensuel');
-            exit;
+            $this->redirect('finance/paiement-mensuel');
         }
 
         try {
@@ -363,7 +356,6 @@ class PaiementMensuelController extends BaseController {
             $_SESSION['error'] = "Erreur lors de la génération : " . $e->getMessage();
         }
 
-        header("Location: /ROSSIGNOLES/finance/paiement-mensuel/saisir?eleve_id=$eleveId&annee_scolaire_id=$anneeScolaireId");
-        exit;
+        $this->redirect("finance/paiement-mensuel/saisir?eleve_id=$eleveId&annee_scolaire_id=$anneeScolaireId");
     }
 }
