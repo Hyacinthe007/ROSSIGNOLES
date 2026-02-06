@@ -1,4 +1,4 @@
-<div class="p-4 md:p-8">
+﻿<div class="p-4 md:p-8">
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
@@ -7,7 +7,7 @@
             </h1>
             <p class="text-gray-600 text-sm mt-1">Enseignants et Personnel Administratif</p>
         </div>
-        
+
         <div class="flex gap-2">
             <?php if (hasPermission('personnel_new.create')): ?>
             <a href="<?= url('personnel/nouveau') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-md">
@@ -27,9 +27,9 @@
     <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
         <div class="relative">
              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-             <input type="text" 
-                    id="searchPersonnel" 
-                    placeholder="Rechercher par nom, prénom, matricule..." 
+             <input type="text"
+                    id="searchPersonnel"
+                    placeholder="Rechercher par nom, prÃ©nom, matricule..."
                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
              <div id="searchResults" class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto"></div>
         </div>
@@ -42,7 +42,7 @@
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-900 font-bold">
                         <th class="p-4">Matricule</th>
-                        <th class="p-4">Nom & Prénom</th>
+                        <th class="p-4">Nom & PrÃ©nom</th>
                         <th class="p-4">Sexe</th>
                         <th class="p-4">Fonction</th>
                         <th class="p-4">Contact</th>
@@ -53,7 +53,7 @@
                 <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="personnelTableBody">
                     <?php if (empty($list)): ?>
                     <tr>
-                        <td colspan="7" class="p-8 text-center text-gray-500">Aucun personnel trouvé</td>
+                        <td colspan="7" class="p-8 text-center text-gray-500">Aucun personnel trouvÃ©</td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($list as $p): ?>
@@ -63,15 +63,15 @@
                                 <div class="flex items-center gap-3">
                                     <!-- Photo -->
                                     <?php if (!empty($p['photo'])): ?>
-                                        <img src="<?= public_url($p['photo']) ?>" 
-                                             alt="Photo" 
+                                        <img src="<?= public_url($p['photo']) ?>"
+                                             alt="Photo"
                                              class="w-10 h-10 rounded-full object-cover border border-gray-200">
                                     <?php else: ?>
                                         <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                                             <i class="fas fa-user text-sm"></i>
                                         </div>
                                     <?php endif; ?>
-                                    <!-- Nom et Prénom côte à côte -->
+                                    <!-- Nom et PrÃ©nom cÃ´te Ã  cÃ´te -->
                                     <div class="text-sm">
                                         <span class="font-semibold text-gray-900"><?= htmlspecialchars($p['nom']) ?></span>
                                         <span class="text-gray-900"><?= htmlspecialchars($p['prenom']) ?></span>
@@ -80,13 +80,13 @@
                             </td>
                             <td class="p-4"><?= htmlspecialchars($p['sexe']) ?></td>
                             <td class="p-4">
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold
                                     <?= $p['fonction'] == 'Enseignant' ? 'bg-indigo-100 text-indigo-700' : 'bg-teal-100 text-teal-700' ?>">
                                     <?= htmlspecialchars($p['fonction']) ?>
                                 </span>
                             </td>
                             <td class="p-4">
-                                <!-- Téléphone au-dessus (sans icône), Email en-dessous -->
+                                <!-- TÃ©lÃ©phone au-dessus (sans icÃ´ne), Email en-dessous -->
                                 <div class="text-gray-900"><?= htmlspecialchars($p['telephone']) ?></div>
                                 <?php if($p['email']): ?>
                                 <div class="text-xs text-gray-500 mt-1"><?= htmlspecialchars($p['email']) ?></div>
@@ -101,7 +101,7 @@
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-2">
-                                    <a href="<?= url($p['type'] . '/details/' . $p['id']) ?>" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir détails">
+                                    <a href="<?= url($p['type'] . '/details/' . $p['id']) ?>" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir dÃ©tails">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="<?= url($p['type'] . '/edit/' . $p['id']) ?>" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Modifier">
@@ -126,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchInput.addEventListener('input', function(e) {
         const term = e.target.value.toLowerCase();
-        
-        // Filtrage simple côté client pour fluidité
+
+        // Filtrage simple cÃ´tÃ© client pour fluiditÃ©
         Array.from(rows).forEach(row => {
             const text = row.innerText.toLowerCase();
             if (text.includes(term)) {
@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.display = 'none';
             }
         });
-        
-        // Autocomplete AJAX simulé (bonus pour l'UX si on veut cliquer sur un résultat)
+
+        // Autocomplete AJAX simulÃ© (bonus pour l'UX si on veut cliquer sur un rÃ©sultat)
         // Mais le filtrage direct du tableau est souvent plus efficace pour une liste admin
     });
 });

@@ -1,4 +1,4 @@
-<?php if (empty($_GET['iframe'])): ?>
+﻿<?php if (empty($_GET['iframe'])): ?>
     <?php require_once APP_PATH . '/Views/layout/header.php'; ?>
 <?php else: ?>
     <!DOCTYPE html>
@@ -13,7 +13,7 @@
 
 <div class="p-4 md:p-8">
 
-    <!-- En-tête -->
+    <!-- En-tÃªte -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 text-gray-500 text-sm mb-1">
@@ -29,7 +29,7 @@
         <div class="flex gap-2">
             <a href="<?= url('pedagogie/niveaux') ?><?= !empty($_GET['iframe']) ? '?iframe=1' : '' ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md font-medium">
                 <i class="fas fa-arrow-left"></i>
-                <span>Retour à l'enseignement</span>
+                <span>Retour Ã  l'enseignement</span>
             </a>
         </div>
     </div>
@@ -42,15 +42,15 @@
                 <input type="hidden" name="niveau_id" value="<?= $niveau['id'] ?>">
 
                 <div class="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h2 class="font-bold text-gray-700">Matières du niveau</h2>
-                    <span class="text-sm text-gray-500"><?= count($matieresAssociees) ?> matière(s)</span>
+                    <h2 class="font-bold text-gray-700">MatiÃ¨res du niveau</h2>
+                    <span class="text-sm text-gray-500"><?= count($matieresAssociees) ?> matiÃ¨re(s)</span>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matière</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">MatiÃ¨re</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-24">Coefficient</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-24">H/Semaine</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase w-24">Obligatoire</th>
@@ -62,7 +62,7 @@
                                 <tr>
                                     <td colspan="5" class="px-6 py-12 text-center text-gray-400">
                                         <i class="fas fa-book-open text-4xl mb-4 block opacity-20"></i>
-                                        Aucune matière configurée pour ce niveau.<br>
+                                        Aucune matiÃ¨re configurÃ©e pour ce niveau.<br>
                                         Utilisez le panneau de droite pour en ajouter.
                                     </td>
                                 </tr>
@@ -74,31 +74,31 @@
                                             <div class="text-xs text-gray-500"><?= e($ma['code']) ?></div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <input type="number" 
-                                                   name="matieres[<?= $ma['matiere_id'] ?>][coefficient]" 
-                                                   value="<?= $ma['coefficient'] ?>" 
+                                            <input type="number"
+                                                   name="matieres[<?= $ma['matiere_id'] ?>][coefficient]"
+                                                   value="<?= $ma['coefficient'] ?>"
                                                    step="0.25" min="0.25"
                                                    class="w-20 text-center px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                                         </td>
                                         <td class="px-6 py-4">
-                                            <input type="number" 
-                                                   name="matieres[<?= $ma['matiere_id'] ?>][heures_semaine]" 
-                                                   value="<?= $ma['heures_semaine'] ?>" 
+                                            <input type="number"
+                                                   name="matieres[<?= $ma['matiere_id'] ?>][heures_semaine]"
+                                                   value="<?= $ma['heures_semaine'] ?>"
                                                    step="0.5" min="0"
                                                    class="w-20 text-center px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <label class="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" 
-                                                       name="matieres[<?= $ma['matiere_id'] ?>][obligatoire]" 
-                                                       value="1" 
+                                                <input type="checkbox"
+                                                       name="matieres[<?= $ma['matiere_id'] ?>][obligatoire]"
+                                                       value="1"
                                                        <?= $ma['obligatoire'] ? 'checked' : '' ?>
                                                        class="sr-only peer">
                                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                             </label>
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <button type="button" 
+                                            <button type="button"
                                                     onclick="removeMatiere(this)"
                                                     class="text-red-400 hover:text-red-600 p-2 transition">
                                                 <i class="fas fa-trash-alt"></i>
@@ -120,17 +120,17 @@
             </form>
         </div>
 
-        <!-- Panel d'ajout de matières -->
+        <!-- Panel d'ajout de matiÃ¨res -->
         <div class="space-y-6">
             <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
                 <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <i class="fas fa-plus-circle text-green-500"></i>
-                    Ajouter une matière
+                    Ajouter une matiÃ¨re
                 </h2>
-                
+
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher une matière</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher une matiÃ¨re</label>
                         <div class="relative">
                             <input type="text" id="matiereSearch" placeholder="Nom ou code..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -138,12 +138,12 @@
                     </div>
 
                     <div class="max-h-[50vh] overflow-y-auto pr-2 space-y-2" id="matiereList">
-                        <?php 
+                        <?php
                         $assocIds = array_column($matieresAssociees, 'matiere_id');
-                        foreach ($toutesMatieres as $m): 
+                        foreach ($toutesMatieres as $m):
                             $isAssoc = in_array($m['id'], $assocIds);
                         ?>
-                            <div class="matiere-item p-3 border rounded-lg flex items-center justify-between hover:bg-gray-50 transition <?= $isAssoc ? 'opacity-50 pointer-events-none' : '' ?>" 
+                            <div class="matiere-item p-3 border rounded-lg flex items-center justify-between hover:bg-gray-50 transition <?= $isAssoc ? 'opacity-50 pointer-events-none' : '' ?>"
                                  data-id="<?= $m['id'] ?>"
                                  data-nom="<?= e($m['nom']) ?>"
                                  data-code="<?= e($m['code']) ?>">
@@ -152,13 +152,13 @@
                                     <div class="text-[10px] text-gray-500 uppercase font-mono"><?= e($m['code']) ?></div>
                                 </div>
                                 <?php if (!$isAssoc): ?>
-                                    <button type="button" 
+                                    <button type="button"
                                             onclick="addMatiereToTable(<?= $m['id'] ?>, '<?= e($m['nom']) ?>', '<?= e($m['code']) ?>')"
                                             class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 <?php else: ?>
-                                    <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold uppercase">Déjà ajoutée</span>
+                                    <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold uppercase">DÃ©jÃ  ajoutÃ©e</span>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
@@ -170,7 +170,7 @@
                 <i class="fas fa-info-circle absolute -right-4 -bottom-4 text-8xl opacity-10"></i>
                 <h3 class="font-bold mb-2">Note</h3>
                 <p class="text-sm text-blue-100 leading-relaxed">
-                    Les coefficients définis ici s'appliquent à toutes les classes de ce niveau, sauf si une série spécifique ou un override classe est défini.
+                    Les coefficients dÃ©finis ici s'appliquent Ã  toutes les classes de ce niveau, sauf si une sÃ©rie spÃ©cifique ou un override classe est dÃ©fini.
                 </p>
             </div>
         </div>
@@ -219,14 +219,14 @@ function addMatiereToTable(id, nom, code) {
             btn.remove();
             const badge = document.createElement('span');
             badge.className = 'text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold uppercase';
-            badge.textContent = 'Déjà ajoutée';
+            badge.textContent = 'DÃ©jÃ  ajoutÃ©e';
             listItem.appendChild(badge);
         }
     }
 }
 
 function removeMatiere(btn) {
-    if (!confirm('Voulez-vous retirer cette matière du niveau ?')) return;
+    if (!confirm('Voulez-vous retirer cette matiÃ¨re du niveau ?')) return;
     const row = btn.closest('tr');
     const input = row.querySelector('input[name^="matieres"]');
     const id = input.name.match(/\[(\d+)\]/)[1];
@@ -247,7 +247,7 @@ function removeMatiere(btn) {
         }
         const tbody = document.querySelector('tbody');
         if (tbody.children.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-gray-400"><i class="fas fa-book-open text-4xl mb-4 block opacity-20"></i>Aucune matière configurée pour ce niveau.<br>Utilisez le panneau de droite pour en ajouter.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-gray-400"><i class="fas fa-book-open text-4xl mb-4 block opacity-20"></i>Aucune matiÃ¨re configurÃ©e pour ce niveau.<br>Utilisez le panneau de droite pour en ajouter.</td></tr>';
         }
     }, 300);
 }

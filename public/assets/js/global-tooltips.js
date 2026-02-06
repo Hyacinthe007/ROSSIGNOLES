@@ -4,12 +4,20 @@
  * Style identique à ceux de la sidebar en mode collapsed
  */
 
+// Constantes de configuration
+const TOOLTIP_SHOW_DELAY = 200; // Délai avant affichage (ms)
+const TOOLTIP_HIDE_DELAY = 0; // Pas de délai pour le masquage
+const TOOLTIP_SPACING = 10; // Espace entre l'élément et le tooltip
+const TOOLTIP_MOUSE_OFFSET = 15; // Décalage par rapport à la souris
+const MIN_EDGE_DISTANCE = 10; // Distance minimale des bords de l'écran
+const MIN_SPACE_REQUIRED = 20; // Espace minimum requis pour afficher le tooltip
+
 class GlobalTooltipManager {
     constructor() {
         this.tooltip = null;
         this.currentElement = null;
-        this.showDelay = 200; // Délai avant affichage (ms) - réduit pour plus de réactivité
-        this.hideDelay = 0; // Pas de délai pour le masquage
+        this.showDelay = TOOLTIP_SHOW_DELAY;
+        this.hideDelay = TOOLTIP_HIDE_DELAY;
         this.showTimer = null;
         this.hideTimer = null;
 
@@ -128,48 +136,47 @@ class GlobalTooltipManager {
 
     positionTooltipRelativeToElement(rect) {
         const tooltipRect = this.tooltip.getBoundingClientRect();
-        const spacing = 10; // Espace entre l'élément et le tooltip
 
         // Calculer la position optimale
         let top, left;
         let position = 'bottom'; // Position par défaut
 
         // Vérifier s'il y a assez d'espace en bas
-        if (window.innerHeight - rect.bottom > tooltipRect.height + spacing + 20) {
+        if (window.innerHeight - rect.bottom > tooltipRect.height + TOOLTIP_SPACING + MIN_SPACE_REQUIRED) {
             // Afficher en bas
-            top = rect.bottom + spacing;
+            top = rect.bottom + TOOLTIP_SPACING;
             left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
             position = 'bottom';
         }
         // Sinon, afficher en haut
-        else if (rect.top > tooltipRect.height + spacing + 20) {
-            top = rect.top - tooltipRect.height - spacing;
+        else if (rect.top > tooltipRect.height + TOOLTIP_SPACING + MIN_SPACE_REQUIRED) {
+            top = rect.top - tooltipRect.height - TOOLTIP_SPACING;
             left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
             position = 'top';
         }
         // Sinon, afficher à droite
-        else if (window.innerWidth - rect.right > tooltipRect.width + spacing + 20) {
+        else if (window.innerWidth - rect.right > tooltipRect.width + TOOLTIP_SPACING + MIN_SPACE_REQUIRED) {
             top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-            left = rect.right + spacing;
+            left = rect.right + TOOLTIP_SPACING;
             position = 'right';
         }
         // Sinon, afficher à gauche
         else {
             top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-            left = rect.left - tooltipRect.width - spacing;
+            left = rect.left - tooltipRect.width - TOOLTIP_SPACING;
             position = 'left';
         }
 
         // Ajuster si le tooltip dépasse à gauche ou à droite
-        if (left < 10) left = 10;
-        if (left + tooltipRect.width > window.innerWidth - 10) {
-            left = window.innerWidth - tooltipRect.width - 10;
+        if (left < MIN_EDGE_DISTANCE) left = MIN_EDGE_DISTANCE;
+        if (left + tooltipRect.width > window.innerWidth - MIN_EDGE_DISTANCE) {
+            left = window.innerWidth - tooltipRect.width - MIN_EDGE_DISTANCE;
         }
 
         // Ajuster si le tooltip dépasse en haut ou en bas
-        if (top < 10) top = 10;
-        if (top + tooltipRect.height > window.innerHeight - 10) {
-            top = window.innerHeight - tooltipRect.height - 10;
+        if (top < MIN_EDGE_DISTANCE) top = MIN_EDGE_DISTANCE;
+        if (top + tooltipRect.height > window.innerHeight - MIN_EDGE_DISTANCE) {
+            top = window.innerHeight - tooltipRect.height - MIN_EDGE_DISTANCE;
         }
 
         this.tooltip.style.top = `${top}px`;
@@ -179,19 +186,18 @@ class GlobalTooltipManager {
 
     positionTooltip(mouseX, mouseY) {
         const tooltipRect = this.tooltip.getBoundingClientRect();
-        const offset = 15;
 
-        let top = mouseY + offset;
-        let left = mouseX + offset;
+        let top = mouseY + TOOLTIP_MOUSE_OFFSET;
+        let left = mouseX + TOOLTIP_MOUSE_OFFSET;
 
         // Ajuster si le tooltip dépasse à droite
-        if (left + tooltipRect.width > window.innerWidth - 10) {
-            left = mouseX - tooltipRect.width - offset;
+        if (left + tooltipRect.width > window.innerWidth - MIN_EDGE_DISTANCE) {
+            left = mouseX - tooltipRect.width - TOOLTIP_MOUSE_OFFSET;
         }
 
         // Ajuster si le tooltip dépasse en bas
-        if (top + tooltipRect.height > window.innerHeight - 10) {
-            top = mouseY - tooltipRect.height - offset;
+        if (top + tooltipRect.height > window.innerHeight - MIN_EDGE_DISTANCE) {
+            top = mouseY - tooltipRect.height - TOOLTIP_MOUSE_OFFSET;
         }
 
         this.tooltip.style.top = `${top}px`;
@@ -202,5 +208,4 @@ class GlobalTooltipManager {
 // Initialiser au chargement du DOM
 document.addEventListener('DOMContentLoaded', () => {
     window.tooltipManager = new GlobalTooltipManager();
-    console.log('Système de tooltips global initialisé');
 });

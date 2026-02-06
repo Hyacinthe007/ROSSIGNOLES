@@ -5,6 +5,10 @@
 // Configuration
 const BASE_URL = window.location.origin + '/ROSSIGNOLES';
 const TOAST_DURATION = 3000;
+const TOAST_FADE_DURATION = 300;
+const RELOAD_DELAY_SHORT = 1000;
+const RELOAD_DELAY_LONG = 1500;
+const CSS_TRANSITION_DELAY = 10;
 
 // État global
 let selectedClasses = new Set();
@@ -13,9 +17,9 @@ let selectedClasses = new Set();
  * Mise à jour inline d'une association
  */
 async function updateAssociation(selectElement) {
-    const classeId = selectElement.dataset.classeId;
-    const field = selectElement.dataset.field;
-    const value = selectElement.value || null;
+    const associationClasseId = selectElement.dataset.classeId;
+    const associationField = selectElement.dataset.field;
+    const associationValue = selectElement.value || null;
 
     // Afficher le spinner
     const container = selectElement.closest('.inline-edit-container');
@@ -30,27 +34,26 @@ async function updateAssociation(selectElement) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                classe_id: classeId,
-                field: field,
-                value: value
+                classe_id: associationClasseId,
+                field: associationField,
+                value: associationValue
             })
         });
 
-        const data = await response.json();
+        const responseData = await response.json();
 
-        if (data.success) {
-            showToast('✓ ' + data.message, 'success');
+        if (responseData.success) {
+            showToast('✓ ' + responseData.message, 'success');
             // Rafraîchir les statistiques
             await refreshStats();
         } else {
-            showToast('✗ ' + data.message, 'error');
+            showToast('✗ ' + responseData.message, 'error');
             // Recharger la page pour restaurer l'état correct
-            setTimeout(() => location.reload(), 1500);
+            setTimeout(() => location.reload(), RELOAD_DELAY_LONG);
         }
     } catch (error) {
-        console.error('Erreur updateAssociation:', error);
         showToast('✗ Erreur de connexion', 'error');
-        setTimeout(() => location.reload(), 1500);
+        setTimeout(() => location.reload(), RELOAD_DELAY_LONG);
     } finally {
         spinner.classList.add('hidden');
         selectElement.disabled = false;
@@ -94,12 +97,11 @@ async function bulkUpdate(field, value) {
         if (data.success) {
             showToast(`✓ ${data.updated_count} classe(s) mise(s) à jour`, 'success');
             // Recharger la page pour afficher les changements
-            setTimeout(() => location.reload(), 1000);
+            setTimeout(() => location.reload(), RELOAD_DELAY_SHORT);
         } else {
             showToast('✗ ' + data.message, 'error');
         }
     } catch (error) {
-        console.error('Erreur bulkUpdate:', error);
         showToast('✗ Erreur de connexion', 'error');
     } finally {
         hideLoadingOverlay();
@@ -127,7 +129,7 @@ async function refreshStats() {
             document.getElementById('stat-taux').textContent = taux + '%';
         }
     } catch (error) {
-        console.error('Erreur refreshStats:', error);
+        // Erreur silencieuse pour les stats
     }
 }
 
@@ -186,9 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Écouteur pour le niveau en masse
     const bulkNiveau = document.getElementById('bulk-niveau');
     if (bulkNiveau) {
-        bulkNiveau.addEventListener('change', (e) => {
+        bulkNiveau.addEventListener('change', async (e) => {
             if (e.target.value) {
-                bulkUpdate('niveau_id', e.target.value);
+                await bulkUpdate('niveau_id', e.target.value);
                 e.target.value = ''; // Réinitialiser le select
             }
         });
@@ -197,14 +199,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Écouteur pour la section en masse
     const bulkSection = document.getElementById('bulk-section');
     if (bulkSection) {
-        bulkSection.addEventListener('change', (e) => {
+        bulkSection.addEventListener('change', async (e) => {
             if (e.target.value) {
                 const value = e.target.value === 'null' ? null : e.target.value;
-                bulkUpdate('serie_id', value);
+                await bulkUpdate('serie_id', value);
                 e.target.value = ''; // Réinitialiser le select
             }
         });
     }
+
+    // Écouteur pour les selects d'édition inline (délégation)
+    document.addEventListener('change', async (e) => {
+        if (e.target.classList.contains('inline-edit-select')) {
+            await updateAssociation(e.target);
+        }
+    });
 });
 
 /**
@@ -229,14 +238,14 @@ function showToast(message, type = 'info') {
     // Animation d'entrée
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
-    }, 10);
+    }, CSS_TRANSITION_DELAY);
 
     // Animation de sortie et suppression
     setTimeout(() => {
         toast.classList.add('translate-x-full');
         setTimeout(() => {
             container.removeChild(toast);
-        }, 300);
+        }, TOAST_FADE_DURATION);
     }, TOAST_DURATION);
 }
 
@@ -247,12 +256,21 @@ function showLoadingOverlay() {
     const overlay = document.createElement('div');
     overlay.id = 'loading-overlay';
     overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    overlay.innerHTML = `
-        <div class="bg-white rounded-xl p-8 flex flex-col items-center">
-            <i class="fas fa-spinner fa-spin text-blue-600 text-4xl mb-4"></i>
-            <p class="text-gray-700 font-medium">Mise à jour en cours...</p>
-        </div>
-    `;
+
+    const container = document.createElement('div');
+    container.className = 'bg-white rounded-xl p-8 flex flex-col items-center';
+
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-spinner fa-spin text-blue-600 text-4xl mb-4';
+
+    const text = document.createElement('p');
+    text.className = 'text-gray-700 font-medium';
+    text.textContent = 'Mise à jour en cours...';
+
+    container.appendChild(icon);
+    container.appendChild(text);
+    overlay.appendChild(container);
+
     document.body.appendChild(overlay);
 }
 
@@ -266,4 +284,4 @@ function hideLoadingOverlay() {
 /**
  * Initialisation
  */
-console.log('Module Associer chargé avec succès');
+// Module chargé

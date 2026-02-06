@@ -49,16 +49,16 @@ class AbsencesController extends BaseController {
              JOIN classes c ON a.classe_id = c.id
              LEFT JOIN emplois_temps et ON (
                  et.classe_id = a.classe_id 
-                 AND et.heure_debut = a.heure_debut 
-                 AND et.heure_fin = a.heure_fin
-                 AND et.jour_semaine = CASE LOWER(DATE_FORMAT(a.date_absence, '%W'))
-                     WHEN 'monday' THEN 'lundi'
-                     WHEN 'tuesday' THEN 'mardi'
-                     WHEN 'wednesday' THEN 'mercredi'
-                     WHEN 'thursday' THEN 'jeudi'
-                     WHEN 'friday' THEN 'vendredi'
-                     WHEN 'saturday' THEN 'samedi'
-                     WHEN 'sunday' THEN 'dimanche'
+                 AND TIME_FORMAT(et.heure_debut, '%H:%i') = TIME_FORMAT(a.heure_debut, '%H:%i')
+                 AND TIME_FORMAT(et.heure_fin, '%H:%i') = TIME_FORMAT(a.heure_fin, '%H:%i')
+                 AND et.jour_semaine = CASE WEEKDAY(a.date_absence)
+                     WHEN 0 THEN 'lundi'
+                     WHEN 1 THEN 'mardi'
+                     WHEN 2 THEN 'mercredi'
+                     WHEN 3 THEN 'jeudi'
+                     WHEN 4 THEN 'vendredi'
+                     WHEN 5 THEN 'samedi'
+                     WHEN 6 THEN 'dimanche'
                  END
              )
              LEFT JOIN matieres m ON et.matiere_id = m.id
@@ -104,10 +104,12 @@ class AbsencesController extends BaseController {
 
             $currentUserId = $_SESSION['user_id'] ?? null;
             
-            // Récupérer les infos de l'emploi du temps si sélectionné
-            $heureDebut = null;
-            $heureFin = null;
-            if ($emploiTempsId) {
+            // Récupérer les infos de l'emploi du temps ou de la saisie manuelle
+            $heureDebut = $_POST['heure_debut'] ?? null;
+            $heureFin = $_POST['heure_fin'] ?? null;
+            
+            // Si on n'a pas de saisie manuelle mais un ID d'emploi du temps
+            if (!$heureDebut && $emploiTempsId) {
                 $emploiTemps = $this->absenceModel->queryOne(
                     "SELECT heure_debut, heure_fin FROM emplois_temps WHERE id = ?",
                     [$emploiTempsId]

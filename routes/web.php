@@ -231,7 +231,12 @@ $routes = [
     ['pattern' => 'retards/details/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@details'],
     ['pattern' => 'retards/delete/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@delete'],
     ['pattern' => 'retards/delete/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@delete'],
-    
+
+    // Présences par cours
+    ['pattern' => 'presences', 'method' => 'GET', 'handler' => 'PresencesController@index'],
+    ['pattern' => 'presences/details-cours', 'method' => 'GET', 'handler' => 'PresencesController@detailsCours'],
+    ['pattern' => 'presences/historique', 'method' => 'GET', 'handler' => 'PresencesController@historique'],
+
     // Sanctions
     ['pattern' => 'sanctions/list', 'method' => 'GET', 'handler' => 'SanctionsController@list'],
     ['pattern' => 'sanctions/add', 'method' => 'GET', 'handler' => 'SanctionsController@add'],

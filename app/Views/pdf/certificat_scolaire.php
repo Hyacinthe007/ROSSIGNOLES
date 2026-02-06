@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <style>
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            padding: 40px; 
+        body {
+            font-family: 'Outfit', sans-serif;
+            padding: 40px;
             line-height: 1.6;
             color: #333;
         }
@@ -56,30 +56,30 @@
 </head>
 <body>
     <div class="header">
-        <div class="school-name">ERP École ROSSIGNOLES</div>
-        <div class="cert-title">Certificat de Scolarité</div>
-        <p>Année Scolaire : <strong><?= e($annee_scolaire) ?></strong></p>
+        <div class="school-name">ERP Ã‰cole ROSSIGNOLES</div>
+        <div class="cert-title">Certificat de ScolaritÃ©</div>
+        <p>AnnÃ©e Scolaire : <strong><?= e($annee_scolaire) ?></strong></p>
     </div>
-    
+
     <div class="content">
-        <p>Je soussigné, le Directeur de l'établissement ROSSIGNOLES, certifie par la présente que :</p>
-        
+        <p>Je soussignÃ©, le Directeur de l'Ã©tablissement ROSSIGNOLES, certifie par la prÃ©sente que :</p>
+
         <div class="highlight-box">
             <div class="eleve-info">
                 <?= e($eleve['nom'] . ' ' . $eleve['prenom']) ?><br>
-                Né(e) le <?= formatDate($eleve['date_naissance']) ?><br>
+                NÃ©(e) le <?= formatDate($eleve['date_naissance']) ?><br>
                 Matricule : <?= e($eleve['matricule']) ?>
             </div>
         </div>
-        
-        <p>est régulièrement inscrit(e) dans notre établissement en classe de <strong><?= e($inscription['nom']) ?></strong> 
-        pour le compte de l'année scolaire <strong><?= e($annee_scolaire) ?></strong>.</p>
-        
-        <p>Le présent certificat est délivré à l'intéressé(e) pour servir et valoir ce que de droit.</p>
+
+        <p>est rÃ©guliÃ¨rement inscrit(e) dans notre Ã©tablissement en classe de <strong><?= e($inscription['nom']) ?></strong>
+        pour le compte de l'annÃ©e scolaire <strong><?= e($annee_scolaire) ?></strong>.</p>
+
+        <p>Le prÃ©sent certificat est dÃ©livrÃ© Ã  l'intÃ©ressÃ©(e) pour servir et valoir ce que de droit.</p>
     </div>
-    
+
     <div class="footer">
-        <div class="date-place">Fait à ......................., le <?= $date_actuelle ?></div>
+        <div class="date-place">Fait Ã  ......................., le <?= $date_actuelle ?></div>
         <strong>Le Directeur</strong>
         <div class="signature-box"></div>
         <p>(Signature et Cachet)</p>

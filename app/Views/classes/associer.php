@@ -267,8 +267,7 @@
                                     <div class="relative inline-edit-container">
                                         <select class="inline-edit-select px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                                 data-classe-id="<?= $asso['classe_id'] ?>"
-                                                data-field="niveau_id"
-                                                onchange="updateAssociation(this)">
+                                                data-field="niveau_id">
                                             <option value="">-- Aucun --</option>
                                             <?php foreach ($niveaux as $niveau): ?>
                                                 <option value="<?= $niveau['id'] ?>" 
@@ -288,8 +287,7 @@
                                     <div class="relative inline-edit-container">
                                         <select class="inline-edit-select px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                                 data-classe-id="<?= $asso['classe_id'] ?>"
-                                                data-field="serie_id"
-                                                onchange="updateAssociation(this)">
+                                                data-field="serie_id">
                                             <option value="">-- Aucune --</option>
                                             <?php foreach ($series as $serie): ?>
                                                 <option value="<?= $serie['id'] ?>" 
@@ -309,8 +307,7 @@
                                     <div class="relative inline-edit-container">
                                         <select class="inline-edit-select px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                                 data-classe-id="<?= $asso['classe_id'] ?>"
-                                                data-field="annee_scolaire_id"
-                                                onchange="updateAssociation(this)">
+                                                data-field="annee_scolaire_id">
                                             <option value="">-- Aucune --</option>
                                             <?php foreach ($annees as $annee): ?>
                                                 <option value="<?= $annee['id'] ?>" 

@@ -108,43 +108,4 @@
         </div>
     </div>
     <?php endif; ?>
-
-    <!-- Activités Récentes -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-gray-800">
-                <i class="fas fa-history text-gray-500 mr-2"></i>
-                Activités récentes
-            </h2>
-            <a href="<?= url('systeme/logs') ?>" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Tout voir</a>
-        </div>
-        <div class="divide-y divide-gray-100">
-            <?php if (!empty($recentLogs)): ?>
-                <?php foreach ($recentLogs as $log): ?>
-                    <div class="p-4 hover:bg-gray-50 transition flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                            <i class="fas <?= $log['module'] === 'Authentification' ? 'fa-key' : 'fa-edit' ?> text-blue-500 text-sm"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate"><?= e($log['action']) ?></p>
-                            <p class="text-xs text-gray-500"><?= e($log['description']) ?></p>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded"><?= e($log['module']) ?></span>
-                                <span class="text-[10px] text-gray-400">
-                                    <i class="far fa-clock mr-1"></i><?= date('d/m à H:i', strtotime($log['created_at'])) ?>
-                                </span>
-                                <span class="text-[10px] text-gray-400">
-                                    <i class="far fa-user mr-1"></i><?= e($log['user_name'] ?? 'Système') ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="p-8 text-center text-gray-500 italic">
-                    Aucune activité récente enregistrée.
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
 </div>

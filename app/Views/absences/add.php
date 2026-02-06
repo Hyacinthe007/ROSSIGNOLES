@@ -64,30 +64,14 @@
 
                 <div>
                     <label for="emploi_temps_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-clock mr-2 text-blue-500"></i>Cours (optionnel)
+                        <i class="fas fa-clock mr-2 text-blue-500"></i>Sélectionner un cours
                     </label>
                     <select id="emploi_temps_id" 
                             name="emploi_temps_id"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Sélectionner un cours</option>
+                        <option value="">-- Choisir un cours de l'emploi du temps --</option>
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">Heure, matière et prof seront récupérés</p>
                 </div>
-            </div>
-
-            <!-- Statut par défaut (déplacé en haut) -->
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                    <input type="checkbox" 
-                           name="justifiee_default" 
-                           id="justifiee_default"
-                           value="1"
-                           class="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500">
-                    <span class="text-sm font-medium text-gray-700">
-                        <i class="fas fa-check-circle mr-2 text-gray-500"></i>
-                        Marquer comme justifiée par défaut
-                    </span>
-                </label>
             </div>
 
             <!-- Zone de chargement -->
@@ -299,30 +283,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayEmploisTemps() {
-        emploiTempsSelect.innerHTML = '<option value="">Sélectionner un cours</option>';
+        emploiTempsSelect.innerHTML = '<option value="">-- Choisir un cours --</option>';
         
+        const now = new Date();
+        const currentH = now.getHours().toString().padStart(2, '0');
+        const currentM = now.getMinutes().toString().padStart(2, '0');
+        const currentTime = `${currentH}:${currentM}`;
+        
+        let courseToSelect = null;
+
         emploisTempsData.forEach(et => {
             const option = document.createElement('option');
             option.value = et.id;
-            option.textContent = `${et.heure_debut} - ${et.heure_fin} | ${et.matiere_nom} | ${et.enseignant_nom}`;
+            option.textContent = `${et.heure_debut.substring(0, 5)} - ${et.heure_fin.substring(0, 5)} | ${et.matiere_nom} | ${et.enseignant_nom}`;
             option.dataset.heureDebut = et.heure_debut;
             option.dataset.heureFin = et.heure_fin;
             option.dataset.matiere = et.matiere_nom;
             option.dataset.enseignant = et.enseignant_nom;
+            
+            // Détection du cours actuel
+            if (currentTime >= et.heure_debut.substring(0, 5) && currentTime <= et.heure_fin.substring(0, 5)) {
+                option.selected = true;
+                courseToSelect = option;
+            }
+            
             emploiTempsSelect.appendChild(option);
         });
 
         emploiTempsSelect.addEventListener('change', updateCoursInfo);
+        
+        // Si un cours a été détecté automatiquement, on met à jour les infos
+        if (courseToSelect) {
+            updateCoursInfo();
+        }
     }
 
     function updateCoursInfo() {
         const selected = emploiTempsSelect.selectedOptions[0];
-        const coursInfo = document.getElementById('cours_info');
+        const heureDebutInput = document.getElementById('heure_debut');
+        const heureFinInput = document.getElementById('heure_fin');
+        const matiereInput = document.getElementById('display_matiere');
+        const enseignantInput = document.getElementById('display_enseignant');
         
         if (selected && selected.value) {
-            coursInfo.innerHTML = `<i class="fas fa-book mr-1"></i>${selected.dataset.matiere} | <i class="fas fa-user mr-1"></i>${selected.dataset.enseignant} | <i class="fas fa-clock mr-1"></i>${selected.dataset.heureDebut} - ${selected.dataset.heureFin}`;
+            heureDebutInput.value = selected.dataset.heureDebut.substring(0, 5);
+            heureFinInput.value = selected.dataset.heureFin.substring(0, 5);
+            matiereInput.value = selected.dataset.matiere;
+            enseignantInput.value = selected.dataset.enseignant;
+            
+            // Mettre en évidence les champs auto-remplis
+            [heureDebutInput, heureFinInput].forEach(el => {
+                el.classList.add('bg-blue-50', 'border-blue-400');
+            });
         } else {
-            coursInfo.innerHTML = '';
+            heureDebutInput.value = '';
+            heureFinInput.value = '';
+            matiereInput.value = '';
+            enseignantInput.value = '';
+            [heureDebutInput, heureFinInput].forEach(el => {
+                el.classList.remove('bg-blue-50', 'border-blue-400');
+            });
         }
     }
 

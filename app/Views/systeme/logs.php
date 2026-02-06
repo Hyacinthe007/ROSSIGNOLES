@@ -102,7 +102,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <code class="text-[10px] bg-gray-50 text-gray-400 px-1.5 py-0.5 rounded border border-gray-100">
-                                        <?= e($log['ip_address'] ?: '0.0.0.0') ?>
+                                        <?= e($log['ip_address'] ?: 'Inconnue') ?>
                                     </code>
                                 </td>
                             </tr>

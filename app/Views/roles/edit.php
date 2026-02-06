@@ -1,8 +1,8 @@
-<?php
-$title = "Modifier le Rôle";
+﻿<?php
+$title = "Modifier le RÃ´le";
 $breadcrumbs = [
-    ['label' => 'Système', 'url' => '#'],
-    ['label' => 'Rôles & Permissions', 'url' => url('roles/list')],
+    ['label' => 'SystÃ¨me', 'url' => '#'],
+    ['label' => 'RÃ´les & Permissions', 'url' => url('roles/list')],
     ['label' => 'Modifier : ' . $role['nom']]
 ];
 ?>
@@ -13,45 +13,45 @@ $breadcrumbs = [
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
                     <i class="fas fa-user-shield text-blue-600 mr-2"></i>
-                    Modifier le rôle
+                    Modifier le rÃ´le
                 </h1>
-                <p class="text-gray-600 text-sm md:text-base">Mettez à jour les caractéristiques et les accès du rôle <strong><?= e($role['nom']) ?></strong>.</p>
+                <p class="text-gray-600 text-sm md:text-base">Mettez Ã  jour les caractÃ©ristiques et les accÃ¨s du rÃ´le <strong><?= e($role['nom']) ?></strong>.</p>
             </div>
             <div class="flex gap-3">
                 <a href="<?= url('roles/list') ?>" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <a href="<?= url('roles/delete/' . $role['id']) ?>" onclick="return confirm('Êtes-vous sûr ?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
+                <a href="<?= url('roles/delete/' . $role['id']) ?>" onclick="return confirm('ÃŠtes-vous sÃ»r ?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
                     <i class="fas fa-trash-alt"></i>
                 </a>
             </div>
         </div>
 
         <form action="<?= url('roles/edit/' . $role['id']) ?>" method="POST" class="space-y-6">
-            
+
             <!-- 1. CONFIGURATION DES PERMISSIONS (LA PARTIE PRINCIPALE) -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="p-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                         <i class="fas fa-shield-alt text-blue-500"></i>
-                        Permissions & Accès
+                        Permissions & AccÃ¨s
                     </h2>
                 </div>
                 <div class="p-0"> <!-- Removed padding for full-height side layout -->
-                    <?php 
+                    <?php
                     $targetLabels = [
-                        // Scolarité
+                        // ScolaritÃ©
                         'inscriptions_new' => 'Nouvelle inscription',
                         'inscriptions_list' => 'Gestion inscriptions',
-                        'eleves' => 'Liste des élèves',
-                        'eleves_classe' => 'Élèves par classe',
+                        'eleves' => 'Liste des Ã©lÃ¨ves',
+                        'eleves_classe' => 'Ã‰lÃ¨ves par classe',
                         'parents' => 'Parents / Tuteurs',
                         // Finance
                         'finance_dashboard' => 'Tableau de bord (Finance)',
                         'finance_mensuel' => 'Paiement Mensuel',
-                        'echeanciers' => 'Échéanciers',
-                        'recus' => 'Reçus de paiement',
-                        // Pédagogie
+                        'echeanciers' => 'Ã‰chÃ©anciers',
+                        'recus' => 'ReÃ§us de paiement',
+                        // PÃ©dagogie
                         'enseignements' => 'Enseignements',
                         'calendrier' => 'Emplois du temps',
                         'parcours' => 'Parcours Scolaires',
@@ -60,9 +60,9 @@ $breadcrumbs = [
                         'personnel_new' => 'Nouveau Personnel',
                         'personnel_list' => 'Liste du personnel',
                         'absences_personnel' => 'Absences du personnel',
-                        // Évaluations
+                        // Ã‰valuations
                         'notes' => 'Notes',
-                        'resultats' => 'Résultats',
+                        'resultats' => 'RÃ©sultats',
                         'bulletins' => 'Bulletins',
                         // Vie scolaire
                         'absences' => 'Absences & Retards',
@@ -71,10 +71,10 @@ $breadcrumbs = [
                         'annonces' => 'Annonces',
                         'messagerie' => 'Messagerie',
                         'notifications' => 'Notifications',
-                        // Paramètres
+                        // ParamÃ¨tres
                         'systeme' => 'Configurations',
                         'users' => 'Utilisateurs',
-                        'roles' => 'Rôles',
+                        'roles' => 'RÃ´les',
                         'logs' => 'Logs'
                     ];
 
@@ -86,19 +86,19 @@ $breadcrumbs = [
                         $groupedPermissions[$p['module']][$target][$action] = $p;
                     }
 
-                    // Définir l'ordre des modules pour correspondre au sidebar
+                    // DÃ©finir l'ordre des modules pour correspondre au sidebar
                     $orderedModules = [
-                        'Scolarité',
+                        'ScolaritÃ©',
                         'Finance',
-                        'Pédagogie',
+                        'PÃ©dagogie',
                         'Ressources humaines',
-                        'Évaluations',
+                        'Ã‰valuations',
                         'Vie scolaire',
                         'Communication',
-                        'Paramètres'
+                        'ParamÃ¨tres'
                     ];
-                    
-                    // Filtrer pour ne garder que ceux qui existent dans les données
+
+                    // Filtrer pour ne garder que ceux qui existent dans les donnÃ©es
                     $modules = array_values(array_intersect($orderedModules, array_keys($groupedPermissions)));
                     $firstModule = $modules[0] ?? null;
                     ?>
@@ -107,10 +107,10 @@ $breadcrumbs = [
                         <!-- Colonne de Gauche : Liste des Modules -->
                         <div class="w-full md:w-64 border-r border-gray-100 bg-gray-50/30">
                             <div class="p-4 space-y-2">
-                                <?php foreach ($modules as $module): 
+                                <?php foreach ($modules as $module):
                                     $targetCount = isset($groupedPermissions[$module]) ? count($groupedPermissions[$module]) : 0;
                                 ?>
-                                    <button type="button" 
+                                    <button type="button"
                                         onclick="showModulePermissions('<?= md5($module) ?>')"
                                         id="btn-module-<?= md5($module) ?>"
                                         class="module-tab-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-between group <?= $module === $firstModule ? 'bg-blue-600 text-white shadow-md shadow-blue-100' : 'text-gray-600 hover:bg-white hover:text-blue-600' ?>">
@@ -129,17 +129,17 @@ $breadcrumbs = [
                         <!-- Colonne de Droite : Permissions du Module -->
                         <div class="flex-1 bg-white">
                             <?php foreach ($groupedPermissions as $module => $targets): ?>
-                                <div id="module-content-<?= md5($module) ?>" 
+                                <div id="module-content-<?= md5($module) ?>"
                                     class="module-permission-content p-6 <?= $module === $firstModule ? '' : 'hidden' ?>">
-                                    
+
                                     <div class="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
                                         <div>
                                             <h3 class="text-lg font-bold text-gray-800"><?= e($module) ?></h3>
-                                            <p class="text-xs text-gray-500">Configurez les accès détaillés pour ce module.</p>
+                                            <p class="text-xs text-gray-500">Configurez les accÃ¨s dÃ©taillÃ©s pour ce module.</p>
                                         </div>
                                         <div class="flex gap-2">
                                             <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', true)" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">Tout cocher</button>
-                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout décocher</button>
+                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout dÃ©cocher</button>
                                         </div>
                                     </div>
 
@@ -155,7 +155,7 @@ $breadcrumbs = [
                                                     </div>
                                                 </div>
                                                 <div class="flex flex-col gap-2 px-1">
-                                                    <?php 
+                                                    <?php
                                                     $order = ['view' => 1, 'create' => 2, 'update' => 3, 'delete' => 4];
                                                     uksort($actions, function($a, $b) use ($order) {
                                                         return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
@@ -163,17 +163,17 @@ $breadcrumbs = [
                                                     ?>
                                                     <?php foreach ($actions as $action => $perm): ?>
                                                         <label class="flex items-center gap-2 group/label cursor-pointer">
-                                                            <input type="checkbox" name="permissions[]" value="<?= $perm['id'] ?>" 
+                                                            <input type="checkbox" name="permissions[]" value="<?= $perm['id'] ?>"
                                                                 <?= in_array($perm['id'], $rolePermissionIds) ? 'checked' : '' ?>
                                                                 data-target="<?= e($targetName) ?>"
                                                                 data-module-hash="<?= md5($module) ?>"
                                                                 class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-all">
                                                             <span class="text-[11px] font-semibold text-gray-700 group-hover/label:text-blue-600 transition-colors">
-                                                                <?php 
+                                                                <?php
                                                                 $actionLabels = [
-                                                                    'view' => 'Lire', 
-                                                                    'create' => 'Créer', 
-                                                                    'update' => 'Modifier', 
+                                                                    'view' => 'Lire',
+                                                                    'create' => 'CrÃ©er',
+                                                                    'update' => 'Modifier',
                                                                     'delete' => 'Supprimer',
                                                                     'export_pdf' => 'Export PDF',
                                                                     'export_excel' => 'Export Excel'

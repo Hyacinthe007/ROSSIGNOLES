@@ -53,10 +53,9 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créneau</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motif</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -64,7 +63,7 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php if (empty($absences)): ?>
                         <tr>
-                            <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-500">
                                 <i class="fas fa-inbox text-4xl mb-4 block"></i>
                                 Aucune absence trouvée
                             </td>
@@ -95,46 +94,32 @@
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    <?php
-                                    // Afficher l'intervalle de temps si disponible
-                                    if (!empty($absence['heure_debut']) && !empty($absence['heure_fin'])) {
-                                        echo '<span class="font-mono text-blue-700">';
-                                        echo e(substr($absence['heure_debut'], 0, 5)) . ' - ' . e(substr($absence['heure_fin'], 0, 5));
-                                        echo '</span>';
-                                    } else {
-                                        // Sinon afficher la période classique
-                                        $periodes = [
-                                            'matin' => 'Matin',
-                                            'apres_midi' => 'Après-midi',
-                                            'journee' => 'Journée'
-                                        ];
-                                        echo '<span class="text-gray-500">' . e($periodes[$absence['periode']] ?? $absence['periode']) . '</span>';
-                                    }
-                                    ?>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <?php if (!empty($absence['heure_debut'])): ?>
+                                        <div class="text-sm font-bold text-blue-700">
+                                            <?= e(substr($absence['heure_debut'], 0, 5)) ?> - <?= e(substr($absence['heure_fin'], 0, 5)) ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="text-xs text-gray-400 italic"><?= ($absence['periode'] === 'journee') ? 'Toute la journée' : ucfirst($absence['periode']) ?></span>
+                                    <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if (!empty($absence['matiere_nom'])): ?>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
-                                            <i class="fas fa-book mr-1"></i>
+                                        <div class="text-sm font-bold text-gray-800 uppercase">
                                             <?= e($absence['matiere_nom']) ?>
-                                        </span>
+                                        </div>
                                     <?php else: ?>
-                                        <span class="text-gray-400 text-xs">-</span>
+                                        <span class="text-xs text-gray-400">---</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if (!empty($absence['professeur_nom'])): ?>
-                                        <span class="inline-flex items-center text-gray-700">
-                                            <i class="fas fa-user-tie mr-1 text-indigo-500"></i>
+                                        <div class="text-sm text-gray-700">
                                             <?= e($absence['professeur_nom']) ?>
-                                        </span>
+                                        </div>
                                     <?php else: ?>
-                                        <span class="text-gray-400 text-xs">-</span>
+                                        <span class="text-xs text-gray-400">-</span>
                                     <?php endif; ?>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">
-                                    <?= e($absence['motif'] ?: 'Non spécifié') ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
