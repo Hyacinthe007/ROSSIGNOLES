@@ -51,7 +51,7 @@
                         <option value="">Sélectionner une classe</option>
                         <?php foreach ($classes as $classe): ?>
                             <option value="<?= $classe['id'] ?>" <?= $selectedClasse == $classe['id'] ? 'selected' : '' ?>>
-                                <?= e($classe['nom']) ?>
+                                <?= e($classe['code']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

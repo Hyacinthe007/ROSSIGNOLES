@@ -83,6 +83,7 @@ $breadcrumbs = [
             </div>
             <div class="card-footer">
                 <form method="POST" style="display:inline;">
+                    <?= csrf_field() ?>
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Oui, supprimer
                     </button>

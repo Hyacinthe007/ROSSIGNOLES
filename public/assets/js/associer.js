@@ -9,6 +9,9 @@ const TOAST_FADE_DURATION = 300;
 const RELOAD_DELAY_SHORT = 1000;
 const RELOAD_DELAY_LONG = 1500;
 const CSS_TRANSITION_DELAY = 10;
+const ANIMATION_DURATION_MS = 300;
+const PERCENTAGE_BASE = 100;
+const STATS_RELOAD_DELAY = 1500;
 
 // État global
 let selectedClasses = new Set();
@@ -129,7 +132,9 @@ async function refreshStats() {
             document.getElementById('stat-taux').textContent = taux + '%';
         }
     } catch (error) {
-        // Erreur silencieuse pour les stats
+        // Erreur silencieuse pour les statistiques afin de ne pas bloquer l'interface utilisateur
+        // mais nous pourrions ajouter un log si nécessaire pour le débogage
+        console.debug('Échec de la mise à jour des statistiques:', error);
     }
 }
 
@@ -230,7 +235,7 @@ function showToast(message, type = 'info') {
         info: 'bg-blue-500'
     };
 
-    toast.className = `${bgColors[type]} text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+    toast.className = `${bgColors[type]} text-white px-6 py-3 rounded-lg transform transition-all duration-${ANIMATION_DURATION_MS} translate-x-full`;
     toast.textContent = message;
 
     container.appendChild(toast);

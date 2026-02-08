@@ -9,7 +9,7 @@
     </div>
 
     <!-- Formulaire -->
-    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="bg-white rounded-xl p-6 md:p-8">
         <form method="POST" action="<?= url('sanctions/edit/' . $sanction['id']) ?>" class="space-y-6">
             <?= csrf_field() ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

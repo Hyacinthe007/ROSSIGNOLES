@@ -19,6 +19,7 @@ $breadcrumbs = [
 
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <form method="POST" class="p-6 space-y-6">
+            <?= csrf_field() ?>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Personnel et Type -->

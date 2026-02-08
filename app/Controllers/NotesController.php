@@ -42,7 +42,7 @@ class NotesController extends BaseController {
         $periodeId = $_GET['periode_id'] ?? null;
 
         // Données pour les listes déroulantes
-        $classes = $anneeId ? $classeModel->all(['annee_scolaire_id' => $anneeId], 'nom ASC') : [];
+        $classes = $anneeId ? $classeModel->getSortedByLevel($anneeId) : [];
         $periodes = $anneeId ? $periodeModel->all(['annee_scolaire_id' => $anneeId], 'numero ASC') : [];
 
         $evaluations = [];
@@ -552,7 +552,7 @@ class NotesController extends BaseController {
         
         // Récupérer les périodes et classes
         $periodes = $anneeId ? $periodeModel->all(['annee_scolaire_id' => $anneeId, 'actif' => 1], 'numero ASC') : [];
-        $classes = $anneeId ? $classeModel->all(['annee_scolaire_id' => $anneeId, 'statut' => 'actif'], 'nom ASC') : [];
+        $classes = $anneeId ? $classeModel->getSortedByLevel($anneeId) : [];
         
         // Statistiques globales
         $statsGlobales = $anneeId ? $bulletinModel->getStatistiquesGlobales($anneeId, $periodeId, $classeId) : [];

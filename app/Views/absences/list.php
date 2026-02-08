@@ -123,13 +123,17 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" 
-                                                   class="sr-only peer toggle-justifiee" 
-                                                   data-absence-id="<?= $absence['id'] ?>"
-                                                   <?= $absence['justifiee'] ? 'checked' : '' ?>>
-                                            <div class="w-11 h-6 bg-red-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                                        </label>
+                                        <?php if (hasRole('direction') || hasRole('surveillant')): ?>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" 
+                                                       class="sr-only peer toggle-justifiee" 
+                                                       data-absence-id="<?= $absence['id'] ?>"
+                                                       <?= $absence['justifiee'] ? 'checked' : '' ?>>
+                                                <div class="w-11 h-6 bg-red-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                            </label>
+                                        <?php else: ?>
+                                            <i class="fas <?= $absence['justifiee'] ? 'fa-check-circle text-green-500' : 'fa-times-circle text-red-500' ?>"></i>
+                                        <?php endif; ?>
                                         <span class="text-xs font-medium toggle-label-<?= $absence['id'] ?> <?= $absence['justifiee'] ? 'text-green-700' : 'text-red-700' ?>">
                                             <?= $absence['justifiee'] ? 'Justifiée' : 'Non justifiée' ?>
                                         </span>
@@ -197,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         label.className = `text-xs font-medium toggle-label-${absenceId} ${isJustifiee ? 'text-green-700' : 'text-red-700'}`;
                     }
                     
+                    // Mettre à jour le compteur dans le badge
+                    updateBadgeCount(isJustifiee);
+                    
                     // Afficher un message de succès
                     showNotification('Statut mis à jour avec succès', 'success');
                 } else {
@@ -217,6 +224,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    
+    // Fonction pour mettre à jour le compteur dans le badge
+    function updateBadgeCount(isJustifiee) {
+        // Récupérer le type actif depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeActif = urlParams.get('type') || 'absence';
+        
+        // Sélectionner le bon badge
+        const badge = document.querySelector(`a[href*="type=${typeActif}"] span.bg-${typeActif === 'retard' ? 'orange' : 'red'}-100`);
+        
+        if (badge) {
+            let currentCount = parseInt(badge.textContent) || 0;
+            
+            // Si on justifie (isJustifiee = true), on décrémente
+            // Si on dé-justifie (isJustifiee = false), on incrémente
+            if (isJustifiee) {
+                currentCount = Math.max(0, currentCount - 1);
+            } else {
+                currentCount++;
+            }
+            
+            // Mettre à jour le badge
+            if (currentCount > 0) {
+                badge.textContent = currentCount;
+                badge.style.display = '';
+            } else {
+                // Cacher le badge si le compteur est à 0
+                badge.style.display = 'none';
+            }
+        }
+    }
     
     // Fonction pour afficher les notifications
     function showNotification(message, type = 'success') {

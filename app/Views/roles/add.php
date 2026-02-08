@@ -1,9 +1,9 @@
 ﻿<?php
-$title = "Nouveau RÃ´le";
+$title = "Nouveau Rôle";
 $breadcrumbs = [
-    ['label' => 'SystÃ¨me', 'url' => '#'],
-    ['label' => 'RÃ´les & Permissions', 'url' => url('roles/list')],
-    ['label' => 'Nouveau RÃ´le']
+    ['label' => 'Système', 'url' => '#'],
+    ['label' => 'Rôles & Permissions', 'url' => url('roles/list')],
+    ['label' => 'Nouveau Rôle']
 ];
 ?>
 
@@ -13,14 +13,14 @@ $breadcrumbs = [
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
                     <i class="fas fa-user-shield text-blue-600 mr-2"></i>
-                    CrÃ©er un nouveau rÃ´le
+                    Créer un nouveau rôle
                 </h1>
-                <p class="text-gray-600 text-sm md:text-base">DÃ©finissez les caractÃ©ristiques et les accÃ¨s de ce nouveau rÃ´le pour le systÃ¨me.</p>
+                <p class="text-gray-600 text-sm md:text-base">Définissez les caractéristiques et les accès de ce nouveau rôle pour le système.</p>
             </div>
             <div>
                 <a href="<?= url('roles/list') ?>" class="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 p-2.5 rounded-xl bg-white border border-gray-100 shadow-sm transition-all hover:shadow-md">
                     <i class="fas fa-arrow-left"></i>
-                    <span class="text-sm font-medium">Retour Ã  la liste</span>
+                    <span class="text-sm font-medium">Retour à la liste</span>
                 </a>
             </div>
         </div>
@@ -30,33 +30,33 @@ $breadcrumbs = [
                 <div class="p-6 border-b border-gray-50 bg-gray-50/50">
                     <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                         <i class="fas fa-info-circle text-blue-500"></i>
-                        Informations gÃ©nÃ©rales
+                        Informations générales
                     </h2>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label for="nom" class="block text-sm font-medium text-gray-700">Nom du rÃ´le <span class="text-red-500">*</span></label>
-                        <input type="text" name="nom" id="nom" required placeholder="Ex: Surveillant GÃ©nÃ©ral"
+                        <label for="nom" class="block text-sm font-medium text-gray-700">Nom du rôle <span class="text-red-500">*</span></label>
+                        <input type="text" name="nom" id="nom" required placeholder="Ex: Surveillant Général"
                             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
 
                     <div class="space-y-2">
-                        <label for="niveau" class="block text-sm font-medium text-gray-700">Niveau d'accÃ¨s (HiÃ©rarchie) <span class="text-red-500">*</span></label>
+                        <label for="niveau" class="block text-sm font-medium text-gray-700">Niveau d'accès (Hiérarchie) <span class="text-red-500">*</span></label>
                         <select name="niveau" id="niveau" required
                             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                            <option value="10">Ã‰lÃ¨ve (10)</option>
+                            <option value="10">Élève (10)</option>
                             <option value="20">Parent (20)</option>
                             <option value="50" selected>Personnel / Enseignant (50)</option>
                             <option value="80">Administration (80)</option>
                             <option value="90">Direction (90)</option>
                             <option value="100">Super Admin (100)</option>
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">Plus le niveau est haut, plus le rÃ´le est important.</p>
+                        <p class="text-xs text-gray-500 mt-1">Plus le niveau est haut, plus le rôle est important.</p>
                     </div>
 
                     <div class="md:col-span-2 space-y-2">
                         <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea name="description" id="description" rows="3" placeholder="DÃ©crivez les responsabilitÃ©s liÃ©es Ã  ce rÃ´le..."
+                        <textarea name="description" id="description" rows="3" placeholder="Décrivez les responsabilités liées à ce rôle..."
                             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                     </div>
 
@@ -64,7 +64,7 @@ $breadcrumbs = [
                         <div class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="actif" value="1" id="actif" class="sr-only peer" checked>
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-700">RÃ´le actif</span>
+                            <span class="ml-3 text-sm font-medium text-gray-700">Rôle actif</span>
                         </div>
                     </div>
                 </div>
@@ -74,38 +74,38 @@ $breadcrumbs = [
                 <div class="p-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                         <i class="fas fa-key text-blue-500"></i>
-                        Permissions & AccÃ¨s
+                        Permissions & Accès
                     </h2>
                     <div class="flex gap-2">
                         <button type="button" onclick="selectAllPermissions(true)" class="text-xs text-blue-600 hover:font-bold">Tout cocher</button>
                         <span class="text-gray-300">|</span>
-                        <button type="button" onclick="selectAllPermissions(false)" class="text-xs text-gray-500 hover:font-bold">Tout dÃ©cocher</button>
+                        <button type="button" onclick="selectAllPermissions(false)" class="text-xs text-gray-500 hover:font-bold">Tout décocher</button>
                     </div>
                 </div>
                 <div class="p-0"> <!-- Removed padding for full-height side layout -->
                     <?php
                     $targetLabels = [
                         'inscriptions' => 'Inscriptions (Gestion)',
-                        'eleves' => 'Liste des Ã©lÃ¨ves',
+                        'eleves' => 'Liste des élèves',
                         'parents' => 'Parents / Tuteurs',
-                        'scolarite' => 'AccÃ¨s au module ScolaritÃ©',
+                        'scolarite' => 'Accès au module Scolarité',
                         'finance' => 'Finance / Caisse',
-                        'echeancier' => 'Ã‰chÃ©anciers',
+                        'echeancier' => 'Échéanciers',
                         'pedagogie' => 'Enseignement / Classes',
                         'parcours' => 'Parcours Scolaires',
                         'conseils' => 'Conseils de classe',
                         'personnel' => 'Personnel (Gestion)',
                         'absences_personnel' => 'Absences Personnel',
-                        'notes' => 'Notes / Ã‰valuations',
+                        'notes' => 'Notes / Évaluations',
                         'bulletins' => 'Bulletins',
                         'absences' => 'Absences & Retards',
                         'sanctions' => 'Sanctions',
-                        'viescolaire' => 'AccÃ¨s au module Vie Scolaire',
+                        'viescolaire' => 'Accès au module Vie Scolaire',
                         'annonces' => 'Annonces',
                         'notifications' => 'Notifications / SMS',
-                        'communication' => 'AccÃ¨s au module Communication',
+                        'communication' => 'Accès au module Communication',
                         'systeme' => 'Configurations',
-                        'roles' => 'RÃ´les & Permissions',
+                        'roles' => 'Rôles & Permissions',
                         'users' => 'Utilisateurs',
                         'logs' => 'Logs / Historique'
                     ];
@@ -118,19 +118,19 @@ $breadcrumbs = [
                         $groupedPermissions[$p['module']][$target][$action] = $p;
                     }
 
-                    // DÃ©finir l'ordre des modules pour correspondre au sidebar
+                    // Définir l'ordre des modules pour correspondre au sidebar
                     $orderedModules = [
-                        'ScolaritÃ©',
+                        'Scolarité',
                         'Finance',
                         'Enseignement',
                         'Ressources Humaines',
-                        'Ã‰valuations',
+                        'Évaluations',
                         'Vie scolaire',
                         'Communication',
-                        'ParamÃ¨tres'
+                        'Paramètres'
                     ];
 
-                    // Filtrer pour ne garder que ceux qui existent dans les donnÃ©es
+                    // Filtrer pour ne garder que ceux qui existent dans les données
                     $modules = array_values(array_intersect($orderedModules, array_keys($groupedPermissions)));
                     $firstModule = $modules[0] ?? null;
                     ?>
@@ -167,11 +167,11 @@ $breadcrumbs = [
                                     <div class="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
                                         <div>
                                             <h3 class="text-lg font-bold text-gray-800"><?= e($module) ?></h3>
-                                            <p class="text-xs text-gray-500">Configurez les accÃ¨s dÃ©taillÃ©s pour ce module.</p>
+                                            <p class="text-xs text-gray-500">Configurez les accès détaillés pour ce module.</p>
                                         </div>
                                         <div class="flex gap-2">
                                             <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', true)" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">Tout cocher</button>
-                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout dÃ©cocher</button>
+                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout décocher</button>
                                         </div>
                                     </div>
 
@@ -201,7 +201,7 @@ $breadcrumbs = [
                                                                 class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-all">
                                                             <span class="text-[11px] font-semibold text-gray-700 group-hover/label:text-blue-600 transition-colors">
                                                                 <?php
-                                                                $actionLabels = ['view' => 'Lire', 'create' => 'CrÃ©er', 'update' => 'Modifier', 'delete' => 'Supprimer'];
+                                                                $actionLabels = ['view' => 'Lire', 'create' => 'Créer', 'update' => 'Modifier', 'delete' => 'Supprimer'];
                                                                 echo $actionLabels[$action] ?? ucfirst($action);
                                                                 ?>
                                                             </span>
@@ -224,7 +224,7 @@ $breadcrumbs = [
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl transition font-semibold shadow-lg shadow-blue-200 flex items-center gap-2">
                     <i class="fas fa-save"></i>
-                    Enregistrer le rÃ´le
+                    Enregistrer le rôle
                 </button>
             </div>
         </form>
@@ -235,10 +235,10 @@ $breadcrumbs = [
 function showModulePermissions(moduleHash) {
     // Masquer tous les contenus
     document.querySelectorAll('.module-permission-content').forEach(el => el.classList.add('hidden'));
-    // Afficher le contenu sÃ©lectionnÃ©
+    // Afficher le contenu sélectionné
     document.getElementById('module-content-' + moduleHash).classList.remove('hidden');
 
-    // Mettre Ã  jour les boutons d'onglets
+    // Mettre à jour les boutons d'onglets
     document.querySelectorAll('.module-tab-btn').forEach(btn => {
         btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-100');
         btn.classList.add('text-gray-600', 'hover:bg-white', 'hover:text-blue-600');

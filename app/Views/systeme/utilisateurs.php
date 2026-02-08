@@ -158,7 +158,7 @@
             <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <h2 class="text-xl font-bold text-gray-800">Groupes d'utilisateurs</h2>
-                    <a href="<?= url('systeme/groupes/add') ?>" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5">
+                    <a href="<?= url('systeme/groupes/add') ?>" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all transform hover:-translate-y-0.5">
                         <i class="fas fa-plus-circle mr-2"></i> Créer un groupe
                     </a>
                 </div>
@@ -170,7 +170,7 @@
             </div>
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach ($groupes as $group): ?>
-                    <div class="bg-white border-2 border-gray-50 rounded-2xl p-5 hover:border-blue-200 transition-all shadow-sm">
+                    <div class="bg-white border-2 border-gray-50 rounded-2xl p-5 hover:border-blue-200 transition-all">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-layer-group"></i>

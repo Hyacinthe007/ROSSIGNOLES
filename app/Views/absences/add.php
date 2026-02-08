@@ -9,7 +9,7 @@
             <p class="text-gray-600 text-sm md:text-base">Sélectionnez une classe et marquez les élèves absents</p>
         </div>
         <div>
-            <a href="<?= url('absences/list') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
+            <a href="<?= url('absences/list') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i>
                 <span class="text-sm font-medium">Retour à la liste</span>
             </a>
@@ -58,8 +58,9 @@
                            id="date_absence" 
                            name="date_absence" 
                            value="<?= date('Y-m-d') ?>"
+                           readonly
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed focus:ring-2 focus:ring-red-500 focus:border-transparent">
                 </div>
 
                 <div>
@@ -80,6 +81,26 @@
                 <p class="text-gray-600">Chargement des élèves...</p>
             </div>
 
+            <!-- Résumé -->
+            <div id="summary" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden">
+                <h4 class="font-bold text-blue-900 mb-2">
+                    <i class="fas fa-info-circle mr-2"></i>Résumé
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-700">Présents:</span>
+                        <span class="font-bold text-green-600 ml-1" id="count_present">0</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-700">Absents:</span>
+                        <span class="font-bold text-red-600 ml-1" id="count_absent">0</span>
+                    </div>
+                    <div id="cours_info" class="col-span-2 text-blue-700">
+                        <!-- Info cours si sélectionné -->
+                    </div>
+                </div>
+            </div>
+            
             <!-- Tableau des élèves -->
             <div id="eleves_container" class="hidden">
                 <div class="mb-4 flex items-center justify-between">
@@ -103,35 +124,12 @@
                                 <th class="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                     Présence
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                    Motif général (optionnel)
-                                </th>
                             </tr>
                         </thead>
                         <tbody id="eleves_tbody" class="divide-y divide-gray-200">
                             <!-- Les lignes seront injectées ici -->
                         </tbody>
                     </table>
-                </div>
-
-                <!-- Résumé -->
-                <div id="summary" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden">
-                    <h4 class="font-bold text-blue-900 mb-2">
-                        <i class="fas fa-info-circle mr-2"></i>Résumé
-                    </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                            <span class="text-blue-700">Présents:</span>
-                            <span class="font-bold text-green-600 ml-1" id="count_present">0</span>
-                        </div>
-                        <div>
-                            <span class="text-blue-700">Absents:</span>
-                            <span class="font-bold text-red-600 ml-1" id="count_absent">0</span>
-                        </div>
-                        <div id="cours_info" class="col-span-2 text-blue-700">
-                            <!-- Info cours si sélectionné -->
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Boutons d'action -->
@@ -154,41 +152,71 @@
 </div>
 
 <style>
-.radio-present:checked + label {
+/* Nouveaux boutons de présence ronds */
+.presence-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    background-color: white;
+    color: #9ca3af;
+    position: relative;
+}
+
+.presence-circle:hover {
+    transform: scale(1.1);
+    border-color: #d1d5db;
+}
+
+.radio-present:checked + .presence-circle {
     background-color: #10b981;
     color: white;
     border-color: #10b981;
 }
 
-.radio-absent:checked + label {
+.radio-absent:checked + .presence-circle {
     background-color: #ef4444;
     color: white;
     border-color: #ef4444;
+    
 }
 
-.radio-label {
-    transition: all 0.2s;
-    cursor: pointer;
-    padding: 8px 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 0.875rem;
+/* Animation douce pour l'icône */
+.presence-circle i {
+    font-size: 1.1rem;
+    transition: transform 0.2s;
 }
 
-.radio-label:hover {
-    border-color: #9ca3af;
+.radio-present:checked + .presence-circle i,
+.radio-absent:checked + .presence-circle i {
+    transform: scale(1.1);
 }
 
-.motif-input:disabled {
-    background-color: #f3f4f6;
-    cursor: not-allowed;
-    opacity: 0.5;
+.presence-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
 }
 
-.motif-input:not(:disabled) {
-    background-color: #fef3c7;
-    border-color: #f59e0b;
+.presence-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.presence-label-text {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.05em;
 }
 </style>
 
@@ -208,10 +236,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const summary = document.getElementById('summary');
 
     // Charger les élèves quand une classe est sélectionnée
-    classeSelect.addEventListener('change', loadEleves);
-    dateInput.addEventListener('change', function() {
-        loadEmploisTemps();
-        loadAbsencesRecentes();
+    classeSelect.addEventListener('change', function() {
+        loadEleves();
+        loadEmploisTemps(); // Charger immédiatement les cours
+    });
+    
+    // Ne pas permettre de changer la date
+    dateInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        return false;
     });
 
     function loadEleves() {
@@ -244,14 +277,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const date = dateInput.value;
         
         if (!classeId || !date) return;
+        
+        loading.classList.remove('hidden');
 
-        // Récupérer les absences des 7 derniers jours
         fetch('<?= url('absences/get-absences-recentes') ?>?classe_id=' + classeId + '&date=' + date)
             .then(response => response.json())
             .then(data => {
                 absencesRecentes = {};
+                // Grouper les absences par élève
                 data.forEach(absence => {
-                    absencesRecentes[absence.eleve_id] = absence.motif || '';
+                    if (!absencesRecentes[absence.eleve_id]) {
+                        absencesRecentes[absence.eleve_id] = [];
+                    }
+                    absencesRecentes[absence.eleve_id].push(absence);
                 });
                 displayEleves();
                 loading.classList.add('hidden');
@@ -285,30 +323,61 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayEmploisTemps() {
         emploiTempsSelect.innerHTML = '<option value="">-- Choisir un cours --</option>';
         
+        if (emploisTempsData.length === 0) {
+            emploiTempsSelect.innerHTML = '<option value="">Aucun cours prévu aujourd\'hui</option>';
+            return;
+        }
+        
         const now = new Date();
         const currentH = now.getHours().toString().padStart(2, '0');
         const currentM = now.getMinutes().toString().padStart(2, '0');
         const currentTime = `${currentH}:${currentM}`;
         
         let courseToSelect = null;
+        let closestCourse = null;
+        let minTimeDiff = Infinity;
 
         emploisTempsData.forEach(et => {
             const option = document.createElement('option');
             option.value = et.id;
-            option.textContent = `${et.heure_debut.substring(0, 5)} - ${et.heure_fin.substring(0, 5)} | ${et.matiere_nom} | ${et.enseignant_nom}`;
+            option.textContent = et.matiere_nom; // Afficher uniquement le nom de la matière
             option.dataset.heureDebut = et.heure_debut;
             option.dataset.heureFin = et.heure_fin;
             option.dataset.matiere = et.matiere_nom;
             option.dataset.enseignant = et.enseignant_nom;
             
-            // Détection du cours actuel
-            if (currentTime >= et.heure_debut.substring(0, 5) && currentTime <= et.heure_fin.substring(0, 5)) {
+            const heureDebut = et.heure_debut.substring(0, 5);
+            const heureFin = et.heure_fin.substring(0, 5);
+            
+            // Détection du cours actuel (en cours maintenant)
+            if (currentTime >= heureDebut && currentTime <= heureFin) {
                 option.selected = true;
                 courseToSelect = option;
+                option.style.fontWeight = 'bold';
+                option.style.backgroundColor = '#dbeafe';
+            }
+            
+            // Trouver le cours le plus proche si aucun cours n'est en cours
+            if (!courseToSelect) {
+                const timeDiff = Math.abs(
+                    (parseInt(heureDebut.split(':')[0]) * 60 + parseInt(heureDebut.split(':')[1])) -
+                    (parseInt(currentH) * 60 + parseInt(currentM))
+                );
+                
+                if (timeDiff < minTimeDiff) {
+                    minTimeDiff = timeDiff;
+                    closestCourse = option;
+                }
             }
             
             emploiTempsSelect.appendChild(option);
         });
+
+        // Si aucun cours en cours, sélectionner le cours le plus proche
+        if (!courseToSelect && closestCourse) {
+            closestCourse.selected = true;
+            courseToSelect = closestCourse;
+        }
 
         emploiTempsSelect.addEventListener('change', updateCoursInfo);
         
@@ -353,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (elevesData.length === 0) {
             elevesTbody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">
                         <i class="fas fa-users text-4xl mb-2"></i>
                         <p>Aucun élève trouvé dans cette classe</p>
                     </td>
@@ -363,8 +432,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         elevesData.forEach((eleve, index) => {
-            const avaitAbsence = absencesRecentes.hasOwnProperty(eleve.id);
-            const motifPrecedent = absencesRecentes[eleve.id] || '';
+            const absencesE = absencesRecentes[eleve.id] || [];
+            // Filtrer les absences non justifiées
+            const nonJustifiees = absencesE.filter(a => !parseInt(a.justifiee));
+            
+            let messageAbsence = '';
+            if (nonJustifiees.length > 0) {
+                // Trier par date
+                const sorted = nonJustifiees.sort((a, b) => new Date(a.date_absence) - new Date(b.date_absence));
+                const first = sorted[0].date_absence;
+                const last = sorted[sorted.length - 1].date_absence;
+                
+                const formatDateFr = (dateStr) => {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('fr-FR');
+                };
+                
+                if (sorted.length === 1) {
+                    messageAbsence = `Absent le ${formatDateFr(first)}`;
+                } else {
+                    // Vérifier si ce sont des jours consécutifs (approximatif pour l'affichage)
+                    messageAbsence = `Absent du ${formatDateFr(first)} au ${formatDateFr(last)}`;
+                }
+            }
             
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-gray-50 transition';
@@ -377,44 +467,41 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>
                             <div class="text-sm font-bold text-gray-900">${eleve.nom} ${eleve.prenom}</div>
                             <div class="text-xs text-gray-500">${eleve.matricule}</div>
-                            ${avaitAbsence ? '<div class="text-xs text-orange-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Absent récemment</div>' : ''}
+                            ${messageAbsence ? `<div class="text-xs text-orange-600 mt-1 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>${messageAbsence}</div>` : ''}
                         </div>
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center justify-center gap-2">
-                        <input type="radio" 
-                               name="presence_${eleve.id}" 
-                               id="present_${eleve.id}" 
-                               value="present"
-                               class="radio-present hidden"
-                               checked
-                               data-eleve-id="${eleve.id}">
-                        <label for="present_${eleve.id}" class="radio-label bg-green-50 text-green-700 border-green-200">
-                            <i class="fas fa-check mr-1"></i>Présent
-                        </label>
+                    <div class="presence-container">
+                        <div class="presence-item">
+                            <input type="radio" 
+                                   name="presence_${eleve.id}" 
+                                   id="present_${eleve.id}" 
+                                   value="present"
+                                   class="radio-present hidden"
+                                   checked
+                                   data-eleve-id="${eleve.id}">
+                            <label for="present_${eleve.id}" class="presence-circle" title="Présent">
+                                <i class="fas fa-check"></i>
+                            </label>
+                            <span class="presence-label-text">Présent</span>
+                        </div>
                         
-                        <input type="radio" 
-                               name="presence_${eleve.id}" 
-                               id="absent_${eleve.id}" 
-                               value="absent"
-                               class="radio-absent hidden"
-                               data-eleve-id="${eleve.id}">
-                        <label for="absent_${eleve.id}" class="radio-label bg-red-50 text-red-700 border-red-200">
-                            <i class="fas fa-times mr-1"></i>Absent
-                        </label>
+                        <div class="presence-item">
+                            <input type="radio" 
+                                   name="presence_${eleve.id}" 
+                                   id="absent_${eleve.id}" 
+                                   value="absent"
+                                   class="radio-absent hidden"
+                                   data-eleve-id="${eleve.id}">
+                            <label for="absent_${eleve.id}" class="presence-circle" title="Absent">
+                                <i class="fas fa-times"></i>
+                            </label>
+                            <span class="presence-label-text">Absent</span>
+                        </div>
                         
                         <input type="checkbox" name="absents[]" value="${eleve.id}" id="checkbox_${eleve.id}" class="hidden">
                     </div>
-                </td>
-                <td class="px-6 py-4">
-                    <input type="text" 
-                           name="motif_${eleve.id}" 
-                           id="motif_${eleve.id}"
-                           placeholder="${avaitAbsence ? 'Motif de retour...' : 'Ex: Maladie, Grève...'}"
-                           value="${avaitAbsence ? motifPrecedent : ''}"
-                           ${!avaitAbsence ? 'disabled' : ''}
-                           class="motif-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
                 </td>
             `;
             elevesTbody.appendChild(tr);
@@ -485,27 +572,12 @@ function updatePresenceStatus(eleveId) {
             checkbox.checked = true;
             console.log('Checkbox cochée pour:', eleveId);
         }
-        if (motifInput) {
-            motifInput.disabled = false;
-            motifInput.placeholder = "Ex: Maladie, Grève...";
-        }
     } else {
         // Élève marqué présent
         console.log('Marqué présent:', eleveId);
         if (checkbox) {
             checkbox.checked = false;
             console.log('Checkbox décochée pour:', eleveId);
-        }
-        
-        // Activer le motif seulement si l'élève avait une absence récente
-        if (motifInput) {
-            if (avaitAbsence) {
-                motifInput.disabled = false;
-                motifInput.placeholder = "Motif de retour...";
-            } else {
-                motifInput.disabled = true;
-                motifInput.value = '';
-            }
         }
     }
     

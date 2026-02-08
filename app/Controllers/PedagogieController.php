@@ -142,7 +142,7 @@ class PedagogieController extends BaseController {
 
         // Chargement des données pour le formulaire
         $anneeActive = $anneeModel->getActive();
-        $classes = $classeModel->all(['statut' => 'actif'], 'nom ASC');
+        $classes = $classeModel->getSortedByLevel($anneeActive ? (int)$anneeActive['id'] : null);
         $matieres = $matiereModel->all(['actif' => 1], 'nom ASC');
         $enseignants = $personnelModel->getActifs('enseignant');
 
@@ -192,7 +192,7 @@ class PedagogieController extends BaseController {
 
         // Chargement des données pour le formulaire
         $anneeActive = $anneeModel->getActive();
-        $classes = $classeModel->all(['statut' => 'actif'], 'nom ASC');
+        $classes = $classeModel->getSortedByLevel($anneeActive ? (int)$anneeActive['id'] : null);
         $matieres = $matiereModel->all(['actif' => 1], 'nom ASC');
         $enseignants = $personnelModel->getActifs('enseignant');
 

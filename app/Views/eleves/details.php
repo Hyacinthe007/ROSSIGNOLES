@@ -252,7 +252,62 @@
                                     }
                                 }
 
-                                foreach (array_reverse($finalRows) as $row): // Trio inverse (plus récent en haut)
+                                // Fonction de tri personnalisée pour organiser les paiements
+                                usort($finalRows, function($a, $b) {
+                                    $motifA = strtolower($a['motif_affiche']);
+                                    $motifB = strtolower($b['motif_affiche']);
+                                    
+                                    // Fonction pour déterminer la priorité de tri
+                                    $getPriority = function($motif) {
+                                        // 1. Droit d'inscription en premier
+                                        if (stripos($motif, 'droit') !== false || 
+                                            (stripos($motif, 'inscription') !== false && stripos($motif, 'écolage') === false && stripos($motif, 'ecolage') === false)) {
+                                            return 1.0;
+                                        } 
+                                        // 2. Articles dans un ordre spécifique
+                                        elseif (stripos($motif, 'tee') !== false || stripos($motif, 't-shirt') !== false || stripos($motif, 'tshirt') !== false) {
+                                            return 2.1; // Tee-shirt
+                                        }
+                                        elseif (stripos($motif, 'logo') !== false) {
+                                            return 2.2; // Logo
+                                        }
+                                        elseif (stripos($motif, 'carnet') !== false) {
+                                            return 2.3; // Carnet de correspondance
+                                        }
+                                        // 3. Écolages par mois
+                                        elseif (stripos($motif, 'écolage') !== false || stripos($motif, 'ecolage') !== false) {
+                                            // Extraire le mois pour les écolages
+                                            $mois = ['janvier' => 1, 'février' => 2, 'fevrier' => 2, 'mars' => 3, 'avril' => 4, 
+                                                     'mai' => 5, 'juin' => 6, 'juillet' => 7, 'août' => 8, 'aout' => 8,
+                                                     'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12, 'decembre' => 12];
+                                            
+                                            foreach ($mois as $nomMois => $numMois) {
+                                                if (stripos($motif, $nomMois) !== false) {
+                                                    // Septembre (9) commence l'année scolaire
+                                                    // Septembre = 3.09, Octobre = 3.10, ..., Décembre = 3.12, Janvier = 3.01, ..., Juin = 3.06
+                                                    return 3 + ($numMois / 100);
+                                                }
+                                            }
+                                            return 3.0; // Écolage sans mois identifié
+                                        } 
+                                        // 4. Autres articles
+                                        else {
+                                            return 2.9; // Autres articles après Carnet
+                                        }
+                                    };
+                                    
+                                    $priorityA = $getPriority($motifA);
+                                    $priorityB = $getPriority($motifB);
+                                    
+                                    if ($priorityA != $priorityB) {
+                                        return $priorityA <=> $priorityB;
+                                    }
+                                    
+                                    // Si même priorité, trier par date de paiement (plus ancien en premier)
+                                    return strtotime($a['date_paiement']) <=> strtotime($b['date_paiement']);
+                                });
+                                
+                                foreach ($finalRows as $row): // Ordre logique : Inscription > Articles > Écolages chronologiques
                                 ?>
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">

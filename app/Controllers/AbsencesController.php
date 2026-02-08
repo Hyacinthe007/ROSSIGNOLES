@@ -68,16 +68,17 @@ class AbsencesController extends BaseController {
             $params
         );
         
-        // Compter le nombre total d'absences et de retards
-        $countAbsences = $this->absenceModel->query(
-            "SELECT COUNT(*) as count FROM absences WHERE type = 'absence'",
-            []
-        )[0]['count'] ?? 0;
-        
-        $countRetards = $this->absenceModel->query(
-            "SELECT COUNT(*) as count FROM absences WHERE type = 'retard'",
-            []
-        )[0]['count'] ?? 0;
+    
+    // Compter le nombre total d'absences et de retards NON JUSTIFIÉS
+    $countAbsences = $this->absenceModel->query(
+        "SELECT COUNT(*) as count FROM absences WHERE type = 'absence' AND justifiee = 0",
+        []
+    )[0]['count'] ?? 0;
+    
+    $countRetards = $this->absenceModel->query(
+        "SELECT COUNT(*) as count FROM absences WHERE type = 'retard' AND justifiee = 0",
+        []
+    )[0]['count'] ?? 0;
         
         $this->view('absences/list', [
             'absences' => $absences,
@@ -383,35 +384,31 @@ class AbsencesController extends BaseController {
             return;
         }
 
-        // Récupérer les absences des 7 derniers jours avant la date donnée
+        // Récupérer les absences des 15 derniers jours avant la date donnée (plus large pour détecter des périodes)
         $absences = $this->absenceModel->query(
-            "SELECT a.eleve_id, a.motif, a.date_absence
+            "SELECT a.eleve_id, a.motif, a.date_absence, a.justifiee
              FROM absences a
              WHERE a.classe_id = ? 
                AND a.date_absence < ?
-               AND a.date_absence >= DATE_SUB(?, INTERVAL 7 DAY)
+               AND a.date_absence >= DATE_SUB(?, INTERVAL 15 DAY)
                AND a.type = 'absence'
-             ORDER BY a.date_absence DESC",
+             ORDER BY a.date_absence ASC",
             [$classeId, $date, $date]
         );
 
-        // Garder seulement la dernière absence par élève
-        $absencesParEleve = [];
-        foreach ($absences as $absence) {
-            if (!isset($absencesParEleve[$absence['eleve_id']])) {
-                $absencesParEleve[$absence['eleve_id']] = $absence;
-            }
-        }
-
-        $this->json(array_values($absencesParEleve));
+        $this->json($absences);
     }
 
     /**
      * Toggle le statut justifié/non justifié d'une absence (API JSON)
      */
     public function toggleJustifiee() {
-        // Vérifier les permissions
+        // Vérifier les permissions et les rôles
         $this->requirePermission('absences.update');
+        if (!hasRole('direction') && !hasRole('surveillant')) {
+            $this->json(['success' => false, 'message' => 'Action réservée à la Direction ou aux Surveillants'], 403);
+            return;
+        }
 
         // Vérifier que c'est une requête POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

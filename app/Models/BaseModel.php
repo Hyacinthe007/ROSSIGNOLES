@@ -47,6 +47,10 @@ class BaseModel {
                 $options[PDO::ATTR_TIMEOUT] = 5;
                 
                 $pdo = new PDO($dsn, $config['username'], $config['password'], $options);
+                
+                // Forcer l'encodage UTF-8 pour la connexion
+                $pdo->exec("SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'");
+                $pdo->exec("SET CHARACTER SET utf8mb4");
             } catch (PDOException $e) {
                 error_log("Database connection error: " . $e->getMessage());
                 die("Erreur de connexion à la base de données. Veuillez vérifier que MySQL est démarré et que la base de données 'ecole' existe.");

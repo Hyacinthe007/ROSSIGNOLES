@@ -31,7 +31,7 @@
     </div>
 
     <!-- Formulaire -->
-    <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl border border-gray-100 mx-auto">
+    <div class="bg-white rounded-xl p-6 max-w-2xl border border-gray-100 mx-auto">
         <form method="POST" action="<?= (isset($tarif) ? url('tarifs/mettre-a-jour/' . $tarif['id']) : url('tarifs/creer')) ?><?= !empty($_GET['iframe']) ? '?iframe=1' : '' ?>">
             <?= csrf_field() ?>
 
@@ -117,11 +117,11 @@
             </div>
 
             <div class="flex items-center justify-end gap-4 pt-6 border-t">
-                <a href="<?= url('tarifs/liste') ?><?= !empty($_GET['iframe']) ? '?iframe=1' : '' ?>" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition flex items-center gap-2">
+                <a href="<?= url('tarifs/liste') ?><?= !empty($_GET['iframe']) ? '?iframe=1' : '' ?>" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition flex items-center gap-2">
                     <i class="fas fa-arrow-left"></i>
                     <span>Retour Ã  la configuration</span>
                 </a>
-                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition flex items-center gap-2">
+                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition flex items-center gap-2">
                     <i class="fas fa-save"></i>
                     <span>Enregistrer</span>
                 </button>

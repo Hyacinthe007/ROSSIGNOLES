@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-3 mb-2">
-                <a href="<?= url('finance/ecolage') ?>" class="text-gray-500 hover:text-gray-700 transition">
+                <a href="<?= url('finance/echeanciers') ?>" class="text-gray-500 hover:text-gray-700 transition">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <h1 class="text-2xl font-bold text-gray-800">Échéancier Écolage</h1>
@@ -129,7 +129,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <?php if ($ech['statut'] !== 'paye'): ?>
-                                            <a href="<?= url('finance/payer-ecolage/' . $ech['id']) ?>" class="text-blue-600 hover:text-blue-900 text-sm font-medium hover:underline">
+                                            <a href="<?= url('finance/paiement-mensuel/saisir') ?>?eleve_id=<?= $eleve['id'] ?>" class="text-blue-600 hover:text-blue-900 text-sm font-medium hover:underline">
                                                 Payer
                                             </a>
                                         <?php else: ?>

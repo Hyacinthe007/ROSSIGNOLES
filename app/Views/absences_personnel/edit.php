@@ -22,6 +22,7 @@ $breadcrumbs = [
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <form method="POST" class="p-6 space-y-6">
+                    <?= csrf_field() ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Personnel et Type -->
                         <div class="space-y-6">
@@ -142,6 +143,7 @@ $breadcrumbs = [
                     <div class="p-6">
                         <p class="text-sm text-gray-600 mb-4">Valider cette demande d'absence.</p>
                         <form method="POST" action="/absences_personnel/valider/<?= $absence['id'] ?>">
+                            <?= csrf_field() ?>
                             <div class="form-group mb-4">
                                 <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Remplaçant (Confirmation)</label>
                                 <select name="remplace_par" class="w-full text-sm border-gray-300 rounded-lg p-2">
@@ -167,6 +169,7 @@ $breadcrumbs = [
                     </div>
                     <div class="p-6">
                         <form method="POST" action="/absences_personnel/refuser/<?= $absence['id'] ?>">
+                            <?= csrf_field() ?>
                             <div class="mb-4">
                                 <label for="motif_refus" class="block text-sm font-medium text-gray-700 mb-1">Motif du refus <span class="text-red-500">*</span></label>
                                 <textarea name="motif_refus" id="motif_refus" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 focus:border-transparent p-2.5 text-sm" required></textarea>

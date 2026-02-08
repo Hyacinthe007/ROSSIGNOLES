@@ -18,7 +18,7 @@
     </div>
 
     <!-- Filtres -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <div class="bg-white rounded-xl p-4 mb-6">
         <form method="GET" action="<?= url('tarifs/liste') ?>" class="flex items-end gap-4">
             <?php if (isset($_GET['iframe']) && $_GET['iframe'] == '1'): ?>
                 <input type="hidden" name="iframe" value="1">
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Tableau -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="bg-white rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gradient-to-r from-green-600 to-green-700 text-white">

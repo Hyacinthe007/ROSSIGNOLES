@@ -1,8 +1,8 @@
 ﻿<?php
-$title = "Modifier le RÃ´le";
+$title = "Modifier le Rôle";
 $breadcrumbs = [
-    ['label' => 'SystÃ¨me', 'url' => '#'],
-    ['label' => 'RÃ´les & Permissions', 'url' => url('roles/list')],
+    ['label' => 'Système', 'url' => '#'],
+    ['label' => 'Rôles & Permissions', 'url' => url('roles/list')],
     ['label' => 'Modifier : ' . $role['nom']]
 ];
 ?>
@@ -13,15 +13,15 @@ $breadcrumbs = [
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
                     <i class="fas fa-user-shield text-blue-600 mr-2"></i>
-                    Modifier le rÃ´le
+                    Modifier le rôle
                 </h1>
-                <p class="text-gray-600 text-sm md:text-base">Mettez Ã  jour les caractÃ©ristiques et les accÃ¨s du rÃ´le <strong><?= e($role['nom']) ?></strong>.</p>
+                <p class="text-gray-600 text-sm md:text-base">Mettez à jour les caractéristiques et les accès du rôle <strong><?= e($role['nom']) ?></strong>.</p>
             </div>
             <div class="flex gap-3">
                 <a href="<?= url('roles/list') ?>" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <a href="<?= url('roles/delete/' . $role['id']) ?>" onclick="return confirm('ÃŠtes-vous sÃ»r ?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
+                <a href="<?= url('roles/delete/' . $role['id']) ?>" onclick="return confirm('Êtes-vous sûr ?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition">
                     <i class="fas fa-trash-alt"></i>
                 </a>
             </div>
@@ -34,24 +34,24 @@ $breadcrumbs = [
                 <div class="p-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                         <i class="fas fa-shield-alt text-blue-500"></i>
-                        Permissions & AccÃ¨s
+                        Permissions & Accès
                     </h2>
                 </div>
                 <div class="p-0"> <!-- Removed padding for full-height side layout -->
                     <?php
                     $targetLabels = [
-                        // ScolaritÃ©
+                        // Scolarité
                         'inscriptions_new' => 'Nouvelle inscription',
                         'inscriptions_list' => 'Gestion inscriptions',
-                        'eleves' => 'Liste des Ã©lÃ¨ves',
-                        'eleves_classe' => 'Ã‰lÃ¨ves par classe',
+                        'eleves' => 'Liste des élèves',
+                        'eleves_classe' => 'Élèves par classe',
                         'parents' => 'Parents / Tuteurs',
                         // Finance
                         'finance_dashboard' => 'Tableau de bord (Finance)',
                         'finance_mensuel' => 'Paiement Mensuel',
-                        'echeanciers' => 'Ã‰chÃ©anciers',
-                        'recus' => 'ReÃ§us de paiement',
-                        // PÃ©dagogie
+                        'echeanciers' => 'Échéanciers',
+                        'recus' => 'Reçus de paiement',
+                        // Pédagogie
                         'enseignements' => 'Enseignements',
                         'calendrier' => 'Emplois du temps',
                         'parcours' => 'Parcours Scolaires',
@@ -60,9 +60,9 @@ $breadcrumbs = [
                         'personnel_new' => 'Nouveau Personnel',
                         'personnel_list' => 'Liste du personnel',
                         'absences_personnel' => 'Absences du personnel',
-                        // Ã‰valuations
+                        // Évaluations
                         'notes' => 'Notes',
-                        'resultats' => 'RÃ©sultats',
+                        'resultats' => 'Résultats',
                         'bulletins' => 'Bulletins',
                         // Vie scolaire
                         'absences' => 'Absences & Retards',
@@ -71,10 +71,10 @@ $breadcrumbs = [
                         'annonces' => 'Annonces',
                         'messagerie' => 'Messagerie',
                         'notifications' => 'Notifications',
-                        // ParamÃ¨tres
+                        // Paramètres
                         'systeme' => 'Configurations',
                         'users' => 'Utilisateurs',
-                        'roles' => 'RÃ´les',
+                        'roles' => 'Rôles',
                         'logs' => 'Logs'
                     ];
 
@@ -86,19 +86,19 @@ $breadcrumbs = [
                         $groupedPermissions[$p['module']][$target][$action] = $p;
                     }
 
-                    // DÃ©finir l'ordre des modules pour correspondre au sidebar
+                    // Définir l'ordre des modules pour correspondre au sidebar
                     $orderedModules = [
-                        'ScolaritÃ©',
+                        'Scolarité',
                         'Finance',
-                        'PÃ©dagogie',
+                        'Pédagogie',
                         'Ressources humaines',
-                        'Ã‰valuations',
+                        'Évaluations',
                         'Vie scolaire',
                         'Communication',
-                        'ParamÃ¨tres'
+                        'Paramètres'
                     ];
 
-                    // Filtrer pour ne garder que ceux qui existent dans les donnÃ©es
+                    // Filtrer pour ne garder que ceux qui existent dans les données
                     $modules = array_values(array_intersect($orderedModules, array_keys($groupedPermissions)));
                     $firstModule = $modules[0] ?? null;
                     ?>
@@ -135,11 +135,11 @@ $breadcrumbs = [
                                     <div class="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
                                         <div>
                                             <h3 class="text-lg font-bold text-gray-800"><?= e($module) ?></h3>
-                                            <p class="text-xs text-gray-500">Configurez les accÃ¨s dÃ©taillÃ©s pour ce module.</p>
+                                            <p class="text-xs text-gray-500">Configurez les accès détaillés pour ce module.</p>
                                         </div>
                                         <div class="flex gap-2">
                                             <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', true)" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">Tout cocher</button>
-                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout dÃ©cocher</button>
+                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout décocher</button>
                                         </div>
                                     </div>
 
@@ -172,7 +172,7 @@ $breadcrumbs = [
                                                                 <?php
                                                                 $actionLabels = [
                                                                     'view' => 'Lire',
-                                                                    'create' => 'CrÃ©er',
+                                                                    'create' => 'Créer',
                                                                     'update' => 'Modifier',
                                                                     'delete' => 'Supprimer',
                                                                     'export_pdf' => 'Export PDF',
@@ -198,9 +198,9 @@ $breadcrumbs = [
                 <a href="<?= url('roles/list') ?>" class="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition">
                     Annuler
                 </a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl transition font-semibold shadow-lg shadow-blue-200 flex items-center gap-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl transition font-semibold flex items-center gap-2">
                     <i class="fas fa-check-circle"></i>
-                    Enregistrer les modifications
+                    Enregistrer
                 </button>
             </div>
         </form>

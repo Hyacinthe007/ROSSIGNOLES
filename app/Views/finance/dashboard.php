@@ -9,13 +9,9 @@
             <p class="text-gray-600 text-sm md:text-base">Vue d'ensemble de la situation financière</p>
         </div>
         <div class="flex gap-2">
-            <a href="<?= url('finance/ecolage') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
+            <a href="<?= url('finance/echeanciers') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Suivi Écolage</span>
-            </a>
-            <a href="<?= url('finance/list') ?>" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition flex items-center gap-2 shadow-lg">
-                <i class="fas fa-list"></i>
-                <span>Tous les frais</span>
             </a>
         </div>
     </div>
@@ -118,7 +114,7 @@
                     <i class="fas fa-calendar-day text-blue-500 mr-2"></i>
                     Mois en cours (<?= date('F Y') ?>)
                 </h2>
-                <a href="<?= url('finance/ecolage') ?>" class="text-blue-600 hover:text-blue-800 text-sm">
+                <a href="<?= url('finance/echeanciers') ?>" class="text-blue-600 hover:text-blue-800 text-sm">
                     Voir tout <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>

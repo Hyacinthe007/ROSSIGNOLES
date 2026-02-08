@@ -162,45 +162,6 @@ class FinanceService {
         return $stats;
     }
     
-    /**
-     * Obtient la liste des élèves avec leur statut de paiement écolage
-     */
-    public function getListeEcolage($mois = null, $annee = null, $statut = null, $classeId = null) {
-        $db = BaseModel::getDBConnection();
-        
-        $mois = $mois ?? date('n');
-        $annee = $annee ?? date('Y');
-        
-        $sql = "
-            SELECT e.*, el.nom as eleve_nom, el.prenom as eleve_prenom, el.matricule,
-                   c.nom as classe_nom, c.id as classe_id,
-                   p.telephone as parent_telephone, p.nom as parent_nom
-            FROM echeanciers_ecolages e
-            INNER JOIN eleves el ON e.eleve_id = el.id
-            INNER JOIN inscriptions i ON e.eleve_id = i.eleve_id AND e.annee_scolaire_id = i.annee_scolaire_id
-            INNER JOIN classes c ON i.classe_id = c.id
-            LEFT JOIN eleves_parents ep ON el.id = ep.eleve_id
-            LEFT JOIN parents p ON ep.parent_id = p.id
-            WHERE e.mois = ? AND e.annee = ? AND i.statut = 'validee'
-        ";
-        $params = [$mois, $annee];
-        
-        if ($statut) {
-            $sql .= " AND e.statut = ?";
-            $params[] = $statut;
-        }
-        
-        if ($classeId) {
-            $sql .= " AND c.id = ?";
-            $params[] = $classeId;
-        }
-        
-        $sql .= " GROUP BY e.id ORDER BY el.nom ASC";
-        
-        $stmt = $db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
-    }
 
     /**
      * Obtient la liste des impayés pour le recouvrement (Échéancier)

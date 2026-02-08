@@ -297,5 +297,26 @@ class Classe extends BaseModel {
         return $this->query($sql, $params);
     }
 
+    /**
+     * Récupère les classes d'une année scolaire triées par ordre pédagogique
+     * (Ordre du cycle, puis ordre du niveau, puis nom de la classe)
+     */
+    public function getSortedByLevel($anneeId = null) {
+        $sql = "SELECT c.*, n.libelle as niveau_nom, cy.libelle as cycle_nom
+                FROM {$this->table} c
+                INNER JOIN niveaux n ON c.niveau_id = n.id
+                LEFT JOIN cycles cy ON n.cycle_id = cy.id
+                WHERE c.statut = 'actif' AND c.deleted_at IS NULL";
+        
+        $params = [];
+        if ($anneeId) {
+            $sql .= " AND c.annee_scolaire_id = ?";
+            $params[] = $anneeId;
+        }
+        
+        $sql .= " ORDER BY cy.ordre ASC, n.ordre ASC, c.nom ASC";
+        
+        return $this->query($sql, $params);
+    }
 }
 

@@ -15,7 +15,7 @@ $breadcrumbs = [
             </h1>
             <p class="text-gray-600">Définissez les niveaux d'accès et les permissions du personnel</p>
         </div>
-        <a href="<?= url('roles/add') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
+        <a href="<?= url('roles/add') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
             <i class="fas fa-plus"></i>
             <span>Nouveau Rôle</span>
         </a>

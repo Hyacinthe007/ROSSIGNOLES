@@ -1,3 +1,25 @@
+<?php
+// Calculer si tous les documents obligatoires ont été téléchargés
+$allMandatoryUploaded = true;
+if (!empty($exigences)) {
+    foreach ($exigences as $exigence) {
+        if ($exigence['obligatoire']) {
+            $found = false;
+            foreach ($documents as $doc) {
+                if ($doc['nom_document'] === $exigence['nom_document']) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $allMandatoryUploaded = false;
+                break;
+            }
+        }
+    }
+}
+?>
+
 <div class="p-4 md:p-8">
     <!-- En-tête -->
     <div class="mb-6">

@@ -54,8 +54,10 @@ $routes = [
     ['pattern' => 'inscriptions/modifier/{id}', 'method' => 'GET', 'handler' => 'InscriptionsController@modifier'],
     ['pattern' => 'inscriptions/update', 'method' => 'POST', 'handler' => 'InscriptionsController@mettreAJour'],
     ['pattern' => 'inscriptions/recu/{id}', 'method' => 'GET', 'handler' => 'InscriptionsController@recuPaiement'],
-    ['pattern' => 'inscriptions/documents/{id}', 'method' => 'GET', 'handler' => 'InscriptionsController@documents'],
-    ['pattern' => 'inscriptions/documents/{id}', 'method' => 'POST', 'handler' => 'InscriptionsController@documents'],
+    ['pattern' => 'inscriptions/documents/{id}', 'method' => 'GET', 'handler' => 'InscriptionDocumentController@documents'],
+    ['pattern' => 'inscriptions/documents/{id}', 'method' => 'POST', 'handler' => 'InscriptionDocumentController@documents'],
+    ['pattern' => 'inscriptions/documents/upload', 'method' => 'POST', 'handler' => 'InscriptionDocumentController@upload'],
+    ['pattern' => 'inscriptions/documents/delete', 'method' => 'POST', 'handler' => 'InscriptionDocumentController@delete'],
     
     // Années Scolaires
     ['pattern' => 'annees-scolaires/list', 'method' => 'GET', 'handler' => 'AnneesScolairesController@list'],
@@ -252,10 +254,7 @@ $routes = [
     // FINANCE - Dashboard et Suivi
     // ============================================================================
     ['pattern' => 'finance/dashboard', 'method' => 'GET', 'handler' => 'FinanceController@dashboard'],
-    ['pattern' => 'finance/ecolage', 'method' => 'GET', 'handler' => 'FinanceController@listeEcolage'],
     ['pattern' => 'finance/echeanciers', 'method' => 'GET', 'handler' => 'FinanceController@echeanciers'],
-    ['pattern' => 'finance/ecolage/payer/{id}', 'method' => 'GET', 'handler' => 'FinanceController@payerEcolage'],
-    ['pattern' => 'finance/ecolage/payer/{id}', 'method' => 'POST', 'handler' => 'FinanceController@payerEcolage'],
     ['pattern' => 'finance/echeanciers/sms/{id}', 'method' => 'GET', 'handler' => 'FinanceController@envoyerSmsRelance'],
     ['pattern' => 'finance/echeanciers/sms-all', 'method' => 'POST', 'handler' => 'FinanceController@envoyerSmsRelanceTous'],
     

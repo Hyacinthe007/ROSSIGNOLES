@@ -9,7 +9,7 @@
             <p class="text-gray-600 text-sm md:text-base">Historique complet de l'élève : <?= e($eleve['nom'] . ' ' . $eleve['prenom']) ?></p>
         </div>
         <div class="flex gap-2">
-            <a href="<?= url('eleves/list') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md">
+            <a href="<?= url('classes/eleves') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour à la liste</span>
             </a>
