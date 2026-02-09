@@ -33,8 +33,14 @@ class FinanceController extends BaseController {
     }
     
     public function dashboard() {
-        $stats = $this->financeService->getStats();
-        $this->view('finance/dashboard', ['stats' => $stats]);
+        // Récupérer le filtre de période depuis l'URL (par défaut: mois en cours)
+        $periode = $_GET['periode'] ?? 'mois_ci';
+        
+        $stats = $this->financeService->getStats(null, $periode);
+        $this->view('finance/dashboard', [
+            'stats' => $stats,
+            'periode' => $periode
+        ]);
     }
     
 
@@ -334,7 +340,7 @@ class FinanceController extends BaseController {
                 [$paiement['eleve_id'], $paiement['date_paiement']]
             );
             
-            $factureIds = array_filter(array_unique(array_column($allPaiementsDay, 'facture_id')));
+            $factureIds = array_values(array_filter(array_unique(array_column($allPaiementsDay, 'facture_id'))));
             
             // Récupérer les lignes de TOUTES les factures du jour pour le détail
             $lignes = [];
@@ -552,7 +558,7 @@ class FinanceController extends BaseController {
             [$paiement['eleve_id'], $paiement['date_paiement']]
         );
         
-        $factureIds = array_filter(array_unique(array_column($allPaiementsDay, 'facture_id')));
+        $factureIds = array_values(array_filter(array_unique(array_column($allPaiementsDay, 'facture_id'))));
         
         // Récupérer les lignes de TOUTES les factures du jour pour le détail
         $lignes = [];

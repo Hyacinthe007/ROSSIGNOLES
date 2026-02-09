@@ -139,7 +139,7 @@ $breadcrumbs = [
                             <i class="fas fa-paper-plane mr-2"></i>Demandé le
                         </th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">
-                            Actions
+                            <i class="fas fa-tools mr-2"></i>Actions
                         </th>
                     </tr>
                 </thead>

@@ -180,6 +180,31 @@ function formatMoney($amount) {
 }
 
 /**
+ * Formate un numéro de téléphone malgache
+ * Format: 03X XX XXX XX
+ */
+function formatTelephone($telephone) {
+    if (empty($telephone)) {
+        return '';
+    }
+    
+    // Nettoyer le numéro (enlever espaces, tirets, etc.)
+    $clean = preg_replace('/[^0-9]/', '', $telephone);
+    
+    // Vérifier si c'est un numéro malgache à 10 chiffres commençant par 03
+    if (strlen($clean) === 10 && substr($clean, 0, 2) === '03') {
+        // Format: 03X XX XXX XX
+        return substr($clean, 0, 3) . ' ' . 
+               substr($clean, 3, 2) . ' ' . 
+               substr($clean, 5, 3) . ' ' . 
+               substr($clean, 8, 2);
+    }
+    
+    // Si le format ne correspond pas, retourner tel quel
+    return $telephone;
+}
+
+/**
  * Génère un matricule automatique selon le type
  * Format: PREFIXE-NUMERO (ex: EL-00001)
  */

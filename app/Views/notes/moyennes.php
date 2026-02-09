@@ -93,7 +93,7 @@ $breadcrumbs = [
                             <option value="">Toutes les classes</option>
                             <?php foreach ($classes as $classe): ?>
                                 <option value="<?= $classe['id'] ?>" <?= $selectedClasse == $classe['id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($classe['nom']) ?>
+                                    <?= htmlspecialchars($classe['code']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

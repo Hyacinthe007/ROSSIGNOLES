@@ -177,55 +177,31 @@ $totalSelectionne = 0;
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Montant perçu <span class="text-red-500">*</span></label>
-                            <div class="relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm"></span>
-                                </div>
-                                <input type="text" 
-                                       name="montant_paye" 
-                                       id="montantPaye"
-                                       class="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-mono text-lg amount-format" 
-                                       placeholder="0"
-                                       required
-                                       oninput="calculerRendu()">
-                            </div>
+                            <input type="text" 
+                                   name="montant_paye" 
+                                   id="montantPaye"
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-mono text-lg amount-format" 
+                                   placeholder="0"
+                                   required>
                         </div>
 
-                        <div class="bg-gray-50 rounded-lg p-3 flex justify-between items-center border border-gray-200">
-                            <span class="text-sm font-medium text-gray-600">Rendu monnaie</span>
-                            <span class="font-bold text-lg text-gray-400 font-mono" id="renduMonnaie">0</span>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mode de paiement</label>
+                            <select name="mode_paiement_id" id="modePaiement" onchange="toggleReference()" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <?php foreach ($modesPaiement as $mode): ?>
+                                    <option value="<?= $mode['id'] ?>"><?= e($mode['libelle']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="pt-2 space-y-3">
-                        <button type="button" 
-                                class="w-full text-left flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 text-sm font-medium text-gray-700"
-                                onclick="document.getElementById('detailsPaiement').classList.toggle('hidden');">
-                            <span><i class="fas fa-sliders-h mr-2"></i> Options de paiement</span>
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </button>
-                        
-                        <div id="detailsPaiement" class="hidden space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-fade-in-down">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Mode de paiement</label>
-                                <select name="mode_paiement_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                    <?php foreach ($modesPaiement as $mode): ?>
-                                        <option value="<?= $mode['id'] ?>"><?= e($mode['libelle']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Date</label>
-                                <input type="date" name="date_paiement" value="<?= date('Y-m-d') ?>" class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Référence</label>
-                                <input type="text" name="reference" placeholder="N° reçu, chèque..." class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Note interne</label>
-                                <textarea name="remarque" rows="2" class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"></textarea>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date de paiement</label>
+                            <input type="date" name="date_paiement" value="<?= date('Y-m-d') ?>" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Référence</label>
+                            <input type="text" name="reference" id="referenceInput" placeholder="N° reçu, chèque..." class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
                         </div>
                     </div>
 
@@ -295,7 +271,13 @@ function toggleEcheance(card) {
 function updateRecapitulatif() {
     document.getElementById('nbEcheances').textContent = nbEcheancesSelectionnees;
     document.getElementById('montantTotal').innerHTML = formatMoney(totalSelectionne);
-    document.getElementById('montantPaye').value = totalSelectionne > 0 ? totalSelectionne : '';
+    
+    // Format the value for the input using global formatAmount from footer.php
+    if (typeof formatAmount === 'function') {
+        document.getElementById('montantPaye').value = totalSelectionne > 0 ? formatAmount(totalSelectionne.toString()) : '';
+    } else {
+        document.getElementById('montantPaye').value = totalSelectionne > 0 ? totalSelectionne : '';
+    }
     
     const btnEnregistrer = document.getElementById('btnEnregistrer');
     if (nbEcheancesSelectionnees > 0) {
@@ -303,26 +285,24 @@ function updateRecapitulatif() {
     } else {
         btnEnregistrer.disabled = true;
     }
-    
-    calculerRendu();
 }
 
-function calculerRendu() {
-    const montantPayeInput = document.getElementById('montantPaye');
-    const montantPaye = parseFloat(unformatAmount(montantPayeInput.value)) || 0;
-    const rendu = montantPaye - totalSelectionne;
-    const renduEl = document.getElementById('renduMonnaie');
+function toggleReference() {
+    const modeSelect = document.getElementById('modePaiement');
+    const referenceInput = document.getElementById('referenceInput');
+    if (!modeSelect || !referenceInput) return;
     
-    renduEl.textContent = formatMoney(Math.max(0, rendu));
+    const selectedText = modeSelect.options[modeSelect.selectedIndex].text.toLowerCase();
     
-    if (rendu < 0 && nbEcheancesSelectionnees > 0) {
-        renduEl.classList.remove('text-green-600', 'text-gray-400');
-        renduEl.classList.add('text-red-500');
-    } else if (rendu >= 0 && nbEcheancesSelectionnees > 0) {
-        renduEl.classList.remove('text-red-500', 'text-gray-400');
-        renduEl.classList.add('text-green-600');
+    if (selectedText.includes('espè')) {
+        referenceInput.disabled = true;
+        referenceInput.placeholder = "Non requis pour espèces";
+        referenceInput.value = "";
+        referenceInput.classList.add('bg-gray-100');
     } else {
-        renduEl.className = 'font-bold text-lg text-gray-400 font-mono';
+        referenceInput.disabled = false;
+        referenceInput.placeholder = "N° reçu, chèque...";
+        referenceInput.classList.remove('bg-gray-100');
     }
 }
 
@@ -339,7 +319,17 @@ document.getElementById('paiementForm').addEventListener('submit', function(e) {
     }
     
     const montantPayeInput = document.getElementById('montantPaye');
-    const montantPaye = parseFloat(unformatAmount(montantPayeInput.value)) || 0;
+    let montantPayeValue = montantPayeInput.value;
+    
+    // Use global unformatAmount from footer.php if available
+    if (typeof unformatAmount === 'function') {
+        montantPayeValue = unformatAmount(montantPayeValue);
+    } else {
+        montantPayeValue = montantPayeValue.replace(/\s/g, '');
+    }
+    
+    const montantPaye = parseFloat(montantPayeValue) || 0;
+    
     if (montantPaye < totalSelectionne) {
         e.preventDefault();
         alert('Le montant perçu est insuffisant pour couvrir les échéances sélectionnées');
@@ -350,6 +340,11 @@ document.getElementById('paiementForm').addEventListener('submit', function(e) {
         e.preventDefault();
         return false;
     }
+});
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    toggleReference();
 });
 </script>
 

@@ -15,7 +15,7 @@ class FinanceService {
     /**
      * Obtient les statistiques financières complètes
      */
-    public function getStats($anneeScolaireId = null) {
+    public function getStats($anneeScolaireId = null, $periode = 'tous') {
         $db = BaseModel::getDBConnection();
         
         if (!$anneeScolaireId) {
@@ -27,6 +27,27 @@ class FinanceService {
                 $annee = $db->query("SELECT id FROM annees_scolaires ORDER BY date_debut DESC LIMIT 1")->fetch();
                 $anneeScolaireId = $annee ? $annee['id'] : null;
             }
+        }
+        
+        // Calculer les dates de filtrage selon la période
+        $dateFilter = '';
+        $dateParams = [];
+        
+        switch ($periode) {
+            case 'aujourdhui':
+                $dateFilter = " AND DATE(p.date_paiement) = CURDATE()";
+                break;
+            case 'mois_ci':
+                $dateFilter = " AND MONTH(p.date_paiement) = MONTH(CURDATE()) AND YEAR(p.date_paiement) = YEAR(CURDATE())";
+                break;
+            case 'dernier_mois':
+                $dateFilter = " AND p.date_paiement >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+                break;
+            case 'trois_mois':
+                $dateFilter = " AND p.date_paiement >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
+                break;
+            default: // 'tous'
+                $dateFilter = '';
         }
         
         $stats = [
@@ -43,20 +64,67 @@ class FinanceService {
         
         if (!$anneeScolaireId) return $stats;
         
-        // Statistiques écolage depuis echeanciers_ecolages
-        $stmt = $db->prepare("
-            SELECT 
-                COALESCE(SUM(e.montant_du), 0) as total_attendu,
-                COALESCE(SUM(e.montant_paye), 0) as total_recu
-            FROM echeanciers_ecolages e
-            WHERE e.annee_scolaire_id = ?
-        ");
-        $stmt->execute([$anneeScolaireId]);
+        // Statistiques écolage depuis paiements (filtré par période)
+        if ($periode === 'tous') {
+            // Pour "tous", utiliser les échéanciers comme avant
+            $stmt = $db->prepare("
+                SELECT 
+                    COALESCE(SUM(e.montant_du), 0) as total_attendu,
+                    COALESCE(SUM(e.montant_paye), 0) as total_recu
+                FROM echeanciers_ecolages e
+                WHERE e.annee_scolaire_id = ?
+            ");
+            $stmt->execute([$anneeScolaireId]);
+        } else {
+            // Pour les périodes spécifiques, calculer depuis les paiements
+            $stmt = $db->prepare("
+                SELECT 
+                    COALESCE(SUM(p.montant), 0) as total_recu
+                FROM paiements p
+                INNER JOIN factures f ON p.facture_id = f.id
+                WHERE f.annee_scolaire_id = ?
+                $dateFilter
+            ");
+            $stmt->execute([$anneeScolaireId]);
+        }
         $result = $stmt->fetch();
         
         $stats['total_recu'] = $result['total_recu'] ?? 0;
-        $stats['total_attendu'] = $result['total_attendu'] ?? 0;
+        
+        // Pour total_attendu, on garde la logique des échéanciers
+        if ($periode !== 'tous') {
+            $stats['total_attendu'] = $stats['total_recu']; // Simplification pour les périodes filtrées
+        } else {
+            $stats['total_attendu'] = $result['total_attendu'] ?? 0;
+        }
+        
         $stats['impayes'] = $stats['total_attendu'] - $stats['total_recu'];
+        
+        // Calculer le total des articles vendus (filtré par période si nécessaire)
+        if ($periode === 'tous') {
+            // Pour "tous", calculer depuis inscriptions_articles
+            $stmtArticles = $db->prepare("
+                SELECT COALESCE(SUM(ia.prix_unitaire * ia.quantite), 0) as total_articles
+                FROM inscriptions_articles ia
+                INNER JOIN inscriptions i ON ia.inscription_id = i.id
+                WHERE i.annee_scolaire_id = ?
+                  AND ia.paye = 1
+            ");
+            $stmtArticles->execute([$anneeScolaireId]);
+        } else {
+            // Pour les périodes spécifiques, calculer depuis les paiements avec remarque contenant "Articles"
+            $stmtArticles = $db->prepare("
+                SELECT COALESCE(SUM(p.montant), 0) as total_articles
+                FROM paiements p
+                INNER JOIN factures f ON p.facture_id = f.id
+                WHERE f.annee_scolaire_id = ?
+                  AND (p.remarque LIKE '%Articles%' OR p.remarque LIKE '%articles%')
+                  $dateFilter
+            ");
+            $stmtArticles->execute([$anneeScolaireId]);
+        }
+        $resultArticles = $stmtArticles->fetch();
+        $stats['total_articles_vendus'] = $resultArticles['total_articles'] ?? 0;
         
         // Compter les élèves inscrits
         $stmt2 = $db->prepare("
@@ -197,7 +265,7 @@ class FinanceService {
         // Utiliser une sous-requête pour récupérer le premier parent de chaque élève
         $sql = "
             SELECT e.*, el.nom as eleve_nom, el.prenom as eleve_prenom, el.matricule,
-                   c.nom as classe_nom,
+                   c.nom as classe_nom, c.code as classe_code,
                    (SELECT p.telephone 
                     FROM eleves_parents ep 
                     INNER JOIN parents p ON ep.parent_id = p.id 

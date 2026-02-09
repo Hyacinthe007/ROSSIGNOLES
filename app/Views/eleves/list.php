@@ -83,7 +83,7 @@
                             <i class="fas fa-credit-card mr-2"></i>Statut
                         </th>
                         <th class="px-6 py-3 text-right text-sm font-bold text-gray-900 capitalize tracking-wider">
-                            Actions
+                            <i class="fas fa-tools mr-2"></i>Actions
                         </th>
                     </tr>
                 </thead>

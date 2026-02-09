@@ -3,7 +3,7 @@
     <div class="mb-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                     <i class="fas fa-receipt text-green-600 mr-2"></i>
                     Reçus de paiement
                 </h1>
@@ -74,13 +74,13 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élève</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mois Écolage</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facture</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mode</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Élève</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Mois Écolage</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-file-invoice mr-2"></i>Facture</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Mode</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Montant</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">

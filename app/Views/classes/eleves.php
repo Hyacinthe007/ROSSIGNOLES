@@ -11,15 +11,7 @@
             </h1>
             <p class="text-gray-600 text-sm md:text-base">Consultez les élèves inscrits pour l'année scolaire en cours</p>
         </div>
-        <div class="flex gap-2">
-            <a href="<?= url('classes/list') ?>" 
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md font-medium">
-                <i class="fas fa-arrow-left"></i>
-                <span>Retour</span>
-            </a>
-        </div>
     </div>
-
     <!-- Statistiques et Filtre -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-lg p-6">
@@ -92,13 +84,12 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code classe</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-id-card mr-2"></i>Matricule</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Nom - prénom</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Classe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Date d'inscription</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-credit-card mr-2"></i>Statut</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -108,10 +99,7 @@
                                     <?= e($eleve['matricule'] ?? 'N/A') ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <?= e($eleve['nom'] ?? 'N/A') ?>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <?= e($eleve['prenom'] ?? 'N/A') ?>
+                                    <div class="font-medium"><?= e(($eleve['nom'] ?? 'N/A') . ' ' . ($eleve['prenom'] ?? '')) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <a href="<?= url('classes/details/' . ($eleve['classe_id'] ?? '')) ?>" 
@@ -119,7 +107,7 @@
                                         <?= e($eleve['classe_code'] ?? 'N/A') ?>
                                     </a>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <?= formatDate($eleve['date_inscription'] ?? '') ?>
                                 </td>
                                  <td class="px-6 py-4 whitespace-nowrap">

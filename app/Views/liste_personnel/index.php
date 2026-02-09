@@ -29,7 +29,7 @@
              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
              <input type="text"
                     id="searchPersonnel"
-                    placeholder="Rechercher par nom, prÃ©nom, matricule..."
+                    placeholder="Rechercher par nom, prénom, matricule..."
                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
              <div id="searchResults" class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto"></div>
         </div>
@@ -41,19 +41,19 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-900 font-bold">
-                        <th class="p-4">Matricule</th>
-                        <th class="p-4">Nom & PrÃ©nom</th>
-                        <th class="p-4">Sexe</th>
-                        <th class="p-4">Fonction</th>
-                        <th class="p-4">Contact</th>
-                        <th class="p-4">Statut</th>
-                        <th class="p-4 text-center">Actions</th>
+                        <th class="p-4"><i class="fas fa-id-card mr-2"></i>Matricule</th>
+                        <th class="p-4"><i class="fas fa-user mr-2"></i>Nom & Prénom</th>
+                        <th class="p-4"><i class="fas fa-venus-mars mr-2"></i>Sexe</th>
+                        <th class="p-4"><i class="fas fa-user-tie mr-2"></i>Fonction</th>
+                        <th class="p-4"><i class="fas fa-phone mr-2"></i>Contact</th>
+                        <th class="p-4"><i class="fas fa-credit-card mr-2"></i>Statut</th>
+                        <th class="p-4 text-center"><i class="fas fa-tools mr-2"></i>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="personnelTableBody">
                     <?php if (empty($list)): ?>
                     <tr>
-                        <td colspan="7" class="p-8 text-center text-gray-500">Aucun personnel trouvÃ©</td>
+                        <td colspan="7" class="p-8 text-center text-gray-500">Aucun personnel trouvé</td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($list as $p): ?>

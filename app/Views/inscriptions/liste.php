@@ -188,13 +188,13 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Élève</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Classe</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Montant Payé</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Statut</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Élève</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Classe</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Montant Payé</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-credit-card mr-2"></i>Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -219,8 +219,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold text-gray-900"><?= e($inscription['classe_nom']) ?></div>
-                                    <div class="text-sm text-gray-500"><?= e($inscription['classe_code']) ?></div>
+                                    <div class="text-sm text-gray-900"><?= e($inscription['classe_code']) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
