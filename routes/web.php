@@ -286,6 +286,7 @@ $routes = [
     ['pattern' => 'paie/configuration', 'method' => 'GET', 'handler' => 'PaieController@configuration'],
     ['pattern' => 'paie/configuration/update', 'method' => 'POST', 'handler' => 'PaieController@updateCotisations'],
     ['pattern' => 'paie/configuration/update-irsa', 'method' => 'POST', 'handler' => 'PaieController@updateIrsa'],
+    ['pattern' => 'paie/simulateur', 'method' => 'GET', 'handler' => 'PaieController@simulateur'],
     
     // Contrats de paie
     ['pattern' => 'paie/contrats', 'method' => 'GET', 'handler' => 'PaieController@contrats'],

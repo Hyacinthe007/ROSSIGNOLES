@@ -70,7 +70,7 @@
                     <select id="emploi_temps_id" 
                             name="emploi_temps_id"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">-- Choisir un cours de l'emploi du temps --</option>
+                        <option value="">-- Choisir un cours --</option>
                     </select>
                 </div>
             </div>
@@ -113,16 +113,16 @@
                 <!-- Tableau -->
                 <div class="overflow-x-auto mb-6">
                     <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead class="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                    N°
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                    <i class="fas fa-list-ol mr-2"></i>N°
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                    Nom - Prénom
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                    <i class="fas fa-user mr-2"></i>Nom - Prénom
                                 </th>
-                                <th class="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider">
-                                    Présence
+                                <th class="px-6 py-3 text-center text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                    <i class="fas fa-check-circle mr-2"></i>Présence
                                 </th>
                             </tr>
                         </thead>
@@ -340,14 +340,16 @@ document.addEventListener('DOMContentLoaded', function() {
         emploisTempsData.forEach(et => {
             const option = document.createElement('option');
             option.value = et.id;
-            option.textContent = et.matiere_nom; // Afficher uniquement le nom de la matière
+            
+            // Formater l'affichage avec heure et matière
+            const heureDebut = et.heure_debut.substring(0, 5);
+            const heureFin = et.heure_fin.substring(0, 5);
+            option.textContent = `${heureDebut}-${heureFin} | ${et.matiere_nom}`;
+            
             option.dataset.heureDebut = et.heure_debut;
             option.dataset.heureFin = et.heure_fin;
             option.dataset.matiere = et.matiere_nom;
             option.dataset.enseignant = et.enseignant_nom;
-            
-            const heureDebut = et.heure_debut.substring(0, 5);
-            const heureFin = et.heure_fin.substring(0, 5);
             
             // Détection du cours actuel (en cours maintenant)
             if (currentTime >= heureDebut && currentTime <= heureFin) {

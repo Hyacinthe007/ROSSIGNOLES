@@ -523,17 +523,17 @@ require_once __DIR__ . '/../layout/sidebar.php';
         <?php else: ?>
             <div class="table-container">
                 <table class="cours-table">
-                    <thead>
+                    <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th>Horaire</th>
-                            <th>Classe</th>
-                            <th>MatiÃ¨re</th>
-                            <th>Enseignant</th>
-                            <th>Effectif</th>
-                            <th>PrÃ©sents</th>
-                            <th>Absents</th>
-                            <th>Taux</th>
-                            <th>Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-clock mr-2"></i>Horaire</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Classe</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-book mr-2"></i>Matière</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user-tie mr-2"></i>Enseignant</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-users mr-2"></i>Effectif</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user-check mr-2"></i>Présents</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user-times mr-2"></i>Absents</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-percentage mr-2"></i>Taux</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>

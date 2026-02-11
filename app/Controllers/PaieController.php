@@ -44,6 +44,19 @@ class PaieController extends BaseController {
     }
     
     /**
+     * Simulateur de salaire
+     */
+    public function simulateur() {
+        $this->requirePermission('paie.read');
+        
+        $data = [
+            'title' => 'Simulateur de Salaire Net'
+        ];
+        
+        $this->view('paie/simulateur', $data);
+    }
+    
+    /**
      * Configuration des paramètres de paie
      */
     public function configuration() {
