@@ -37,6 +37,12 @@ class AuthController extends BaseController {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
+                // Photo/avatar en session (si présente)
+                if (!empty($user['avatar'])) {
+                    $_SESSION['avatar'] = $user['avatar'];
+                } else {
+                    $_SESSION['avatar'] = null;
+                }
                 
                 // Récupération des rôles et permissions
                 $roles = $userModel->getRoles($user['id']);
@@ -80,6 +86,14 @@ class AuthController extends BaseController {
     public function logout() {
         if (isset($_SESSION['user_id'])) {
             LogActivite::log('Déconnexion', 'Authentification', "L'utilisateur {$_SESSION['username']} s'est déconnecté");
+        }
+        // Nettoyer les données de session puis détruire
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params['path'], $params['domain'], $params['secure'], $params['httponly']
+            );
         }
         session_destroy();
         $this->redirect('/auth/login');

@@ -44,20 +44,61 @@ $breadcrumbs = [
     <!-- Filtres -->
     <div class="bg-white rounded-xl shadow-md p-4 mb-6">
         <form method="GET" class="flex flex-col sm:flex-row gap-4 items-end">
-            <div class="w-full sm:w-1/3">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Classe</label>
-                <select name="classe_id" class="w-full rounded-lg border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+            <div class="flex-1 w-full md:w-auto">
+                <label for="classe_id" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
+                    <i class="fas fa-door-open mr-1 text-purple-500"></i>Classe
+                </label>
+                <?php
+                if (isset($classes) && is_array($classes)) {
+                    usort($classes, function($a, $b) {
+                        $getKey = function($c) {
+                            $code = mb_strtolower($c['code'] ?? ($c['nom'] ?? ''));
+                            $clean = preg_replace('/[^a-z0-9]+/u', ' ', $code);
+                            preg_match_all('/\d+/', $clean, $nums);
+                            $nums = $nums[0];
+                            if (count($nums) >= 1) {
+                                $grade = intval($nums[0]);
+                                $section = isset($nums[1]) ? intval($nums[1]) : 0;
+                                $weight = 6 - min(6, max(1, $grade));
+                            } else {
+                                if (strpos($clean, 'ter') !== false || strpos($clean, 'term') !== false) {
+                                    $weight = 6; // Terminale last
+                                    $section = 0;
+                                } else {
+                                    $weight = 999; // unknowns at end
+                                    $section = 0;
+                                }
+                            }
+                            return ($weight * 10) + $section;
+                        };
+                        $ka = $getKey($a);
+                        $kb = $getKey($b);
+                        if ($ka == $kb) return 0;
+                        return ($ka < $kb) ? -1 : 1;
+                    });
+                }
+                ?>
+
+                <select id="classe_id" 
+                        name="classe_id"
+                        onchange="this.form.submit()"
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 transition-all bg-gray-50 outline-none text-sm">
                     <option value="">Toutes les classes</option>
-                    <?php foreach ($classes as $c): ?>
-                        <option value="<?= $c['id'] ?>" <?= ($filters['classe_id'] == $c['id']) ? 'selected' : '' ?>>
-                            <?= e($c['nom']) ?>
-                        </option>
-                    <?php endforeach; ?>
+                    <?php if (isset($classes)): 
+                        foreach ($classes as $classe): 
+                    ?>
+                            <option value="<?= $classe['id'] ?>" <?= (isset($_GET['classe_id']) && $_GET['classe_id'] == $classe['id']) ? 'selected' : '' ?>>
+                                <?= e($classe['code']) ?>
+                            </option>
+                        <?php endforeach; 
+                    endif; ?>
                 </select>
             </div>
-            <div class="w-full sm:w-1/3">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Matière</label>
-                <select name="matiere_id" class="w-full rounded-lg border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+            <div class="flex-1 w-full md:w-auto">
+                <label for="matiere_id" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
+                    <i class="fas fa-book mr-1 text-purple-500"></i>Matière
+                </label>
+                <select id="matiere_id" name="matiere_id" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 transition-all bg-gray-50 outline-none text-sm">
                     <option value="">Toutes les matières</option>
                     <?php foreach ($matieres as $m): ?>
                         <option value="<?= $m['id'] ?>" <?= ($filters['matiere_id'] == $m['id']) ? 'selected' : '' ?>>
@@ -110,7 +151,7 @@ $breadcrumbs = [
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        <?= e($interro['classe_nom']) ?>
+                                        <?= e($interro['classe_code']) ?>
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

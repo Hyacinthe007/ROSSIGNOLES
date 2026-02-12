@@ -8,6 +8,7 @@ use App\Models\Personnel;
 use App\Models\Classe;
 use App\Models\Paiement;
 use App\Models\AnneeScolaire;
+use App\Models\Absence;
 
 /**
  * Contrôleur du tableau de bord
@@ -59,11 +60,29 @@ class DashboardController extends BaseController {
         $finMois = date('Y-m-t');
         $paiementsMois = $paiementModel->getTotalEncaisse($debutMois, $finMois, $anneeId);
         
+        // Élèves en classe aujourd'hui
+        $absenceModel = new Absence();
+        $dateAujourdhui = date('Y-m-d');
+        $elevesAbsentsAujourdhui = 0;
+        
+        if ($anneeId) {
+            $result = $absenceModel->queryOne(
+                "SELECT COUNT(DISTINCT a.eleve_id) as total FROM absences a 
+                 INNER JOIN classes c ON a.classe_id = c.id 
+                 WHERE a.date_absence = ? AND c.annee_scolaire_id = ? AND a.justifiee = 0",
+                [$dateAujourdhui, $anneeId]
+            );
+            $elevesAbsentsAujourdhui = $result['total'] ?? 0;
+        }
+        
+        $elevesEnClasseAujourdhui = $elevesCount - $elevesAbsentsAujourdhui;
+        
         $stats = [
             'total_eleves' => $elevesCount,
             'total_classes' => $classesCount,
             'total_enseignants' => $ensCount,
             'paiements_du_mois' => $paiementsMois,
+            'eleves_en_classe_aujourd_hui' => $elevesEnClasseAujourdhui,
             'annee_scolaire' => $anneeActive ? $anneeActive['libelle'] : 'N/A'
         ];
 

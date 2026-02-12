@@ -49,15 +49,15 @@
             </div>
         </div>
 
-        <!-- Paiements du mois -->
+        <!-- Élèves en classe aujourd'hui -->
         <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-6 shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-orange-100 text-sm mb-1">Paiements du mois</p>
-                    <p class="text-3xl font-bold"><?= formatMoney($stats['paiements_du_mois'] ?? 0) ?></p>
+                    <p class="text-orange-100 text-sm mb-1">Élèves en classe aujourd'hui</p>
+                    <p class="text-3xl font-bold"><?= e($stats['eleves_en_classe_aujourd_hui'] ?? 0) ?></p>
                 </div>
                 <div class="bg-white bg-opacity-20 p-4 rounded-lg">
-                    <i class="fas fa-money-bill-wave text-3xl"></i>
+                    <i class="fas fa-users text-3xl"></i>
                 </div>
             </div>
         </div>

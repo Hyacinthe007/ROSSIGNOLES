@@ -116,6 +116,28 @@ class SystemeController extends BaseController {
                     'is_active' => isset($_POST['is_active']) ? 1 : 0
                 ];
 
+                // Handle avatar upload if provided
+                if (!empty($_FILES['avatar']) && ($_FILES['avatar']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                    $tmp = $_FILES['avatar']['tmp_name'];
+                    $name = $_FILES['avatar']['name'];
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mime = finfo_file($finfo, $tmp);
+                    finfo_close($finfo);
+                    $allowed = ['image/jpeg' => '.jpg', 'image/png' => '.png', 'image/gif' => '.gif'];
+                    if (isset($allowed[$mime])) {
+                        $ext = $allowed[$mime];
+                        $filename = time() . '_' . bin2hex(random_bytes(6)) . $ext;
+                        $uploadDir = PUBLIC_PATH . '/uploads/avatars/';
+                        if (!is_dir($uploadDir)) {
+                            @mkdir($uploadDir, 0755, true);
+                        }
+                        $dest = $uploadDir . $filename;
+                        if (@move_uploaded_file($tmp, $dest)) {
+                            $data['avatar'] = 'uploads/avatars/' . $filename;
+                        }
+                    }
+                }
+
                 $userId = $userModel->create($data);
 
                 // Assigner les groupes et auto-lier les rôles correspondants
@@ -182,6 +204,32 @@ class SystemeController extends BaseController {
                 // Si un mot de passe est fourni, on le met à jour
                 if (!empty($_POST['password'])) {
                     $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                }
+
+                // Handle avatar upload if provided (edit)
+                if (!empty($_FILES['avatar']) && ($_FILES['avatar']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                    $tmp = $_FILES['avatar']['tmp_name'];
+                    $name = $_FILES['avatar']['name'];
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mime = finfo_file($finfo, $tmp);
+                    finfo_close($finfo);
+                    $allowed = ['image/jpeg' => '.jpg', 'image/png' => '.png', 'image/gif' => '.gif'];
+                    if (isset($allowed[$mime])) {
+                        $ext = $allowed[$mime];
+                        $filename = time() . '_' . bin2hex(random_bytes(6)) . $ext;
+                        $uploadDir = PUBLIC_PATH . '/uploads/avatars/';
+                        if (!is_dir($uploadDir)) {
+                            @mkdir($uploadDir, 0755, true);
+                        }
+                        $dest = $uploadDir . $filename;
+                        if (@move_uploaded_file($tmp, $dest)) {
+                            $data['avatar'] = 'uploads/avatars/' . $filename;
+                            // update session if editing own profile
+                            if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id) {
+                                $_SESSION['avatar'] = $data['avatar'];
+                            }
+                        }
+                    }
                 }
 
                 $userModel->update($id, $data);

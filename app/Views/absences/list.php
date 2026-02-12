@@ -49,15 +49,15 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élève</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créneau</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Élève</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Classe</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar mr-2"></i>Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-clock mr-2"></i>Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-clock mr-2"></i>Créneau</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-book mr-2"></i>Matière</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Enseignant</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-check mr-2"></i>Statut</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">

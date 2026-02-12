@@ -70,11 +70,7 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <!-- Notifications -->
-            <button class="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <i class="fas fa-bell text-gray-600"></i>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <!-- Notifications: removed per request -->
 
             <!-- Profil utilisateur -->
             <div class="flex items-center gap-2">
@@ -82,16 +78,65 @@
                     <p class="text-sm font-medium text-gray-800"><?= e(session('username', 'Utilisateur')) ?></p>
                     <p class="text-xs text-gray-500"><?= e(implode(', ', session('roles', []))) ?></p>
                 </div>
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
-                    <?= strtoupper(substr(session('username', 'U'), 0, 1)) ?>
+                <?php $userPhoto = session('avatar') ?? null; $userId = session('user_id') ?? null; ?>
+                <div class="relative">
+                    <button id="profileMenuBtn" aria-haspopup="true" aria-expanded="false" class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center focus:outline-none ring-2 ring-transparent hover:ring-blue-100 transition">
+                        <?php if ($userPhoto): ?>
+                            <img src="<?= public_url($userPhoto) ?>" alt="Photo utilisateur" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <div class="w-full h-full bg-blue-500 text-white flex items-center justify-center font-medium">
+                                <?= strtoupper(substr(session('username', 'U'), 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div id="profileMenu" class="hidden origin-top-right absolute right-0 mt-2 w-64 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="p-4 border-b">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                                    <?php if ($userPhoto): ?>
+                                        <img src="<?= public_url($userPhoto) ?>" alt="Avatar" class="w-full h-full object-cover">
+                                    <?php else: ?>
+                                        <div class="w-full h-full bg-blue-500 text-white flex items-center justify-center font-medium"><?= strtoupper(substr(session('username', 'U'), 0, 1)) ?></div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-semibold text-gray-800"><?= e(session('username', 'Utilisateur')) ?></div>
+                                    <div class="text-xs text-gray-500"><?= e(session('email', '')) ?></div>
+                                    <a href="<?= url('systeme/utilisateurs/edit/' . ($userId ?? '')) ?>" class="block text-xs text-blue-600 mt-2">Modifier profil</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="py-2">
+                            <a href="<?= url('systeme/config') ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog text-gray-400 w-4"></i>
+                                <span>Paramètres</span>
+                            </a>
+                            <a href="<?= url('systeme/utilisateurs') ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user text-gray-400 w-4"></i>
+                                <span>Utilisateurs</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-question-circle text-gray-400 w-4"></i>
+                                <span>Aide</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-info-circle text-gray-400 w-4"></i>
+                                <span>À propos</span>
+                            </a>
+                        </div>
+
+                        <div class="border-t">
+                            <a href="<?= url('auth/logout') ?>" class="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
+                                <i class="fas fa-sign-out-alt text-red-500 w-4"></i>
+                                <span>Déconnexion</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Déconnexion -->
-            <a href="<?= url('auth/logout') ?>" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="hidden sm:inline">Déconnexion</span>
-            </a>
         </div>
     </header>
 
@@ -129,3 +174,35 @@
             </div>
         <?php endif; ?>
     </div>
+
+    <script>
+        (function(){
+            const btn = document.getElementById('profileMenuBtn');
+            const menu = document.getElementById('profileMenu');
+            if (!btn || !menu) return;
+
+            function openMenu() {
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+            function closeMenu() {
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+
+            btn.addEventListener('click', function(e){
+                e.stopPropagation();
+                if (menu.classList.contains('hidden')) openMenu(); else closeMenu();
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e){
+                if (!menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function(e){
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+    </script>

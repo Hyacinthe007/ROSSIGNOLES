@@ -34,7 +34,8 @@
                 </p>
             </div>
 
-            <form action="" method="POST" class="p-6 md:p-8 space-y-8" data-validate>
+            <form action="" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-8" data-validate>
+                <?= csrf_field() ?>
                 <?php if (isset($error)): ?>
                     <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
                         <div class="flex">
@@ -91,6 +92,23 @@
                             <p class="text-xs text-gray-500 mt-2">
                                 <i class="fas fa-info-circle mr-1"></i> Utilisez au moins 8 caractères pour une sécurité optimale.
                             </p>
+                        </div>
+
+                        <div>
+                            <label for="avatar" class="block text-sm font-semibold text-gray-700 mb-2">Photo de profil</label>
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                                    <?php if (!empty($user['avatar'])): ?>
+                                        <img src="<?= url($user['avatar']) ?>" alt="Avatar" class="w-full h-full object-cover">
+                                    <?php else: ?>
+                                        <div class="w-full h-full bg-blue-500 text-white flex items-center justify-center font-medium"><?= strtoupper(substr(session('username', 'U'), 0, 1)) ?></div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" name="avatar" id="avatar" accept="image/*" class="block w-full text-sm text-gray-600">
+                                    <p class="text-[11px] text-gray-500 mt-2">Formats acceptés: JPG, PNG, GIF. Taille max recommandée: 2MB.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

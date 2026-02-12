@@ -41,7 +41,8 @@ class InterrogationsController extends BaseController {
         $matiereId = $_GET['matiere_id'] ?? null;
         
         $sql = "SELECT i.*, 
-                       c.nom as classe_nom, 
+                       c.nom as classe_nom,
+                       c.code as classe_code, 
                        m.nom as matiere_nom, 
                        p.nom as periode_nom,
                        COUNT(ni.id) as nb_notes
@@ -68,14 +69,21 @@ class InterrogationsController extends BaseController {
         $sql .= " GROUP BY i.id ORDER BY c.nom ASC, i.date_interrogation DESC";
         
         $interrogations = $this->interrogationModel->query($sql, $params);
-        $classes = $this->classeModel->getAll();
+        
+        // Récupérer les classes
+        $classesSql = "SELECT c.id, c.code, c.nom
+                       FROM classes c
+                       WHERE c.annee_scolaire_id = ? AND c.statut = 'actif' AND c.deleted_at IS NULL
+                       ORDER BY c.code ASC";
+        $classes = $this->classeModel->query($classesSql, [$anneeScolaire['id']]);
+        $classes = sortClassesFrench($classes); // Tri intelligent des classes
         $matieres = $this->matiereModel->getAll();
         
         $this->view('interrogations/list', [
             'interrogations' => $interrogations,
             'classes' => $classes,
             'matieres' => $matieres,
-            'filters' => ['classe_id' => $classeId, 'matiere_id' => $matiereId]
+            'filters' => ['classe_code' => $classeId, 'matiere_id' => $matiereId]
         ]);
     }
     

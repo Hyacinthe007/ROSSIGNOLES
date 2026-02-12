@@ -35,6 +35,7 @@ async function updateAssociation(selectElement) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
             },
             body: JSON.stringify({
                 classe_id: associationClasseId,
@@ -87,6 +88,7 @@ async function bulkUpdate(field, value) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
             },
             body: JSON.stringify({
                 classe_ids: classeIds,

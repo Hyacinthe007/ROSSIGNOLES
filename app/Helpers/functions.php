@@ -472,3 +472,55 @@ function french_tens_complex($number) {
     }
     return '';
 }
+
+/**
+ * Trie les classes selon la logique française (6ème, 5ème, 4ème, 3ème, 2nde, 1ère, Terminale)
+ * Les classes du même niveau sont triées par numéro (1, 2, 3, etc.)
+ * 
+ * @param array $classes Tableau des classes avec 'nom' et 'code'
+ * @return array Classes triées
+ */
+function sortClassesFrench($classes) {
+    // Ordre des niveaux français
+    $levelOrder = [
+        '6ème' => 0,
+        '5ème' => 1,
+        '4ème' => 2,
+        '3ème' => 3,
+        '2nde' => 4,
+        '2nd' => 4,
+        '1ère' => 5,
+        '1er' => 5,
+        'Terminale' => 6,
+        'Term' => 6,
+        'Ter' => 6
+    ];
+    
+    usort($classes, function($a, $b) use ($levelOrder) {
+        $nom_a = $a['nom'] ?? '';
+        $nom_b = $b['nom'] ?? '';
+        
+        // Extraire le niveau et le numéro (ex: "6ème 1" => niveau="6ème", numero="1")
+        preg_match('/^([^0-9]+)\s*(\d+)?/', trim($nom_a), $matches_a);
+        preg_match('/^([^0-9]+)\s*(\d+)?/', trim($nom_b), $matches_b);
+        
+        $level_a = trim($matches_a[1] ?? '');
+        $level_b = trim($matches_b[1] ?? '');
+        $num_a = (int)($matches_a[2] ?? 0);
+        $num_b = (int)($matches_b[2] ?? 0);
+        
+        // Obtenir l'ordre des niveaux
+        $order_a = $levelOrder[$level_a] ?? 999;
+        $order_b = $levelOrder[$level_b] ?? 999;
+        
+        // Comparer d'abord par niveau
+        if ($order_a !== $order_b) {
+            return $order_a <=> $order_b;
+        }
+        
+        // Si même niveau, comparer par numéro
+        return $num_a <=> $num_b;
+    });
+    
+    return $classes;
+}

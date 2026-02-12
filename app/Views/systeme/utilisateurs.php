@@ -130,15 +130,27 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <div class="flex justify-end gap-2">
-                                            <a href="<?= url('systeme/utilisateurs/edit/' . $user['id']) ?>" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"><i class="fas fa-edit"></i></a>
+                                            <a href="<?= url('systeme/utilisateurs/edit/' . $user['id']) ?>" 
+                                               class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                                               data-tooltip="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <?php if ($user['id'] != $_SESSION['user_id']): ?>
                                                 <form action="<?= url('systeme/utilisateurs/toggle-status/' . $user['id']) ?>" method="POST" class="inline">
-                                                    <button type="submit" class="p-2 <?= ($user['is_active'] ?? 1) ? 'text-orange-500 hover:bg-orange-100' : 'text-green-500 hover:bg-green-100' ?> rounded-lg">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" 
+                                                            class="p-2 <?= ($user['is_active'] ?? 1) ? 'text-orange-500 hover:bg-orange-100' : 'text-green-500 hover:bg-green-100' ?> rounded-lg"
+                                                            data-tooltip="<?= ($user['is_active'] ?? 1) ? 'Désactiver' : 'Activer' ?>">
                                                         <i class="fas <?= ($user['is_active'] ?? 1) ? 'fa-user-slash' : 'fa-user-check' ?>"></i>
                                                     </button>
                                                 </form>
                                                 <form action="<?= url('systeme/utilisateurs/delete/' . $user['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                                                    <button type="submit" class="p-2 text-red-500 hover:bg-red-100 rounded-lg"><i class="fas fa-trash-alt"></i></button>
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" 
+                                                            class="p-2 text-red-500 hover:bg-red-100 rounded-lg"
+                                                            data-tooltip="Supprimer">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
                                                 </form>
                                             <?php endif; ?>
                                         </div>
@@ -163,6 +175,7 @@
                     </a>
                 </div>
                 <form action="<?= url('systeme/utilisateurs/sync-parents') ?>" method="POST" onsubmit="return confirm('Désactiver les parents sans enfants actifs ?');">
+                    <?= csrf_field() ?>
                     <button type="submit" class="text-sm font-bold text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all">
                         <i class="fas fa-sync-alt mr-2"></i>Nettoyer le groupe Parents
                     </button>
@@ -176,9 +189,18 @@
                                 <i class="fas fa-layer-group"></i>
                             </div>
                             <div class="flex gap-1">
-                                <a href="<?= url('systeme/groupes/edit/' . $group['id']) ?>" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50"><i class="fas fa-edit"></i></a>
+                                <a href="<?= url('systeme/groupes/edit/' . $group['id']) ?>" 
+                                   class="p-2 text-blue-700 hover:text-green-700 rounded-lg hover:bg-blue-50"
+                                   data-tooltip="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <form action="<?= url('systeme/groupes/delete/' . $group['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Supprimer ce groupe ?');">
-                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"><i class="fas fa-trash-alt"></i></button>
+                                    <?= csrf_field() ?>
+                                    <button type="submit" 
+                                            class="p-2 text-red-700 hover:text-red-700 rounded-lg hover:bg-red-50"
+                                            data-tooltip="Supprimer">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </form>
                             </div>
                         </div>
