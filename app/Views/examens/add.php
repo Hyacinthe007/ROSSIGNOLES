@@ -46,10 +46,50 @@ if (!empty($_GET['iframe'])) {
                         <label class="block text-sm font-medium text-gray-700 mb-1">Classe <span class="text-red-500">*</span></label>
                         <select name="classe_id" required class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Sélectionner...</option>
-                            <?php foreach ($classes as $c): ?>
-                                <option value="<?= $c['id'] ?>" <?= ($isEdit && $examen['classe_id'] == $c['id']) ? 'selected' : '' ?>>
-                                    <?= e($c['nom']) ?>
-                                </option>
+                            <?php 
+                            $groups = ['Secondaire' => [], 'Lycée' => []];
+                            foreach ($classes as $c) {
+                                $code = strtoupper($c['code']);
+                                if (preg_match('/^[3456]/', $code)) {
+                                    $groups['Secondaire'][] = $c;
+                                } else {
+                                    $groups['Lycée'][] = $c;
+                                }
+                            }
+                            
+                            // Sort 'Secondaire' group descending by the first digit (6, 5, 4, 3)
+                            usort($groups['Secondaire'], function($a, $b) {
+                                $valA = (int)($a['code'][0] ?? 0);
+                                $valB = (int)($b['code'][0] ?? 0);
+                                if ($valA !== $valB) return $valB <=> $valA;
+                                return strcasecmp($a['code'], $b['code']);
+                            });
+
+                            // Sort 'Lycée' group (2nd -> 1ère -> Terminale)
+                            usort($groups['Lycée'], function($a, $b) {
+                                $getLycéeWeight = function($code) {
+                                    $code = strtoupper($code);
+                                    if (str_starts_with($code, '2')) return 1;
+                                    if (str_starts_with($code, '1')) return 2;
+                                    if (str_contains($code, 'TER')) return 3;
+                                    return 9;
+                                };
+                                $wa = $getLycéeWeight($a['code']);
+                                $wb = $getLycéeWeight($b['code']);
+                                if ($wa !== $wb) return $wa <=> $wb;
+                                return strcasecmp($a['code'], $b['code']);
+                            });
+
+                            foreach ($groups as $groupLabel => $items): 
+                                if (empty($items)) continue; 
+                            ?>
+                                <optgroup label="<?= $groupLabel ?>">
+                                    <?php foreach ($items as $c): ?>
+                                        <option value="<?= $c['id'] ?>" <?= ($isEdit && $examen['classe_id'] == $c['id']) ? 'selected' : '' ?>>
+                                            <?= e($c['code']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </optgroup>
                             <?php endforeach; ?>
                         </select>
                     </div>

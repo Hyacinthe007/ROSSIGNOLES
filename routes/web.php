@@ -14,6 +14,9 @@ $routes = [
     // Dashboard
     ['pattern' => 'dashboard', 'method' => 'GET', 'handler' => 'DashboardController@index'],
     
+    // Recherche globale
+    ['pattern' => 'search/global', 'method' => 'GET', 'handler' => 'SearchController@global'],
+    
     // Élèves
     ['pattern' => 'eleves/list', 'method' => 'GET', 'handler' => 'ElevesController@list'],
     ['pattern' => 'eleves/add', 'method' => 'GET', 'handler' => 'ElevesController@add'],
@@ -36,7 +39,6 @@ $routes = [
     ['pattern' => 'parents/edit/{id}', 'method' => 'GET', 'handler' => 'ParentsController@edit'],
     ['pattern' => 'parents/edit/{id}', 'method' => 'POST', 'handler' => 'ParentsController@edit'],
     ['pattern' => 'parents/details/{id}', 'method' => 'GET', 'handler' => 'ParentsController@details'],
-    ['pattern' => 'parents/delete/{id}', 'method' => 'GET', 'handler' => 'ParentsController@delete'],
     ['pattern' => 'parents/delete/{id}', 'method' => 'POST', 'handler' => 'ParentsController@delete'],
     
     
@@ -66,7 +68,7 @@ $routes = [
     ['pattern' => 'annees-scolaires/edit/{id}', 'method' => 'GET', 'handler' => 'AnneesScolairesController@edit'],
     ['pattern' => 'annees-scolaires/edit/{id}', 'method' => 'POST', 'handler' => 'AnneesScolairesController@edit'],
     ['pattern' => 'annees-scolaires/details/{id}', 'method' => 'GET', 'handler' => 'AnneesScolairesController@details'],
-    ['pattern' => 'annees-scolaires/activate/{id}', 'method' => 'GET', 'handler' => 'AnneesScolairesController@activate'],
+    ['pattern' => 'annees-scolaires/activate/{id}', 'method' => 'POST', 'handler' => 'AnneesScolairesController@activate'],
     
     // Périodes
     ['pattern' => 'periodes/list', 'method' => 'GET', 'handler' => 'PeriodesController@list'],
@@ -74,7 +76,7 @@ $routes = [
     ['pattern' => 'periodes/add', 'method' => 'POST', 'handler' => 'PeriodesController@add'],
     ['pattern' => 'periodes/edit/{id}', 'method' => 'GET', 'handler' => 'PeriodesController@edit'],
     ['pattern' => 'periodes/edit/{id}', 'method' => 'POST', 'handler' => 'PeriodesController@edit'],
-    ['pattern' => 'periodes/delete/{id}', 'method' => 'GET', 'handler' => 'PeriodesController@delete'],
+    ['pattern' => 'periodes/delete/{id}', 'method' => 'POST', 'handler' => 'PeriodesController@delete'],
     
     // Calendrier Scolaire (Vacances & Fériés)
     ['pattern' => 'calendrier/list', 'method' => 'GET', 'handler' => 'CalendrierController@list'],
@@ -82,7 +84,7 @@ $routes = [
     ['pattern' => 'calendrier/add', 'method' => 'POST', 'handler' => 'CalendrierController@add'],
     ['pattern' => 'calendrier/edit/{id}', 'method' => 'GET', 'handler' => 'CalendrierController@edit'],
     ['pattern' => 'calendrier/edit/{id}', 'method' => 'POST', 'handler' => 'CalendrierController@edit'],
-    ['pattern' => 'calendrier/delete/{id}', 'method' => 'GET', 'handler' => 'CalendrierController@delete'],
+    ['pattern' => 'calendrier/delete/{id}', 'method' => 'POST', 'handler' => 'CalendrierController@delete'],
     
     // Classes
     ['pattern' => 'classes/list', 'method' => 'GET', 'handler' => 'ClassesController@list'],
@@ -107,8 +109,8 @@ $routes = [
     ['pattern' => 'pedagogie/series', 'method' => 'GET', 'handler' => 'PedagogieController@series'],
     ['pattern' => 'pedagogie/series/add', 'method' => 'POST', 'handler' => 'PedagogieController@addSerie'],
     ['pattern' => 'pedagogie/series/edit/{id}', 'method' => 'POST', 'handler' => 'PedagogieController@editSerie'],
-    ['pattern' => 'pedagogie/series/delete/{id}', 'method' => 'GET', 'handler' => 'PedagogieController@deleteSerie'],
-    ['pattern' => 'pedagogie/series/toggle/{id}', 'method' => 'GET', 'handler' => 'PedagogieController@toggleSerie'],
+    ['pattern' => 'pedagogie/series/delete/{id}', 'method' => 'POST', 'handler' => 'PedagogieController@deleteSerie'],
+    ['pattern' => 'pedagogie/series/toggle/{id}', 'method' => 'POST', 'handler' => 'PedagogieController@toggleSerie'],
     
     ['pattern' => 'pedagogie/enseignements', 'method' => 'GET', 'handler' => 'PedagogieController@enseignements'],
     ['pattern' => 'pedagogie/enseignements/add', 'method' => 'GET', 'handler' => 'PedagogieController@addEnseignement'],
@@ -137,7 +139,6 @@ $routes = [
     ['pattern' => 'matieres/edit/{id}', 'method' => 'GET', 'handler' => 'MatieresController@edit'],
     ['pattern' => 'matieres/edit/{id}', 'method' => 'POST', 'handler' => 'MatieresController@edit'],
     ['pattern' => 'matieres/details/{id}', 'method' => 'GET', 'handler' => 'MatieresController@details'],
-    ['pattern' => 'matieres/delete/{id}', 'method' => 'GET', 'handler' => 'MatieresController@delete'],
     ['pattern' => 'matieres/delete/{id}', 'method' => 'POST', 'handler' => 'MatieresController@delete'],
     
     // Enseignants
@@ -147,7 +148,6 @@ $routes = [
     ['pattern' => 'enseignants/edit/{id}', 'method' => 'GET', 'handler' => 'EnseignantsController@edit'],
     ['pattern' => 'enseignants/edit/{id}', 'method' => 'POST', 'handler' => 'EnseignantsController@edit'],
     ['pattern' => 'enseignants/details/{id}', 'method' => 'GET', 'handler' => 'EnseignantsController@details'],
-    ['pattern' => 'enseignants/delete/{id}', 'method' => 'GET', 'handler' => 'EnseignantsController@delete'],
     ['pattern' => 'enseignants/delete/{id}', 'method' => 'POST', 'handler' => 'EnseignantsController@delete'],
     
     // Personnel
@@ -157,7 +157,6 @@ $routes = [
     ['pattern' => 'personnel/edit/{id}', 'method' => 'GET', 'handler' => 'PersonnelController@edit'],
     ['pattern' => 'personnel/edit/{id}', 'method' => 'POST', 'handler' => 'PersonnelController@edit'],
     ['pattern' => 'personnel/details/{id}', 'method' => 'GET', 'handler' => 'PersonnelController@details'],
-    ['pattern' => 'personnel/delete/{id}', 'method' => 'GET', 'handler' => 'PersonnelController@delete'],
     ['pattern' => 'personnel/delete/{id}', 'method' => 'POST', 'handler' => 'PersonnelController@delete'],
     ['pattern' => 'personnel/certificat/{id}', 'method' => 'GET', 'handler' => 'PersonnelController@certificatTravail'],
     
@@ -167,7 +166,6 @@ $routes = [
     ['pattern' => 'interrogations/add', 'method' => 'POST', 'handler' => 'InterrogationsController@add'],
     ['pattern' => 'interrogations/edit/{id}', 'method' => 'GET', 'handler' => 'InterrogationsController@edit'],
     ['pattern' => 'interrogations/edit/{id}', 'method' => 'POST', 'handler' => 'InterrogationsController@edit'],
-    ['pattern' => 'interrogations/delete/{id}', 'method' => 'GET', 'handler' => 'InterrogationsController@delete'],
     ['pattern' => 'interrogations/delete/{id}', 'method' => 'POST', 'handler' => 'InterrogationsController@delete'],
     
     // Examens
@@ -176,7 +174,6 @@ $routes = [
     ['pattern' => 'examens/add', 'method' => 'POST', 'handler' => 'ExamensController@add'],
     ['pattern' => 'examens/edit/{id}', 'method' => 'GET', 'handler' => 'ExamensController@edit'],
     ['pattern' => 'examens/edit/{id}', 'method' => 'POST', 'handler' => 'ExamensController@edit'],
-    ['pattern' => 'examens/delete/{id}', 'method' => 'GET', 'handler' => 'ExamensController@delete'],
     ['pattern' => 'examens/delete/{id}', 'method' => 'POST', 'handler' => 'ExamensController@delete'],
     
     // Evaluations (Unifiées)
@@ -220,7 +217,6 @@ $routes = [
     ['pattern' => 'absences/edit/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@edit'],
     ['pattern' => 'absences/edit/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@edit'],
     ['pattern' => 'absences/details/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@details'],
-    ['pattern' => 'absences/delete/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@delete'],
     ['pattern' => 'absences/delete/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@delete'],
     ['pattern' => 'absences/toggle-justifiee', 'method' => 'POST', 'handler' => 'AbsencesController@toggleJustifiee'],
     
@@ -231,7 +227,6 @@ $routes = [
     ['pattern' => 'retards/edit/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@edit'],
     ['pattern' => 'retards/edit/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@edit'],
     ['pattern' => 'retards/details/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@details'],
-    ['pattern' => 'retards/delete/{id}', 'method' => 'GET', 'handler' => 'AbsencesController@delete'],
     ['pattern' => 'retards/delete/{id}', 'method' => 'POST', 'handler' => 'AbsencesController@delete'],
 
     // Présences par cours
@@ -246,7 +241,6 @@ $routes = [
     ['pattern' => 'sanctions/edit/{id}', 'method' => 'GET', 'handler' => 'SanctionsController@edit'],
     ['pattern' => 'sanctions/edit/{id}', 'method' => 'POST', 'handler' => 'SanctionsController@edit'],
     ['pattern' => 'sanctions/details/{id}', 'method' => 'GET', 'handler' => 'SanctionsController@details'],
-    ['pattern' => 'sanctions/delete/{id}', 'method' => 'GET', 'handler' => 'SanctionsController@delete'],
     ['pattern' => 'sanctions/delete/{id}', 'method' => 'POST', 'handler' => 'SanctionsController@delete'],
     
      
@@ -311,7 +305,7 @@ $routes = [
     ['pattern' => 'notifications/modeles/add', 'method' => 'POST', 'handler' => 'NotificationsController@addModele'],
     ['pattern' => 'notifications/modeles/edit/{id}', 'method' => 'GET', 'handler' => 'NotificationsController@editModele'],
     ['pattern' => 'notifications/modeles/edit/{id}', 'method' => 'POST', 'handler' => 'NotificationsController@editModele'],
-    ['pattern' => 'notifications/modeles/delete/{id}', 'method' => 'GET', 'handler' => 'NotificationsController@deleteModele'],
+    ['pattern' => 'notifications/modeles/delete/{id}', 'method' => 'POST', 'handler' => 'NotificationsController@deleteModele'],
     
     // Système
 
@@ -365,7 +359,7 @@ $routes = [
     ['pattern' => 'conseils/edit/{id}', 'method' => 'GET', 'handler' => 'ConseilsController@edit'],
     ['pattern' => 'conseils/edit/{id}', 'method' => 'POST', 'handler' => 'ConseilsController@edit'],
     ['pattern' => 'conseils/details/{id}', 'method' => 'GET', 'handler' => 'ConseilsController@details'],
-    ['pattern' => 'conseils/delete/{id}', 'method' => 'GET', 'handler' => 'ConseilsController@delete'],
+    ['pattern' => 'conseils/delete/{id}', 'method' => 'POST', 'handler' => 'ConseilsController@delete'],
 
     // Annonces
     ['pattern' => 'annonces/list', 'method' => 'GET', 'handler' => 'AnnoncesController@list'],
@@ -373,7 +367,7 @@ $routes = [
     ['pattern' => 'annonces/add', 'method' => 'POST', 'handler' => 'AnnoncesController@add'],
     ['pattern' => 'annonces/edit/{id}', 'method' => 'GET', 'handler' => 'AnnoncesController@edit'],
     ['pattern' => 'annonces/edit/{id}', 'method' => 'POST', 'handler' => 'AnnoncesController@edit'],
-    ['pattern' => 'annonces/delete/{id}', 'method' => 'GET', 'handler' => 'AnnoncesController@delete'],
+    ['pattern' => 'annonces/delete/{id}', 'method' => 'POST', 'handler' => 'AnnoncesController@delete'],
 
     // Rôles et Permissions
     ['pattern' => 'roles/list', 'method' => 'GET', 'handler' => 'RolesController@list'],
@@ -381,7 +375,7 @@ $routes = [
     ['pattern' => 'roles/add', 'method' => 'POST', 'handler' => 'RolesController@add'],
     ['pattern' => 'roles/edit/{id}', 'method' => 'GET', 'handler' => 'RolesController@edit'],
     ['pattern' => 'roles/edit/{id}', 'method' => 'POST', 'handler' => 'RolesController@edit'],
-    ['pattern' => 'roles/delete/{id}', 'method' => 'GET', 'handler' => 'RolesController@delete'],
+    ['pattern' => 'roles/delete/{id}', 'method' => 'POST', 'handler' => 'RolesController@delete'],
     
     // Absences du Personnel
     ['pattern' => 'absences_personnel/list', 'method' => 'GET', 'handler' => 'AbsencesPersonnelController@list'],
@@ -390,7 +384,6 @@ $routes = [
     ['pattern' => 'absences_personnel/edit/{id}', 'method' => 'GET', 'handler' => 'AbsencesPersonnelController@edit'],
     ['pattern' => 'absences_personnel/edit/{id}', 'method' => 'POST', 'handler' => 'AbsencesPersonnelController@edit'],
     ['pattern' => 'absences_personnel/details/{id}', 'method' => 'GET', 'handler' => 'AbsencesPersonnelController@details'],
-    ['pattern' => 'absences_personnel/delete/{id}', 'method' => 'GET', 'handler' => 'AbsencesPersonnelController@delete'],
     ['pattern' => 'absences_personnel/delete/{id}', 'method' => 'POST', 'handler' => 'AbsencesPersonnelController@delete'],
     ['pattern' => 'absences_personnel/valider/{id}', 'method' => 'POST', 'handler' => 'AbsencesPersonnelController@valider'],
     ['pattern' => 'absences_personnel/refuser/{id}', 'method' => 'POST', 'handler' => 'AbsencesPersonnelController@refuser'],
@@ -402,7 +395,7 @@ $routes = [
     ['pattern' => 'tarifs/creer', 'method' => 'POST', 'handler' => 'TarifController@creer'],
     ['pattern' => 'tarifs/modifier/{id}', 'method' => 'GET', 'handler' => 'TarifController@modifier'],
     ['pattern' => 'tarifs/mettre-a-jour/{id}', 'method' => 'POST', 'handler' => 'TarifController@mettreAJour'],
-    ['pattern' => 'tarifs/activer/{id}', 'method' => 'GET', 'handler' => 'TarifController@activer'],
+    ['pattern' => 'tarifs/activer/{id}', 'method' => 'POST', 'handler' => 'TarifController@activer'],
     
     // ============================================================================
     // GESTION DES ÉCHÉANCIERS D'ÉCOLAGE
@@ -423,7 +416,7 @@ $routes = [
     ['pattern' => 'articles/creer', 'method' => 'POST', 'handler' => 'ArticlesController@creer'],
     ['pattern' => 'articles/modifier/{id}', 'method' => 'GET', 'handler' => 'ArticlesController@modifier'],
     ['pattern' => 'articles/mettre-a-jour/{id}', 'method' => 'POST', 'handler' => 'ArticlesController@mettreAJour'],
-    ['pattern' => 'articles/supprimer/{id}', 'method' => 'GET', 'handler' => 'ArticlesController@supprimer'],
+    ['pattern' => 'articles/supprimer/{id}', 'method' => 'POST', 'handler' => 'ArticlesController@supprimer'],
     ['pattern' => 'articles/tarifs', 'method' => 'GET', 'handler' => 'ArticlesController@tarifs']
 ];
 

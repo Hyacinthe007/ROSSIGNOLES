@@ -713,6 +713,35 @@ textarea:focus {
     }
 }
 
+/* Force main content full width on small screens to remove left/right gutters */
+@media (max-width: 640px) {
+    .main-content {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        min-height: auto;
+    }
+
+    /* Ensure direct children don't add horizontal padding */
+    .main-content > * {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Make dashboard cards span edge-to-edge inside their grid cell */
+    .stat-card,
+    .actions-card {
+        border-radius: 0.5rem; /* keep small radius */
+        box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
 /* Responsive utilities */
 @media (max-width: 640px) {
     .stat-card {

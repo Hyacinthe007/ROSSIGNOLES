@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="<?= url('public/assets/css/admin-style.css') ?>">
     <link rel="stylesheet" href="<?= url('public/assets/css/global-tooltips.css') ?>">
     <script src="<?= url('public/assets/js/global-tooltips.js') ?>" defer></script>
+    <script src="<?= url('public/assets/js/secure-actions.js') ?>" defer></script>
     <meta name="csrf-token" content="<?= csrf_token() ?>">
 </head>
 <body class="bg-gray-50">
@@ -56,18 +57,28 @@
             </a>
         </div>
 
-        <!-- Recherche globale -->
-        <div class="hidden md:flex flex-1 max-w-md mx-8">
+        <!-- Recherche globale (Desktop) -->
+        <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
             <div class="relative w-full">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </span>
                 <input type="text" 
                        id="globalSearch"
-                       placeholder="Rechercher un élève, enseignant..." 
+                       autocomplete="off"
+                       placeholder="Rechercher (Ctrl+K)..." 
                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm">
             </div>
+            <!-- Résultats de recherche -->
+            <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 hidden overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+            </div>
         </div>
+
+        <!-- Bouton recherche mobile -->
+        <button id="mobileSearchBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border hover:bg-gray-100 transition-colors"
+            aria-label="Recherche">
+            <i class="fas fa-search text-gray-600"></i>
+        </button>
         
         <div class="flex items-center gap-3">
             <!-- Notifications: removed per request -->
@@ -141,6 +152,25 @@
     </header>
 
     <?php require_once APP_PATH . '/Views/layout/sidebar.php'; ?>
+
+    <!-- ====== MODAL RECHERCHE MOBILE ====== -->
+    <div id="mobileSearchModal" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-start justify-center pt-4 px-4 animate-in fade-in duration-200">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg animate-in slide-in-from-top-4 duration-200">
+            <div class="p-4 border-b flex items-center gap-3">
+                <i class="fas fa-search text-gray-400"></i>
+                <input type="text" 
+                       id="mobileSearchInput"
+                       autocomplete="off"
+                       placeholder="Rechercher un élève, parent, enseignant..." 
+                       class="flex-1 bg-transparent outline-none text-sm placeholder-gray-500">
+                <button id="closeMobileSearchBtn" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <div id="mobileSearchResults" class="max-h-[70vh] overflow-y-auto">
+            </div>
+        </div>
+    </div>
     
     <!-- ====== OVERLAY (voile noir mobile) ====== -->
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -149,7 +179,7 @@
 <!-- ====== CONTENU PRINCIPAL ====== -->
 <main class="<?= isLoggedIn() ? 'main-content pt-16' : '' ?>" id="mainContent">
     <!-- Messages Flash -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div class="px-0 sm:px-6 lg:px-8 mt-4">
         <?php if ($success = session_flash('success')): ?>
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded shadow-sm flex justify-between items-center animate-fade-in" role="alert">
                 <div class="flex items-center">
@@ -204,5 +234,213 @@
             document.addEventListener('keydown', function(e){
                 if (e.key === 'Escape') closeMenu();
             });
+        })();
+
+        // Global Search Logic - Desktop & Mobile
+        (function() {
+            const searchInput = document.getElementById('globalSearch');
+            const resultsContainer = document.getElementById('searchResults');
+            const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+            const mobileSearchModal = document.getElementById('mobileSearchModal');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const mobileSearchResults = document.getElementById('mobileSearchResults');
+            const closeMobileSearchBtn = document.getElementById('closeMobileSearchBtn');
+            
+            let debounceTimer;
+
+            if (!searchInput || !resultsContainer) return;
+
+            // ===== DESKTOP SEARCH =====
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    resultsContainer.innerHTML = '';
+                    resultsContainer.classList.add('hidden');
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    performSearch(query, resultsContainer);
+                }, 300);
+            });
+
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2 && resultsContainer.innerHTML !== '') {
+                    resultsContainer.classList.remove('hidden');
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+
+            // ===== MOBILE SEARCH =====
+            if (mobileSearchBtn && mobileSearchModal && mobileSearchInput) {
+                mobileSearchBtn.addEventListener('click', () => {
+                    mobileSearchModal.classList.remove('hidden');
+                    mobileSearchInput.focus();
+                });
+
+                closeMobileSearchBtn.addEventListener('click', () => {
+                    mobileSearchModal.classList.add('hidden');
+                    mobileSearchInput.value = '';
+                    mobileSearchResults.innerHTML = '';
+                });
+
+                mobileSearchModal.addEventListener('click', (e) => {
+                    if (e.target === mobileSearchModal) {
+                        mobileSearchModal.classList.add('hidden');
+                    }
+                });
+
+                mobileSearchInput.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    const query = this.value.trim();
+
+                    if (query.length < 2) {
+                        mobileSearchResults.innerHTML = '';
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        performSearch(query, mobileSearchResults);
+                    }, 300);
+                });
+            }
+
+            // ===== KEYBOARD SHORTCUT =====
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    if (window.innerWidth >= 768) {
+                        // Desktop: focus search
+                        searchInput.focus();
+                        searchInput.select();
+                    } else {
+                        // Mobile: open modal
+                        if (mobileSearchModal) {
+                            mobileSearchModal.classList.remove('hidden');
+                            mobileSearchInput.focus();
+                        }
+                    }
+                }
+                // Close on Escape
+                if (e.key === 'Escape') {
+                    if (mobileSearchModal && !mobileSearchModal.classList.contains('hidden')) {
+                        mobileSearchModal.classList.add('hidden');
+                    }
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+
+            // ===== PERFORM SEARCH =====
+            function performSearch(query, container) {
+                fetch(`<?= url('search/global') ?>?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderResults(data, container);
+                    })
+                    .catch(err => console.error('Erreur recherche:', err));
+            }
+
+            function renderResults(results, container) {
+                // Flatten results if they come in grouped format
+                let allResults = [];
+                if (Array.isArray(results)) {
+                    allResults = results;
+                } else {
+                    // Grouped format
+                    if (results.eleves) allResults = allResults.concat(results.eleves);
+                    if (results.parents) allResults = allResults.concat(results.parents);
+                    if (results.personnel) allResults = allResults.concat(results.personnel);
+                }
+
+                if (allResults.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-4 text-center text-gray-400">
+                            <i class="fas fa-search-minus mb-2 text-xl block"></i>
+                            <span class="text-sm">Aucun résultat trouvé</span>
+                        </div>`;
+                } else {
+                    let html = '<div class="py-2">';
+                    
+                    // Group results by category
+                    let grouped = { 'élève': [], 'parent': [], 'enseignant': [], 'personnel': [] };
+                    allResults.forEach(item => {
+                        const category = item.type || 'personnel';
+                        if (!grouped[category]) grouped[category] = [];
+                        grouped[category].push(item);
+                    });
+
+                    // Render grouped results
+                    let hasContent = false;
+                    const categoryLabels = { 
+                        'élève': { label: 'Élèves', icon: 'fas fa-user-graduate', color: 'blue' },
+                        'parent': { label: 'Parents', icon: 'fas fa-user-friends', color: 'purple' },
+                        'enseignant': { label: 'Enseignants', icon: 'fas fa-chalkboard-teacher', color: 'green' },
+                        'personnel': { label: 'Personnel', icon: 'fas fa-user-tie', color: 'orange' }
+                    };
+
+                    Object.keys(categoryLabels).forEach(category => {
+                        if (grouped[category] && grouped[category].length > 0) {
+                            hasContent = true;
+                            const label = categoryLabels[category];
+                            html += `
+                                <div class="px-4 py-2 mt-2 mb-1">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        <i class="${label.icon}"></i>
+                                        <span>${label.label}</span>
+                                        <span class="ml-auto bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 text-xs">${grouped[category].length}</span>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            grouped[category].forEach(item => {
+                                const photoUrl = item.photo 
+                                    ? `<?= public_url('') ?>${item.photo}`
+                                    : null;
+                                
+                                const photoHtml = photoUrl 
+                                    ? `<img src="${photoUrl}" class="w-10 h-10 rounded-lg object-cover ring-1 ring-gray-100">`
+                                    : `<div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center ring-1 ring-blue-100">
+                                         <i class="${item.icon}"></i>
+                                       </div>`;
+                                
+                                html += `
+                                    <a href="${item.url}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-all group border-l-4 border-transparent hover:border-blue-500">
+                                        ${photoHtml}
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition-colors truncate">${item.title}</div>
+                                            <div class="text-[10px] text-gray-400 group-hover:text-blue-400 mt-0.5 truncate">${item.subtitle}</div>
+                                        </div>
+                                        <div class="text-gray-300 group-hover:text-blue-400 transition-all transform group-hover:translate-x-1 hidden md:block">
+                                            <i class="fas fa-chevron-right text-xs"></i>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                        }
+                    });
+
+                    if (!hasContent) {
+                        html = `
+                            <div class="p-4 text-center text-gray-400">
+                                <i class="fas fa-search-minus mb-2 text-xl block"></i>
+                                <span class="text-sm">Aucun résultat trouvé</span>
+                            </div>`;
+                    }
+                    
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+                
+                if (container === resultsContainer) {
+                    container.classList.remove('hidden');
+                }
+            }
         })();
     </script>

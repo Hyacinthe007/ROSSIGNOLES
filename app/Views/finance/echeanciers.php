@@ -53,15 +53,15 @@
     <div class="mb-6">
         <div class="border-b border-gray-200">
             <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                <a href="<?= url('finance/echeanciers') ?>" 
-                   class="<?= ($statutFilter === 'retard' || $statutFilter === 'retard_10') ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                    <i class="fas fa-hand-holding-usd mr-2"></i>
-                    Recouvrement
-                </a>
-                <a href="<?= url('finance/echeanciers?statut=exclusion') ?>" 
+                <a href="<?= url('finance/echeanciers?statut=exclusion') ?>"
                    class="<?= ($statutFilter === 'exclusion') ? 'border-gray-800 text-gray-800' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                     <i class="fas fa-user-slash mr-2"></i>
                     Liste des exclus
+                </a>
+                <a href="<?= url('finance/echeanciers') ?>" 
+                   class="<?= ($statutFilter === 'retard' || $statutFilter === 'retard_10') ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-hand-holding-usd mr-2"></i>
+                    Retards de paiement
                 </a>
             </nav>
         </div>
@@ -105,7 +105,7 @@
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-id-card mr-2"></i>Élève</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Classe</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Mois Concerné</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Parent / Contact</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Parent</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Montant Dû</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider text-center"><i class="fas fa-credit-card mr-2"></i>Statut</th>
                             <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
@@ -128,13 +128,20 @@
                                         <?= e($e['mois_libelle']) ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <p class="text-gray-900 font-medium"><?= e($e['parent_nom'] ?? 'N/A') ?></p>
-                                    <p class="text-gray-500">
-                                        <?= e($e['parent_telephone'] ?? 'N/A') ?>
+                                    <p class="text-gray-900">
+                                        <?php
+                                            $tel = $e['parent_telephone'] ?? 'N/A';
+                                            $digits = preg_replace('/\D/', '', $tel);
+                                            if (strlen($digits) === 10) {
+                                                $tel = substr($digits, 0, 3) . ' ' . substr($digits, 3, 2) . ' ' . substr($digits, 5, 3) . ' ' . substr($digits, 8, 2);
+                                            }
+                                        ?>
+                                        <?= e($tel) ?>
                                     </p>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <p class="text-sm font-bold text-red-600"><?= number_format($e['montant_restant'], 0, ',', ' ') ?> Ar</p>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -148,7 +155,7 @@
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-700">
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
                                     <a href="<?= url('finance/echeanciers/sms/' . $e['id']) ?>" 
                                        class="bg-orange-50 hover:bg-orange-100 text-orange-600 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 text-xs border border-orange-200 mr-2"
                                        title="Envoyer une relance SMS au parent">

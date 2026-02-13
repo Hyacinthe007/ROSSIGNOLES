@@ -24,8 +24,6 @@ class CsrfMiddleware {
      */
     private static $excludedRoutes = [
         'auth/login',
-        'finance/paiement-mensuel',
-        'finance/paiement-mensuel/.*',
         'api/.*'
     ];
 

@@ -131,7 +131,10 @@ class BaseModel {
                     
                     $orderParts = preg_split('/\s+/', $part);
                     $orderColumn = $orderParts[0];
-                    $orderDirection = isset($orderParts[1]) ? $orderParts[1] : 'ASC';
+                    $orderDirection = strtoupper(isset($orderParts[1]) ? $orderParts[1] : 'ASC');
+                    if (!in_array($orderDirection, ['ASC', 'DESC'])) {
+                        $orderDirection = 'ASC';
+                    }
                     
                     if ($this->columnExists($orderColumn)) {
                         $validParts[] = "{$orderColumn} {$orderDirection}";
@@ -149,7 +152,7 @@ class BaseModel {
             }
             
             if ($limit) {
-                $sql .= " LIMIT {$limit}";
+                $sql .= " LIMIT " . (int)$limit;
             }
             
             $stmt = $this->db->prepare($sql);
@@ -168,7 +171,7 @@ class BaseModel {
                 try {
                     $sql = "SELECT * FROM {$this->table}";
                     if ($limit) {
-                        $sql .= " LIMIT {$limit}";
+                        $sql .= " LIMIT " . (int)$limit;
                     }
                     $stmt = $this->db->prepare($sql);
                     $stmt->execute();

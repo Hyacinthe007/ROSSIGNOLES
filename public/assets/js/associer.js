@@ -19,62 +19,61 @@ let selectedClasses = new Set();
 /**
  * Mise à jour inline d'une association
  */
-async function updateAssociation(selectElement) {
-    const associationClasseId = selectElement.dataset.classeId;
-    const associationField = selectElement.dataset.field;
-    const associationValue = selectElement.value || null;
+function updateAssociation(selectElement) {
+    var associationClasseId = selectElement.dataset.classeId;
+    var associationField = selectElement.dataset.field;
+    var associationValue = selectElement.value || null;
 
     // Afficher le spinner
-    const container = selectElement.closest('.inline-edit-container');
-    const spinner = container.querySelector('.spinner');
+    var container = selectElement.closest('.inline-edit-container');
+    var spinner = container.querySelector('.spinner');
     spinner.classList.remove('hidden');
     selectElement.disabled = true;
 
-    try {
-        const response = await fetch(`${BASE_URL}/classes/associer/update`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-            },
-            body: JSON.stringify({
-                classe_id: associationClasseId,
-                field: associationField,
-                value: associationValue
-            })
+    return fetch(BASE_URL + '/classes/associer/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
+        },
+        body: JSON.stringify({
+            classe_id: associationClasseId,
+            field: associationField,
+            value: associationValue
+        })
+    })
+        .then(function (response) { return response.json(); })
+        .then(function (responseData) {
+            if (responseData.success) {
+                showToast('✓ ' + responseData.message, 'success');
+                return refreshStats();
+            } else {
+                showToast('✗ ' + responseData.message, 'error');
+                setTimeout(function () { location.reload(); }, RELOAD_DELAY_LONG);
+            }
+        })
+        .catch(function (error) {
+            console.error('Erreur updateAssociation:', error);
+            showToast('✗ Erreur de connexion', 'error');
+            setTimeout(function () { location.reload(); }, RELOAD_DELAY_LONG);
+        })
+        .finally(function () {
+            spinner.classList.add('hidden');
+            selectElement.disabled = false;
         });
-
-        const responseData = await response.json();
-
-        if (responseData.success) {
-            showToast('✓ ' + responseData.message, 'success');
-            // Rafraîchir les statistiques
-            await refreshStats();
-        } else {
-            showToast('✗ ' + responseData.message, 'error');
-            // Recharger la page pour restaurer l'état correct
-            setTimeout(() => location.reload(), RELOAD_DELAY_LONG);
-        }
-    } catch (error) {
-        showToast('✗ Erreur de connexion', 'error');
-        setTimeout(() => location.reload(), RELOAD_DELAY_LONG);
-    } finally {
-        spinner.classList.add('hidden');
-        selectElement.disabled = false;
-    }
 }
 
 /**
  * Mise à jour en masse des associations
  */
-async function bulkUpdate(field, value) {
+function bulkUpdate(field, value) {
     if (selectedClasses.size === 0) {
         showToast('⚠ Aucune classe sélectionnée', 'warning');
         return;
     }
 
-    const classeIds = Array.from(selectedClasses);
-    const confirmMsg = `Voulez-vous vraiment modifier ${classeIds.length} classe(s) ?`;
+    var classeIds = Array.from(selectedClasses);
+    var confirmMsg = 'Voulez-vous vraiment modifier ' + classeIds.length + ' classe(s) ?';
 
     if (!confirm(confirmMsg)) {
         return;
@@ -83,34 +82,34 @@ async function bulkUpdate(field, value) {
     // Afficher un overlay de chargement
     showLoadingOverlay();
 
-    try {
-        const response = await fetch(`${BASE_URL}/classes/associer/bulk-update`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-            },
-            body: JSON.stringify({
-                classe_ids: classeIds,
-                field: field,
-                value: value
-            })
+    return fetch(BASE_URL + '/classes/associer/bulk-update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
+        },
+        body: JSON.stringify({
+            classe_ids: classeIds,
+            field: field,
+            value: value
+        })
+    })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+            if (data.success) {
+                showToast('✓ ' + data.updated_count + ' classe(s) mise(s) à jour', 'success');
+                setTimeout(function () { location.reload(); }, RELOAD_DELAY_SHORT);
+            } else {
+                showToast('✗ ' + data.message, 'error');
+            }
+        })
+        .catch(function (error) {
+            console.error('Erreur bulkUpdate:', error);
+            showToast('✗ Erreur de connexion', 'error');
+        })
+        .finally(function () {
+            hideLoadingOverlay();
         });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast(`✓ ${data.updated_count} classe(s) mise(s) à jour`, 'success');
-            // Recharger la page pour afficher les changements
-            setTimeout(() => location.reload(), RELOAD_DELAY_SHORT);
-        } else {
-            showToast('✗ ' + data.message, 'error');
-        }
-    } catch (error) {
-        showToast('✗ Erreur de connexion', 'error');
-    } finally {
-        hideLoadingOverlay();
-    }
 }
 
 /**
@@ -191,34 +190,34 @@ function clearSelection() {
 /**
  * Gestion des actions groupées
  */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     // Écouteur pour le niveau en masse
-    const bulkNiveau = document.getElementById('bulk-niveau');
+    var bulkNiveau = document.getElementById('bulk-niveau');
     if (bulkNiveau) {
-        bulkNiveau.addEventListener('change', async (e) => {
+        bulkNiveau.addEventListener('change', function (e) {
             if (e.target.value) {
-                await bulkUpdate('niveau_id', e.target.value);
-                e.target.value = ''; // Réinitialiser le select
+                bulkUpdate('niveau_id', e.target.value);
+                e.target.value = '';
             }
         });
     }
 
     // Écouteur pour la section en masse
-    const bulkSection = document.getElementById('bulk-section');
+    var bulkSection = document.getElementById('bulk-section');
     if (bulkSection) {
-        bulkSection.addEventListener('change', async (e) => {
+        bulkSection.addEventListener('change', function (e) {
             if (e.target.value) {
-                const value = e.target.value === 'null' ? null : e.target.value;
-                await bulkUpdate('serie_id', value);
-                e.target.value = ''; // Réinitialiser le select
+                var value = e.target.value === 'null' ? null : e.target.value;
+                bulkUpdate('serie_id', value);
+                e.target.value = '';
             }
         });
     }
 
     // Écouteur pour les selects d'édition inline (délégation)
-    document.addEventListener('change', async (e) => {
+    document.addEventListener('change', function (e) {
         if (e.target.classList.contains('inline-edit-select')) {
-            await updateAssociation(e.target);
+            updateAssociation(e.target);
         }
     });
 });

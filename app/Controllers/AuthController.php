@@ -15,6 +15,18 @@ class AuthController extends BaseController {
     
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Rate limiting - Protection contre les attaques par force brute
+            $rateLimiter = new \App\Services\LoginRateLimiter(5, 15);
+            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            $rateLimitKey = $ip . '|' . ($_POST['username'] ?? '');
+
+            if ($rateLimiter->tooManyAttempts($rateLimitKey)) {
+                $minutes = $rateLimiter->remainingMinutes($rateLimitKey);
+                $error = "Trop de tentatives de connexion. Réessayez dans {$minutes} minute(s).";
+                $this->view('auth/login', ['error' => $error]);
+                return;
+            }
+
             // Validation consistante
             $validator = new \App\Core\Validator($_POST);
             $isValid = $validator->validate([
@@ -25,6 +37,7 @@ class AuthController extends BaseController {
             if (!$isValid) {
                 $_SESSION['errors'] = $validator->getErrors();
                 $this->redirect('auth/login');
+                return;
             }
 
             $username = $_POST['username'] ?? '';
@@ -34,6 +47,12 @@ class AuthController extends BaseController {
             $user = $userModel->authenticate($username, $password);
             
             if ($user) {
+                // Effacer le compteur de tentatives après connexion réussie
+                $rateLimiter->clear($rateLimitKey);
+
+                // Régénérer l'ID de session pour prévenir la fixation de session
+                session_regenerate_id(true);
+
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
@@ -71,7 +90,14 @@ class AuthController extends BaseController {
                 
                 $this->redirect('/dashboard');
             } else {
+                // Enregistrer la tentative échouée
+                $rateLimiter->hit($rateLimitKey);
+                $attemptsLeft = 5 - $rateLimiter->getAttempts($rateLimitKey);
+
                 $error = "Identifiants incorrects";
+                if ($attemptsLeft > 0 && $attemptsLeft <= 2) {
+                    $error .= ". Il vous reste {$attemptsLeft} tentative(s).";
+                }
                 $this->view('auth/login', ['error' => $error]);
             }
         } else {
@@ -100,13 +126,9 @@ class AuthController extends BaseController {
     }
     
     public function passwordReset() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
-            // Logique de réinitialisation
-            $this->view('auth/password_reset', ['message' => 'Email envoyé']);
-        } else {
-            $this->view('auth/password_reset');
-        }
+        // Fonctionnalité non disponible — rediriger avec message informatif
+        $_SESSION['error'] = "La réinitialisation du mot de passe n'est pas encore disponible. Veuillez contacter l'administrateur système.";
+        $this->redirect('auth/login');
     }
 }
 

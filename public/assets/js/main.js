@@ -118,8 +118,6 @@ function showNotification(message, type = 'info') {
     }, NOTIFICATION_DURATION);
 }
 
-
-
 // Fonction pour le formatage des montants
 function formatMoney(amount) {
     return new Intl.NumberFormat('fr-FR', {

@@ -143,8 +143,8 @@ $breadcrumbs = [
                                     $targetCount = isset($groupedPermissions[$module]) ? count($groupedPermissions[$module]) : 0;
                                 ?>
                                     <button type="button"
-                                        onclick="showModulePermissions('<?= md5($module) ?>')"
-                                        id="btn-module-<?= md5($module) ?>"
+                                        onclick="showModulePermissions('<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>')"
+                                        id="btn-module-<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>"
                                         class="module-tab-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-between group <?= $module === $firstModule ? 'bg-blue-600 text-white shadow-md shadow-blue-100' : 'text-gray-600 hover:bg-white hover:text-blue-600' ?>">
                                         <div class="flex items-center gap-3">
                                             <i class="fas fa-folder text-xs <?= $module === $firstModule ? 'text-blue-200' : 'text-gray-400 group-hover:text-blue-500' ?>"></i>
@@ -161,7 +161,7 @@ $breadcrumbs = [
                         <!-- Colonne de Droite : Permissions du Module -->
                         <div class="flex-1 bg-white">
                             <?php foreach ($groupedPermissions as $module => $targets): ?>
-                                <div id="module-content-<?= md5($module) ?>"
+                                <div id="module-content-<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>"
                                     class="module-permission-content p-6 <?= $module === $firstModule ? '' : 'hidden' ?>">
 
                                     <div class="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
@@ -170,8 +170,8 @@ $breadcrumbs = [
                                             <p class="text-xs text-gray-500">Configurez les accès détaillés pour ce module.</p>
                                         </div>
                                         <div class="flex gap-2">
-                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', true)" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">Tout cocher</button>
-                                            <button type="button" onclick="selectModulePermissions('<?= md5($module) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout décocher</button>
+                                            <button type="button" onclick="selectModulePermissions('<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>', true)" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">Tout cocher</button>
+                                            <button type="button" onclick="selectModulePermissions('<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>', false)" class="text-xs font-bold text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition">Tout décocher</button>
                                         </div>
                                     </div>
 
@@ -197,7 +197,7 @@ $breadcrumbs = [
                                                         <label class="flex items-center gap-2 group/label cursor-pointer">
                                                             <input type="checkbox" name="permissions[]" value="<?= $perm['id'] ?>"
                                                                 data-target="<?= e($targetName) ?>"
-                                                                data-module-hash="<?= md5($module) ?>"
+                                                                data-module-hash="<?= preg_replace('/[^a-z0-9]+/', '_', strtolower($module)) ?>"
                                                                 class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-all">
                                                             <span class="text-[11px] font-semibold text-gray-700 group-hover/label:text-blue-600 transition-colors">
                                                                 <?php

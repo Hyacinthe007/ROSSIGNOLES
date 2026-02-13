@@ -3,6 +3,28 @@
  * Point d'entrée de l'application ERP École ROSSIGNOLES
  */
 
+// ── Vérification de la version PHP minimale ──────────────────────────────────
+define('REQUIRED_PHP_VERSION', '8.2.12');
+
+if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
+    http_response_code(503);
+    header('Content-Type: text/html; charset=UTF-8');
+    echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+       . '<title>Version PHP insuffisante - ROSSIGNOLES</title>'
+       . '<style>body{font-family:system-ui,-apple-system,sans-serif;background:#f9fafb;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}'
+       . '.box{background:#fff;border-radius:1rem;padding:2.5rem;max-width:520px;width:90%;text-align:center;border-top:4px solid #f59e0b}'
+       . 'h1{color:#92400e;font-size:1.4rem;margin-bottom:.5rem}'
+       . 'p{color:#4b5563;line-height:1.7;margin:.5rem 0}'
+       . 'code{background:#fef3c7;padding:.15rem .5rem;border-radius:.25rem;font-size:.9rem;color:#92400e}</style></head>'
+       . '<body><div class="box">'
+       . '<h1>⚠ Version PHP insuffisante</h1>'
+       . '<p>L\'application ROSSIGNOLES nécessite <strong>PHP ' . REQUIRED_PHP_VERSION . '</strong> ou supérieur.</p>'
+       . '<p>Version actuellement installée : <code>PHP ' . PHP_VERSION . '</code></p>'
+       . '<p style="font-size:.85rem;color:#6b7280;margin-top:1.5rem">Contactez votre administrateur système pour mettre à jour PHP.</p>'
+       . '</div></body></html>';
+    exit(1);
+}
+
 // Charger l'autoloader de Composer si disponible
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
