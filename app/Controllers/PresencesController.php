@@ -356,6 +356,214 @@ class PresencesController extends BaseController {
     }
     
     /**
+     * Page de vérification : permet de vérifier la présence d'un élève
+     * pour un cours passé avec un enseignant donné
+     */
+    public function verification() {
+        $enseignantId = $_GET['enseignant_id'] ?? null;
+        $date = $_GET['date'] ?? null;
+        $emploiTempsId = $_GET['emploi_temps_id'] ?? null;
+        $eleveId = $_GET['eleve_id'] ?? null;
+        
+        // Récupérer l'année scolaire active
+        $anneeScolaire = $this->absenceModel->queryOne(
+            "SELECT id FROM annees_scolaires WHERE actif = 1 LIMIT 1"
+        );
+        $anneeScolaireId = $anneeScolaire['id'] ?? null;
+        
+        // Récupérer la liste des enseignants
+        $enseignants = $this->absenceModel->query(
+            "SELECT DISTINCT p.id, CONCAT(p.nom, ' ', p.prenom) as nom_complet
+             FROM personnels p
+             JOIN emplois_temps et ON et.personnel_id = p.id
+             WHERE et.annee_scolaire_id = ?
+             ORDER BY p.nom, p.prenom",
+            [$anneeScolaireId]
+        );
+        
+        $cours = null;
+        $coursDisponibles = [];
+        $eleves = [];
+        $eleveVerifie = null;
+        $resultatVerification = null;
+        
+        // Si un enseignant et une date sont sélectionnés, récupérer les cours
+        if ($enseignantId && $date) {
+            $jourSemaine = $this->getJourSemaineFr($date);
+            
+            $coursDisponibles = $this->absenceModel->query(
+                "SELECT et.id, et.heure_debut, et.heure_fin,
+                        m.nom as matiere_nom, m.code as matiere_code, m.couleur,
+                        c.id as classe_id, c.code as classe_code, c.nom as classe_nom,
+                        CONCAT(p.nom, ' ', p.prenom) as enseignant_nom,
+                        p.id as enseignant_id
+                 FROM emplois_temps et
+                 JOIN matieres m ON et.matiere_id = m.id
+                 JOIN classes c ON et.classe_id = c.id
+                 LEFT JOIN personnels p ON et.personnel_id = p.id
+                 WHERE et.annee_scolaire_id = ? 
+                   AND et.jour_semaine = ?
+                   AND et.personnel_id = ?
+                   AND et.actif = 1
+                 ORDER BY et.heure_debut ASC",
+                [$anneeScolaireId, $jourSemaine, $enseignantId]
+            );
+        }
+        
+        // Si un cours spécifique est sélectionné
+        if ($emploiTempsId && $date) {
+            $cours = $this->absenceModel->queryOne(
+                "SELECT et.id, et.heure_debut, et.heure_fin, et.jour_semaine,
+                        m.nom as matiere_nom, m.code as matiere_code, m.couleur,
+                        c.id as classe_id, c.code as classe_code, c.nom as classe_nom,
+                        CONCAT(p.nom, ' ', p.prenom) as enseignant_nom,
+                        p.id as enseignant_id
+                 FROM emplois_temps et
+                 JOIN matieres m ON et.matiere_id = m.id
+                 JOIN classes c ON et.classe_id = c.id
+                 LEFT JOIN personnels p ON et.personnel_id = p.id
+                 WHERE et.id = ?",
+                [$emploiTempsId]
+            );
+            
+            if ($cours) {
+                // Récupérer tous les élèves de la classe
+                $elevesClasse = $this->absenceModel->query(
+                    "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom, e.photo
+                     FROM eleves e
+                     JOIN inscriptions i ON e.id = i.eleve_id
+                     WHERE i.classe_id = ? 
+                       AND i.statut IN ('active', 'validee', 'en_cours')
+                       AND e.statut = 'actif'
+                     ORDER BY e.nom, e.prenom",
+                    [$cours['classe_id']]
+                );
+                
+                // Récupérer les absences pour ce cours à cette date
+                $absences = $this->absenceModel->query(
+                    "SELECT a.*, e.id as eleve_id
+                     FROM absences a
+                     JOIN eleves e ON a.eleve_id = e.id
+                     WHERE a.classe_id = ? 
+                       AND a.date_absence = ?
+                       AND a.heure_debut = ?
+                       AND a.heure_fin = ?
+                       AND a.type = 'absence'",
+                    [$cours['classe_id'], $date, $cours['heure_debut'], $cours['heure_fin']]
+                );
+                
+                // Créer un tableau des absents
+                $absentsIds = [];
+                $absencesMap = [];
+                foreach ($absences as $absence) {
+                    $absentsIds[] = $absence['eleve_id'];
+                    $absencesMap[$absence['eleve_id']] = $absence;
+                }
+                
+                // Marquer chaque élève comme présent ou absent
+                foreach ($elevesClasse as &$eleve) {
+                    $eleve['present'] = !in_array($eleve['id'], $absentsIds);
+                    $eleve['absence'] = $absencesMap[$eleve['id']] ?? null;
+                }
+                
+                $eleves = $elevesClasse;
+                
+                // Si un élève spécifique est recherché
+                if ($eleveId) {
+                    $eleveVerifie = null;
+                    foreach ($eleves as $e) {
+                        if ($e['id'] == $eleveId) {
+                            $eleveVerifie = $e;
+                            break;
+                        }
+                    }
+                    
+                    if ($eleveVerifie) {
+                        $resultatVerification = [
+                            'eleve' => $eleveVerifie,
+                            'present' => $eleveVerifie['present'],
+                            'absence' => $eleveVerifie['absence'] ?? null,
+                            'cours' => $cours,
+                            'date' => $date
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // Statistiques
+        $stats = null;
+        if (!empty($eleves)) {
+            $nbPresents = count(array_filter($eleves, fn($e) => $e['present']));
+            $nbAbsents = count($eleves) - $nbPresents;
+            $stats = [
+                'total' => count($eleves),
+                'presents' => $nbPresents,
+                'absents' => $nbAbsents,
+                'taux_presence' => count($eleves) > 0 
+                    ? round(($nbPresents / count($eleves)) * 100, 1)
+                    : 0
+            ];
+        }
+        
+        $this->view('presences/verification', [
+            'enseignant_id' => $enseignantId,
+            'date' => $date,
+            'emploi_temps_id' => $emploiTempsId,
+            'eleve_id' => $eleveId,
+            'enseignants' => $enseignants,
+            'cours_disponibles' => $coursDisponibles,
+            'cours' => $cours,
+            'eleves' => $eleves,
+            'eleve_verifie' => $eleveVerifie,
+            'resultat_verification' => $resultatVerification,
+            'stats' => $stats
+        ]);
+    }
+    
+    /**
+     * API pour rechercher un élève (autocomplétion)
+     */
+    public function apiSearchEleve() {
+        header('Content-Type: application/json');
+        
+        $terme = $_GET['q'] ?? '';
+        $classeId = $_GET['classe_id'] ?? null;
+        
+        if (strlen($terme) < 2 && !$classeId) {
+            echo json_encode([]);
+            exit;
+        }
+        
+        $sql = "SELECT DISTINCT e.id, e.matricule, e.nom, e.prenom, e.photo
+                FROM eleves e
+                JOIN inscriptions i ON e.id = i.eleve_id
+                WHERE i.statut IN ('active', 'validee', 'en_cours')
+                  AND e.statut = 'actif'";
+        
+        $params = [];
+        
+        if ($classeId) {
+            $sql .= " AND i.classe_id = ?";
+            $params[] = $classeId;
+        }
+        
+        if ($terme) {
+            $sql .= " AND (e.nom LIKE ? OR e.prenom LIKE ? OR e.matricule LIKE ?)";
+            $params[] = "%{$terme}%";
+            $params[] = "%{$terme}%";
+            $params[] = "%{$terme}%";
+        }
+        
+        $sql .= " ORDER BY e.nom, e.prenom LIMIT 20";
+        
+        $eleves = $this->absenceModel->query($sql, $params);
+        
+        echo json_encode($eleves);
+        exit;
+    }
+    
+    /**
      * Convertit une date en jour de la semaine en français
      */
     private function getJourSemaineFr($date) {

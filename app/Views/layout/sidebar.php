@@ -127,6 +127,9 @@
                     <a href="<?= url('absences/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('absences/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-calendar-check w-4 h-4 mr-2"></i><span>Assiduité</span>
                     </a>
+                    <a href="<?= url('presences') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isActiveRoute('presences') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
+                        <i class="fas fa-clipboard-check w-4 h-4 mr-2"></i><span>Présences par cours</span>
+                    </a>
                     <?php endif; ?>
                 </div>
             </div>

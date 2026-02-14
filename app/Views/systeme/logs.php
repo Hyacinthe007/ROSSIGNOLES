@@ -49,31 +49,31 @@
                 <table id="logsTable" class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Horodatage</th>
-                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Utilisateur</th>
-                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Module</th>
-                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
-                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Description</th>
-                            <th class="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Adresse IP</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-900 uppercase tracking-widest">Horodatage</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-900 uppercase tracking-widest">Utilisateur</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-900 uppercase tracking-widest">Module</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-900 uppercase tracking-widest">Action</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-900 uppercase tracking-widest">Description</th>
+                            <th class="px-6 py-4 text-right text-[10px] font-bold text-gray-900 uppercase tracking-widest">Adresse IP</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-100">
                         <?php foreach ($logs as $log): 
                             $actionType = strtolower($log['action']);
                             $badgeClass = 'bg-gray-100 text-gray-600';
-                            if (strpos($actionType, 'creat') !== false || strpos($actionType, 'add') !== false) $badgeClass = 'bg-green-100 text-green-700';
-                            elseif (strpos($actionType, 'updat') !== false || strpos($actionType, 'edit') !== false) $badgeClass = 'bg-blue-100 text-blue-700';
-                            elseif (strpos($actionType, 'delet') !== false || strpos($actionType, 'remov') !== false) $badgeClass = 'bg-red-100 text-red-700';
-                            elseif (strpos($actionType, 'login') !== false) $badgeClass = 'bg-purple-100 text-purple-700';
+                            if (strpos($actionType, 'creat') !== false || strpos($actionType, 'add') !== false) $badgeClass = 'bg-green-100 text-green-900';
+                            elseif (strpos($actionType, 'updat') !== false || strpos($actionType, 'edit') !== false) $badgeClass = 'bg-blue-100 text-blue-900';
+                            elseif (strpos($actionType, 'delet') !== false || strpos($actionType, 'remov') !== false) $badgeClass = 'bg-red-100 text-red-900';
+                            elseif (strpos($actionType, 'login') !== false) $badgeClass = 'bg-purple-100 text-purple-900';
                         ?>
                             <tr class="hover:bg-indigo-50/30 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-[11px] font-bold text-gray-600">
-                                        <i class="far fa-calendar-alt mr-1 text-gray-300"></i>
+                                    <div class="text-[11px] font-bold text-gray-900">
+                                        <i class="far fa-calendar-alt mr-1 text-gray-700"></i>
                                         <?= date('d/m/Y', strtotime($log['created_at'])) ?>
                                     </div>
-                                    <div class="text-[10px] text-gray-400">
-                                        <i class="far fa-clock mr-1 text-gray-300"></i>
+                                    <div class="text-[10px] text-gray-700">
+                                        <i class="far fa-clock mr-1 text-gray-700"></i>
                                         <?= date('H:i:s', strtotime($log['created_at'])) ?>
                                     </div>
                                 </td>

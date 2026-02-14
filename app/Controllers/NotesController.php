@@ -93,35 +93,42 @@ class NotesController extends BaseController {
         }
 
         if (!$type || !$id) {
-            die("Paramètres manquants pour la saisie des notes");
+            $_SESSION['error'] = "Paramètres manquants pour la saisie des notes. Veuillez sélectionner une évaluation.";
+            $this->redirect('notes/list');
+            return;
         }
 
-        $context = $this->getEvaluationContext($type, $id);
+        try {
+            $context = $this->getEvaluationContext($type, $id);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $notes = $_POST['notes'] ?? [];
-            $absences = $_POST['absences'] ?? [];
-            $appreciations = $_POST['appreciations'] ?? [];
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $notes = $_POST['notes'] ?? [];
+                $absences = $_POST['absences'] ?? [];
+                $appreciations = $_POST['appreciations'] ?? [];
 
-            $this->persistNotes(
-                $context['model'],
-                $context['tableNotes'],
-                $context['fkId'],
-                $id,
-                $notes,
-                $absences,
-                $appreciations
-            );
-            
-            $this->redirect('notes/list?classe_id=' . $context['evaluation']['classe_id'] . '&periode_id=' . $context['evaluation']['periode_id']);
-        } else {
-            $eleves = $this->getElevesWithNotes($context['model'], $context['tableNotes'], $context['fkId'], $id, $context['evaluation']);
-            
-            $this->view('notes/saisie', [
-                'evaluation' => $context['details'],
-                'eleves' => $eleves,
-                'type' => $type
-            ]);
+                $this->persistNotes(
+                    $context['model'],
+                    $context['tableNotes'],
+                    $context['fkId'],
+                    $id,
+                    $notes,
+                    $absences,
+                    $appreciations
+                );
+                
+                $this->redirect('notes/list?classe_id=' . $context['evaluation']['classe_id'] . '&periode_id=' . $context['evaluation']['periode_id']);
+            } else {
+                $eleves = $this->getElevesWithNotes($context['model'], $context['tableNotes'], $context['fkId'], $id, $context['evaluation']);
+                
+                $this->view('notes/saisie', [
+                    'evaluation' => $context['details'],
+                    'eleves' => $eleves,
+                    'type' => $type
+                ]);
+            }
+        } catch (\Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect('notes/list');
         }
     }
 
@@ -134,44 +141,51 @@ class NotesController extends BaseController {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
         if (!$type || !$id) {
-            die("Paramètres manquants pour la saisie en masse");
+            $_SESSION['error'] = "Paramètres manquants pour la saisie en masse. Veuillez sélectionner une évaluation.";
+            $this->redirect('notes/list');
+            return;
         }
 
-        $context = $this->getEvaluationContext($type, $id);
-        $eleves = $this->getElevesWithNotes($context['model'], $context['tableNotes'], $context['fkId'], $id, $context['evaluation']);
+        try {
+            $context = $this->getEvaluationContext($type, $id);
+            $eleves = $this->getElevesWithNotes($context['model'], $context['tableNotes'], $context['fkId'], $id, $context['evaluation']);
 
-        // Notes éventuellement pré-chargées depuis un import Excel
-        $importSummary = null;
-        if (isset($_SESSION['notes_importees']) && isset($_SESSION['notes_importees'][$type][$id])) {
-            $importData = $_SESSION['notes_importees'][$type][$id];
-            $importSummary = $importData['summary'] ?? null;
-            $notesParMatricule = $importData['notes'] ?? [];
+            // Notes éventuellement pré-chargées depuis un import Excel
+            $importSummary = null;
+            if (isset($_SESSION['notes_importees']) && isset($_SESSION['notes_importees'][$type][$id])) {
+                $importData = $_SESSION['notes_importees'][$type][$id];
+                $importSummary = $importData['summary'] ?? null;
+                $notesParMatricule = $importData['notes'] ?? [];
 
-            // Projection des notes importées sur la liste des élèves
-            foreach ($eleves as &$eleve) {
-                $mat = $eleve['matricule'];
-                if (isset($notesParMatricule[$mat])) {
-                    $row = $notesParMatricule[$mat];
-                    if (array_key_exists('note', $row)) {
-                        $eleve['note'] = $row['note'];
-                    }
-                    if (array_key_exists('absent', $row)) {
-                        $eleve['absent'] = $row['absent'];
-                    }
-                    if (array_key_exists('appreciation', $row)) {
-                        $eleve['appreciation'] = $row['appreciation'];
+                // Projection des notes importées sur la liste des élèves
+                foreach ($eleves as &$eleve) {
+                    $mat = $eleve['matricule'];
+                    if (isset($notesParMatricule[$mat])) {
+                        $row = $notesParMatricule[$mat];
+                        if (array_key_exists('note', $row)) {
+                            $eleve['note'] = $row['note'];
+                        }
+                        if (array_key_exists('absent', $row)) {
+                            $eleve['absent'] = $row['absent'];
+                        }
+                        if (array_key_exists('appreciation', $row)) {
+                            $eleve['appreciation'] = $row['appreciation'];
+                        }
                     }
                 }
+                unset($eleve);
             }
-            unset($eleve);
-        }
 
-        $this->view('notes/saisie_masse', [
-            'evaluation' => $context['details'],
-            'eleves' => $eleves,
-            'type' => $type,
-            'import_summary' => $importSummary
-        ]);
+            $this->view('notes/saisie_masse', [
+                'evaluation' => $context['details'],
+                'eleves' => $eleves,
+                'type' => $type,
+                'import_summary' => $importSummary
+            ]);
+        } catch (\Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect('notes/list');
+        }
     }
 
     /**
@@ -355,7 +369,9 @@ class NotesController extends BaseController {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
         if (!$type || !$id) {
-            die("Paramètres manquants");
+            $_SESSION['error'] = "Paramètres manquants pour le téléchargement du modèle.";
+            $this->redirect('notes/list');
+            return;
         }
 
         $context = $this->getEvaluationContext($type, $id);
@@ -405,12 +421,12 @@ class NotesController extends BaseController {
             $tableNotes = 'notes_interrogations';
             $fkId = 'interrogation_id';
         } else {
-            die("Type d'évaluation invalide");
+            throw new \Exception("Type d'évaluation invalide");
         }
         
         $evaluation = $model->find($id);
         if (!$evaluation) {
-            die("Évaluation non trouvée");
+            throw new \Exception("Évaluation non trouvée");
         }
 
         $details = $model->getDetailsWithRelations($id);

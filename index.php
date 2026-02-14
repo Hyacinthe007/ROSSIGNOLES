@@ -66,7 +66,9 @@ use App\Middleware\CsrfMiddleware;
 use App\Core\Router;
 
 // Charger les routes
-$routes = require __DIR__ . '/routes/web.php';
+$webRoutes = require __DIR__ . '/routes/web.php';
+$apiRoutes = require __DIR__ . '/routes/api.php';
+$routes = array_merge($webRoutes, $apiRoutes);
 
 // Créer une instance du routeur
 $router = new Router();

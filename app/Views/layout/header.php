@@ -28,6 +28,128 @@
     <script src="<?= url('public/assets/js/global-tooltips.js') ?>" defer></script>
     <script src="<?= url('public/assets/js/secure-actions.js') ?>" defer></script>
     <meta name="csrf-token" content="<?= csrf_token() ?>">
+    <style>
+        /* Barre de recherche avec bordure tournante continue */
+        .smart-search-box {
+            position: relative;
+            padding: 3px; /* Bordure légèrement plus épaisse pour qu'elle soit bien "pleine" */
+            border-radius: 9999px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .smart-search-box::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Utilisation d'une dimension dynamique pour couvrir toute la largeur/hauteur même en format ultra-large */
+            width: 150%; 
+            padding-bottom: 150%; 
+            background: conic-gradient(
+                from 0deg,
+                #3b82f6, #6366f1, #8b5cf6, #d946ef, #ec4899, #f43f5e, 
+                #f97316, #eab308, #84cc16, #22c55e, #10b981, #06b6d4, #3b82f6
+            );
+            animation: rotate-gradient 4s linear infinite;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .smart-search-inner {
+            position: relative;
+            z-index: 1;
+            background: #fff; /* Retour à un fond plein pour une ligne bien nette sur le bord */
+            width: 100%;
+            height: 100%;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+        }
+
+        @keyframes rotate-gradient {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .smart-search-input {
+            flex: 1;
+            height: 36px; /* Réduit de 42px à 36px */
+            padding: 0 12px;
+            border: none !important;
+            background: transparent !important;
+            font-size: 0.95rem;
+            color: #1f2937;
+            outline: none !important;
+            font-weight: 500;
+        }
+
+        .smart-search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .smart-search-icon {
+            margin-left: 16px;
+            color: #9ca3af;
+            font-size: 15px;
+        }
+
+        .smart-search-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 14px;
+        }
+
+        .smart-search-action-btn {
+            color: #71717a;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .smart-search-action-btn:hover {
+            color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        /* Copilot-style Icon */
+        .copilot-swirl {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #10b981, #3b82f6, #6366f1, #a855f7, #ec4899);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-10deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copilot-swirl::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+            left: -100%;
+            top: 0;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -57,20 +179,31 @@
             </a>
         </div>
 
-        <!-- Recherche globale (Desktop) -->
-        <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
-            <div class="relative w-full">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-400"></i>
-                </span>
-                <input type="text" 
-                       id="globalSearch"
-                       autocomplete="off"
-                       placeholder="Rechercher (Ctrl+K)..." 
-                       class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all shadow-sm">
+        <!-- Recherche globale inteligente (Desktop) -->
+        <?php 
+        $currentUri = $_SERVER['REQUEST_URI'];
+        $isHelpPage = strpos($currentUri, 'systeme/aide') !== false 
+                   || strpos($currentUri, 'systeme/apropos') !== false
+                   || (strpos($currentUri, 'finance/recus') !== false && isset($_GET['id']));
+        if (!$isHelpPage): 
+        ?>
+        <div class="hidden md:flex flex-1 max-w-lg mx-8 relative">
+            <div class="smart-search-box group w-full">
+                <div class="smart-search-inner">
+                    <span class="smart-search-icon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" 
+                           id="globalSearch"
+                           autocomplete="off"
+                           placeholder="Rechercher Ctrl + k..."
+                           class="smart-search-input">
+                    <div class="smart-search-actions">
+                    </div>
+                </div>
             </div>
             <!-- Résultats de recherche -->
-            <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 hidden overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+            <div id="searchResults" class="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 hidden overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
             </div>
         </div>
 
@@ -79,6 +212,7 @@
             aria-label="Recherche">
             <i class="fas fa-search text-gray-600"></i>
         </button>
+        <?php endif; ?>
         
         <div class="flex items-center gap-3">
             <!-- Notifications: removed per request -->
@@ -129,11 +263,11 @@
                                 <i class="fas fa-user text-gray-400 w-4"></i>
                                 <span>Utilisateurs</span>
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="<?= url('systeme/aide') ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-question-circle text-gray-400 w-4"></i>
                                 <span>Aide</span>
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="<?= url('systeme/apropos') ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-info-circle text-gray-400 w-4"></i>
                                 <span>À propos</span>
                             </a>

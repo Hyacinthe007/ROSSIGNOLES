@@ -7,6 +7,7 @@ return [
     'app_name' => env('APP_NAME', 'ERP École - ROSSIGNOLES'),
     'app_version' => '1.0.0',
     'app_url' => env('APP_URL', 'http://localhost/ROSSIGNOLES'),
+    'base_url' => env('APP_URL', 'http://localhost/ROSSIGNOLES'),
     'timezone' => 'Indian/Antananarivo',
     'locale' => 'fr_FR',
     'charset' => 'UTF-8',

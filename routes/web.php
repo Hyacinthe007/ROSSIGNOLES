@@ -233,6 +233,8 @@ $routes = [
     ['pattern' => 'presences', 'method' => 'GET', 'handler' => 'PresencesController@index'],
     ['pattern' => 'presences/details-cours', 'method' => 'GET', 'handler' => 'PresencesController@detailsCours'],
     ['pattern' => 'presences/historique', 'method' => 'GET', 'handler' => 'PresencesController@historique'],
+    ['pattern' => 'presences/verification', 'method' => 'GET', 'handler' => 'PresencesController@verification'],
+    ['pattern' => 'presences/api/search-eleve', 'method' => 'GET', 'handler' => 'PresencesController@apiSearchEleve'],
 
     // Sanctions
     ['pattern' => 'sanctions/list', 'method' => 'GET', 'handler' => 'SanctionsController@list'],
@@ -319,6 +321,8 @@ $routes = [
     ['pattern' => 'systeme/utilisateurs/delete/{id}', 'method' => 'POST', 'handler' => 'SystemeController@deleteUtilisateur'],
     ['pattern' => 'systeme/utilisateurs/toggle-status/{id}', 'method' => 'POST', 'handler' => 'SystemeController@toggleStatus'],
     ['pattern' => 'systeme/utilisateurs/sync-parents', 'method' => 'POST', 'handler' => 'SystemeController@syncParentsGroup'],
+    ['pattern' => 'systeme/aide', 'method' => 'GET', 'handler' => 'SystemeController@aide'],
+    ['pattern' => 'systeme/apropos', 'method' => 'GET', 'handler' => 'SystemeController@apropos'],
     
     // Groupes
     ['pattern' => 'systeme/groupes', 'method' => 'GET', 'handler' => 'SystemeController@groupes'],

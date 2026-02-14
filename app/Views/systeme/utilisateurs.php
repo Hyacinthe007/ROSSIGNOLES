@@ -70,10 +70,10 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative w-64">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-600">
                             <i class="fas fa-search text-sm"></i>
                         </span>
-                        <input type="text" id="userSearch" placeholder="Rechercher..." class="w-full pl-9 pr-4 py-2 text-sm border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="userSearch" placeholder="Rechercher..." class="w-full pl-9 pr-4 py-2 text-sm border-gray-900 rounded-lg focus:ring-blue-900 focus:border-blue-900">
                     </div>
                 </div>
             </div>
@@ -88,11 +88,11 @@
                     <table id="usersTable" class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Utilisateur</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Groupes</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Dernière connexion</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Statut</th>
-                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase">Utilisateur</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase">Groupes</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase">Dernière connexion</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase">Statut</th>
+                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-900 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">

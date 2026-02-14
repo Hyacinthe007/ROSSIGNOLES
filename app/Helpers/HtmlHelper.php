@@ -1,4 +1,6 @@
 <?php
+namespace App\Helpers;
+
 /**
  * Helper pour le HTML
  */
@@ -50,5 +52,9 @@ class HtmlHelper {
         $html .= "</select>";
         return $html;
     }
+}
+
+if (!class_exists('HtmlHelper')) {
+    class_alias(\App\Helpers\HtmlHelper::class, 'HtmlHelper');
 }
 

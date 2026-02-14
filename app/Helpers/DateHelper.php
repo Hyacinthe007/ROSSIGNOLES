@@ -1,4 +1,6 @@
 <?php
+namespace App\Helpers;
+
 /**
  * Helper pour les dates
  */
@@ -40,5 +42,9 @@ class DateHelper {
         $dateObj = new DateTime($date);
         return $dateObj->format($format);
     }
+}
+
+if (!class_exists('DateHelper')) {
+    class_alias(\App\Helpers\DateHelper::class, 'DateHelper');
 }
 

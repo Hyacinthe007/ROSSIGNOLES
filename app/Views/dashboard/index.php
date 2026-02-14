@@ -93,7 +93,7 @@
             <?php endif; ?>
 
             <?php if ($canEnterNotes): ?>
-            <a href="<?= url('notes/saisie') ?>" class="flex flex-col items-center justify-center p-2 sm:p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition group">
+            <a href="<?= url('notes/list') ?>" class="flex flex-col items-center justify-center p-2 sm:p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition group">
                 <i class="fas fa-pen text-xl sm:text-3xl text-purple-600 mb-1 sm:mb-2 group-hover:scale-110 transition"></i>
                 <span class="text-xs font-medium text-gray-700 text-center">Saisir notes</span>
             </a>

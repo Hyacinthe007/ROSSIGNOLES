@@ -390,19 +390,25 @@ require_once __DIR__ . '/../layout/sidebar.php';
 </style>
 
 <div class="p-4 md:p-8">
-    <!-- En-tÃªte -->
+    <!-- En-tête -->
     <div class="header-actions">
         <div class="page-header-clean">
             <h1>
                 <i class="fas fa-chalkboard-teacher"></i>
-                PrÃ©sences par Cours (<?= date('Y', strtotime($date)) ?> - <?= date('Y', strtotime($date)) + 1 ?>)
+                Présences par Cours (<?= date('Y', strtotime($date)) ?> - <?= date('Y', strtotime($date)) + 1 ?>)
             </h1>
-            <p>Consultez les prÃ©sences pour chaque cours de la journÃ©e</p>
+            <p>Consultez les présences pour chaque cours de la journée</p>
         </div>
-        <a href="/presences/historique" class="btn-retour">
-            <i class="fas fa-history"></i>
-            Historique
-        </a>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="<?= url('presences/verification') ?>" class="btn-retour" style="background: #805ad5;">
+                <i class="fas fa-search"></i>
+                Vérifier une présence
+            </a>
+            <a href="<?= url('presences/historique') ?>" class="btn-retour">
+                <i class="fas fa-history"></i>
+                Historique
+            </a>
+        </div>
     </div>
 
     <!-- Statistiques -->
@@ -428,7 +434,7 @@ require_once __DIR__ . '/../layout/sidebar.php';
 
             <div class="stat-box">
                 <div class="stat-content">
-                    <h3>PrÃ©sents</h3>
+                    <h3>Présents</h3>
                     <p class="stat-number"><?= $totalPresents ?></p>
                 </div>
                 <div class="stat-icon icon-green">
@@ -448,7 +454,7 @@ require_once __DIR__ . '/../layout/sidebar.php';
 
             <div class="stat-box">
                 <div class="stat-content">
-                    <h3>Taux de prÃ©sence</h3>
+                    <h3>Taux de présence</h3>
                     <p class="stat-number"><?= $tauxGlobal ?>%</p>
                 </div>
                 <div class="stat-icon icon-purple">
@@ -517,8 +523,8 @@ require_once __DIR__ . '/../layout/sidebar.php';
         <?php if (empty($cours)): ?>
             <div class="empty-state">
                 <i class="fas fa-calendar-times"></i>
-                <h3>Aucun cours programmÃ©</h3>
-                <p>Il n'y a pas de cours prÃ©vu pour cette date avec les filtres sÃ©lectionnÃ©s.</p>
+                <h3>Aucun cours programmé</h3>
+                <p>Il n'y a pas de cours prévu pour cette date avec les filtres sélectionnés.</p>
             </div>
         <?php else: ?>
             <div class="table-container">

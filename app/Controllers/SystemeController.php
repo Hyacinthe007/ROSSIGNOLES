@@ -21,11 +21,11 @@ class SystemeController extends BaseController {
     
     public function __construct() {
         $this->requireAuth();
-        $this->requirePermission('systeme.config');
         $this->configModel = new Configuration();
     }
     
     public function config() {
+        $this->requirePermission('systeme.config');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 foreach ($_POST as $cle => $valeur) {
@@ -475,5 +475,12 @@ class SystemeController extends BaseController {
             ]);
         }
     }
-}
 
+    public function aide() {
+        $this->view('systeme/aide', ['title' => 'Centre d\'Aide']);
+    }
+
+    public function apropos() {
+        $this->view('systeme/apropos', ['title' => 'À Propos']);
+    }
+}

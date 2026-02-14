@@ -140,5 +140,14 @@ class Personnel extends BaseModel {
             $params
         );
     }
+
+    /**
+     * Récupère tous les documents associés à ce membre du personnel
+     */
+    public function getDocuments($id) {
+        $docModel = new DocumentPersonnel();
+        return $docModel->getByPersonnel((int)$id);
+    }
 }
+
 

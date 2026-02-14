@@ -25,35 +25,15 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-4">
-            <form method="GET" action="<?= url('finance/recus') ?>" id="receiptSearchForm" class="flex flex-col md:flex-row gap-3">
-                <div class="flex-1">
-                    <div class="relative">
-                        <input type="text" 
-                               id="receiptSearchInput"
-                               name="search" 
-                               value="<?= e($search ?? '') ?>"
-                               placeholder="Filtrer par élève, matricule, n° facture, classe..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    </div>
-                </div>
-                <div id="searchLoader" class="hidden flex items-center px-2">
-                    <i class="fas fa-spinner fa-spin text-green-600"></i>
-                </div>
-                <button type="submit" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition flex items-center justify-center gap-2 shadow font-medium">
-                    <i class="fas fa-filter"></i>
-                    <span>Filtrer</span>
-                </button>
-                <?php if (!empty($search)): ?>
-                    <a href="<?= url('finance/recus') ?>" 
-                       class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-times"></i>
-                        <span>Réinitialiser</span>
-                    </a>
-                <?php endif; ?>
-            </form>
+        <!-- Filtres et Recherche -->
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text"
+                       id="receiptSearchInput"
+                       placeholder="Rechercher par élève, matricule, n° facture, classe..."
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            </div>
         </div>
     </div>
 
@@ -74,13 +54,54 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-calendar-alt mr-2"></i>Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-user mr-2"></i>Élève</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-chalkboard-teacher mr-2"></i>Mois Écolage</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-file-invoice mr-2"></i>Facture</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Mode</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-money-bill-wave mr-2"></i>Montant</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="date" data-order="desc">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-calendar-alt text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Date</span>
+                                    <i class="fas fa-sort text-gray-300 ml-auto"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="text">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-user text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Élève</span>
+                                    <i class="fas fa-sort text-gray-300 ml-auto"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="text">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-chalkboard-teacher text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Mois Écolage</span>
+                                    <i class="fas fa-sort text-gray-300 ml-auto"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="text">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-file-invoice text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Facture</span>
+                                    <i class="fas fa-sort text-gray-300 ml-auto"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="text">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-money-bill-wave text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Mode</span>
+                                    <i class="fas fa-sort text-gray-300 ml-auto"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors group" data-sort="number">
+                                <div class="flex items-center justify-end gap-2">
+                                    <i class="fas fa-money-bill-wave text-gray-400 group-hover:text-green-600 transition-colors"></i>
+                                    <span>Montant</span>
+                                    <i class="fas fa-sort text-gray-300 ml-2"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                <div class="flex items-center justify-end gap-2">
+                                    <i class="fas fa-tools text-gray-400"></i>
+                                    <span>Actions</span>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -88,11 +109,11 @@
                             $mois = !empty($paiement['mois_ecolage']) ? explode(', ', $paiement['mois_ecolage']) : [null];
                             foreach ($mois as $index => $m):
                         ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <tr class="receipt-row hover:bg-gray-50 transition">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-val="<?= strtotime($paiement['date_paiement']) ?>">
                                     <?= date('d/m/Y', strtotime($paiement['date_paiement'])) ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-val="<?= e($paiement['eleve_nom'] . ' ' . $paiement['eleve_prenom']) ?>">
                                     <?php if ($paiement['eleve_nom']): ?>
                                         <div>
                                             <div class="font-medium"><?= e($paiement['eleve_nom'] . ' ' . $paiement['eleve_prenom']) ?></div>
@@ -104,7 +125,7 @@
                                         <span class="text-gray-400">-</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" data-val="<?= e($m ?: '') ?>">
                                     <?php if ($m): ?>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <i class="fas fa-calendar-alt mr-1"></i>
@@ -114,21 +135,20 @@
                                         <span class="text-gray-400  text-xs">Autre / Frais divers</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" data-val="<?= e($paiement['numero_facture'] ?? '') ?>">
                                     <?= e($paiement['numero_facture'] ?? '-') ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" data-val="<?= e($paiement['mode_paiement_libelle'] ?? '') ?>">
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                         <?= e($paiement['mode_paiement_libelle'] ?? 'N/A') ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right text-green-600">
-                                    <?php 
-                                    // Calculer le montant par mois
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right text-green-600" data-val="<?php 
                                     $nombreMois = count($mois);
-                                    $montantParMois = $nombreMois > 0 ? $paiement['montant'] / $nombreMois : $paiement['montant'];
-                                    ?>
-                                    <?= number_format($montantParMois, 0, ',', ' ') ?> Ar
+                                    $mParMois = $nombreMois > 0 ? $paiement['montant'] / $nombreMois : $paiement['montant'];
+                                    echo $mParMois;
+                                ?>">
+                                    <?= number_format($mParMois, 0, ',', ' ') ?> Ar
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
@@ -157,36 +177,71 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('receiptSearchInput');
-    const loader = document.getElementById('searchLoader');
-    let timeout = null;
+    const tableBody = document.querySelector('tbody');
+    const rows = Array.from(tableBody.getElementsByClassName('receipt-row'));
+    const headers = document.querySelectorAll('th[data-sort]');
 
+    // --- LOGIQUE DE RECHERCHE ---
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            const query = this.value.trim();
-            
-            // Afficher le loader
-            if (loader) loader.classList.remove('hidden');
-
-            timeout = setTimeout(() => {
-                // Rediriger vers l'URL avec le paramètre de recherche
-                // On utilise window.location pour recharger la page avec les nouveaux résultats de la DB
-                // C'est le moyen le plus simple d'interroger la base sans refaire toute l'API AJAX
-                const baseUrl = "<?= url('finance/recus') ?>";
-                const url = query ? `${baseUrl}?search=${encodeURIComponent(query)}` : baseUrl;
-                
-                window.location.href = url;
-            }, 800); // Délai de 800ms pour éviter trop de rechargements pendant la frappe
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
         });
-
-        // Placer le curseur à la fin du texte si déjà présent (après rechargement)
-        if (searchInput.value) {
-            searchInput.focus();
-            const val = searchInput.value;
-            searchInput.value = '';
-            searchInput.value = val;
-        }
+        searchInput.focus();
     }
+
+    // --- LOGIQUE DE TRI ---
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const sortType = header.getAttribute('data-sort');
+            const currentOrder = header.getAttribute('data-order') || 'asc';
+            const nextOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+            const colIndex = Array.from(header.parentElement.children).indexOf(header);
+
+            // Reset other headers
+            headers.forEach(h => {
+                h.removeAttribute('data-order');
+                const icon = h.querySelector('.fa-sort, .fa-sort-up, .fa-sort-down');
+                if (icon) {
+                    icon.className = 'fas fa-sort text-gray-300 ml-auto';
+                    if (h.classList.contains('text-right')) icon.className = 'fas fa-sort text-gray-300 ml-2';
+                }
+            });
+
+            // Update current header
+            header.setAttribute('data-order', nextOrder);
+            const statusIcon = header.querySelector('.fa-sort');
+            if (statusIcon) {
+                statusIcon.className = `fas fa-sort-${nextOrder === 'asc' ? 'up' : 'down'} text-green-600 ${header.classList.contains('text-right') ? 'ml-2' : 'ml-auto'}`;
+            }
+
+            // Sort rows
+            const sortedRows = rows.sort((a, b) => {
+                const aVal = a.children[colIndex].getAttribute('data-val');
+                const bVal = b.children[colIndex].getAttribute('data-val');
+
+                if (sortType === 'number') {
+                    return nextOrder === 'asc' 
+                        ? parseFloat(aVal) - parseFloat(bVal)
+                        : parseFloat(bVal) - parseFloat(aVal);
+                } else if (sortType === 'date') {
+                    return nextOrder === 'asc'
+                        ? parseInt(aVal) - parseInt(bVal)
+                        : parseInt(bVal) - parseInt(aVal);
+                } else {
+                    return nextOrder === 'asc'
+                        ? aVal.localeCompare(bVal)
+                        : bVal.localeCompare(aVal);
+                }
+            });
+
+            // Re-render table body
+            sortedRows.forEach(row => tableBody.appendChild(row));
+        });
+    });
 });
 </script>
 
