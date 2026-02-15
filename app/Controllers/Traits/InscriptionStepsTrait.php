@@ -82,6 +82,57 @@ trait InscriptionStepsTrait {
                     'lien_parente' => $_POST['lien_parente']
                 ];
                 $_SESSION['inscription_data']['eleve_nouveau'] = true;
+                
+                // Créer ou mettre à jour l'élève immédiatement pour pouvoir utiliser son ID en étape 4
+                $eleveModel = new Eleve();
+                $eleveData = $_SESSION['inscription_data']['eleve_data'];
+                
+                // Générer un matricule si non fourni
+                if (empty($eleveData['matricule'])) {
+                    if (!function_exists('generateMatricule')) {
+                        require_once APP_PATH . '/Helpers/functions.php';
+                    }
+                    $eleveData['matricule'] = generateMatricule('eleve', 'eleves');
+                }
+                
+                // Ajouter le statut 'brouillon' pour les nouvelles inscriptions
+                $eleveData['statut'] = 'brouillon';
+                
+                if (empty($_SESSION['inscription_data']['eleve_id'])) {
+                    // Créer l'élève la première fois avec statut 'brouillon'
+                    $_SESSION['inscription_data']['eleve_id'] = $eleveModel->create($eleveData);
+                } else {
+                    // Mettre à jour l'élève s'il existe déjà
+                    $eleveModel->update($_SESSION['inscription_data']['eleve_id'], $eleveData);
+                }
+                
+                // Créer le parent et la liaison si nécessaire (première fois seulement)
+                if (!empty($_SESSION['inscription_data']['parent_data']) && empty($_SESSION['inscription_data']['parent_created'])) {
+                    $parentModel = new ParentModel();
+                    
+                    // Vérifier si un parent avec le même téléphone existe déjà
+                    $parentExistant = null;
+                    if (!empty($_SESSION['inscription_data']['parent_data']['telephone'])) {
+                        $parentExistant = $parentModel->getByTelephone($_SESSION['inscription_data']['parent_data']['telephone']);
+                    }
+                    
+                    // Créer le parent s'il n'existe pas
+                    if ($parentExistant) {
+                        $parentId = $parentExistant['id'];
+                    } else {
+                        $parentId = $parentModel->create([
+                            'nom' => $_SESSION['inscription_data']['parent_data']['nom'],
+                            'prenom' => $_SESSION['inscription_data']['parent_data']['prenom'],
+                            'telephone' => $_SESSION['inscription_data']['parent_data']['telephone'],
+                            'email' => $_SESSION['inscription_data']['parent_data']['email'] ?? null,
+                            'adresse' => $_SESSION['inscription_data']['parent_data']['adresse'] ?? null
+                        ]);
+                    }
+                    
+                    // Créer ou mettre à jour la relation eleves_parents
+                    $parentModel->linkToEleve($parentId, $_SESSION['inscription_data']['eleve_id'], $_SESSION['inscription_data']['parent_data']['lien_parente'] ?? 'pere');
+                    $_SESSION['inscription_data']['parent_created'] = true;
+                }
             } else {
                 $eleveId = $_POST['eleve_id'];
                 if (empty($eleveId)) {
@@ -228,6 +279,13 @@ trait InscriptionStepsTrait {
         $inscriptionId = $_SESSION['inscription_data']['inscription_id'] ?? null;
         $eleveId = $_SESSION['inscription_data']['eleve_id'] ?? null;
         
+        // Valider que eleve_id existe en session
+        if (!$eleveId) {
+            $_SESSION['error'] = "Informations de l'élève manquantes. Veuillez recommencer depuis le début.";
+            $this->redirect('inscriptions/nouveau?etape=1');
+            return;
+        }
+        
         $model = new Inscription();
         $docModel = new DocumentsInscription();
         $inscription = $inscriptionId ? $model->getDetails($inscriptionId) : null;
@@ -370,14 +428,14 @@ trait InscriptionStepsTrait {
     protected function uploadDocument($inscriptionId, $additionalData = [], $redirectUrl = null) {
         $docModel = new DocumentsInscription();
         
-        if (!isset($_FILES['document']) || $_FILES['document']['error'] === UPLOAD_ERR_NO_FILE) {
+        if (!isset($_FILES['fichier']) || $_FILES['fichier']['error'] === UPLOAD_ERR_NO_FILE) {
             $_SESSION['error'] = "Veuillez sélectionner un fichier.";
             $this->redirect($redirectUrl ?? 'inscriptions/nouveau?etape=4');
             return;
         }
 
-        $file = $_FILES['document'];
-        $typeDocument = $_POST['type_document'] ?? 'Autre';
+        $file = $_FILES['fichier'];
+        $typeDocument = $_POST['type_document'] ?? 'autre';
 
         // Validation du type de fichier
         $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
@@ -402,11 +460,11 @@ trait InscriptionStepsTrait {
             $data = [
                 'inscription_id' => $inscriptionId,
                 'eleve_id' => $additionalData['eleve_id'] ?? null,
-                'nom_document' => $typeDocument,
+                'type_document' => $typeDocument,
+                'nom_fichier' => $filename,
                 'chemin_fichier' => 'uploads/documents/' . $filename,
                 'type_mime' => $file['type'],
-                'taille' => $file['size'],
-                'date_upload' => date('Y-m-d H:i:s')
+                'taille_fichier' => $file['size']
             ];
             
             $docModel->create($data);

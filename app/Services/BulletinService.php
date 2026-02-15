@@ -156,22 +156,20 @@ class BulletinService {
     }
     
     /**
-     * Récupère les notes d'une matière pour un élève
+     * Récupère les notes d'une matière pour un élève (V2 optimisée)
      */
     private function getNotesMatiere($eleveId, $matiereId, $periodeId, $anneeScolaireId) {
-        $sql = "SELECT n.note, n.type, e.coefficient as coef_eval
-                FROM (
-                    SELECT note, evaluation_id, 'examen' as type FROM notes_examens WHERE eleve_id = ?
-                    UNION ALL
-                    SELECT note, evaluation_id, 'interrogation' as type FROM notes_interrogations WHERE eleve_id = ?
-                ) n
-                INNER JOIN evaluations e ON n.evaluation_id = e.id
-                WHERE e.matiere_id = ? 
-                AND e.periode_id = ?
-                AND e.annee_scolaire_id = ?
-                AND n.note IS NOT NULL";
+        $sql = "SELECT n.note, ev.type, ev.poids as coef_eval
+                FROM notes n
+                JOIN evaluations ev ON n.evaluation_id = ev.id
+                WHERE n.eleve_id = ? 
+                AND ev.matiere_id = ? 
+                AND ev.periode_id = ?
+                AND ev.annee_scolaire_id = ?
+                AND n.note IS NOT NULL
+                AND n.absent = 0";
         
-        return $this->noteModel->query($sql, [$eleveId, $eleveId, $matiereId, $periodeId, $anneeScolaireId]);
+        return $this->db->query($sql, [$eleveId, $matiereId, $periodeId, $anneeScolaireId]);
     }
     
     /**
@@ -361,20 +359,32 @@ class BulletinService {
     }
     
     /**
-     * Récupère les matières d'une classe avec coefficients
+     * Récupère les matières d'une classe avec coefficients (Phase 3 optimisée)
      */
     public function getMatieresClasse($classeId) {
         $sql = "SELECT m.id, m.nom, m.code, 
-                COALESCE(mc.coefficient, ms.coefficient, mn.coefficient, 1.00) as coefficient
+                COALESCE(
+                    (SELECT coefficient FROM coefficients_matieres WHERE matiere_id = m.id AND cible_id = c.id AND cible_type = 'classe' AND actif = 1 LIMIT 1),
+                    (SELECT coefficient FROM coefficients_matieres WHERE matiere_id = m.id AND cible_id = c.niveau_id AND cible_type = 'niveau' AND actif = 1 LIMIT 1),
+                    (SELECT coefficient FROM coefficients_matieres WHERE matiere_id = m.id AND cible_id = c.serie_id AND cible_type = 'serie' AND actif = 1 LIMIT 1),
+                    1.00
+                ) as coefficient
                 FROM matieres m
-                INNER JOIN classes c ON c.id = ?
-                LEFT JOIN matieres_classes mc ON (m.id = mc.matiere_id AND c.id = mc.classe_id AND c.annee_scolaire_id = mc.annee_scolaire_id)
-                LEFT JOIN matieres_series ms ON (m.id = ms.matiere_id AND c.serie_id = ms.serie_id AND ms.actif = 1)
-                LEFT JOIN matieres_niveaux mn ON (m.id = mn.matiere_id AND c.niveau_id = mn.niveau_id AND mn.actif = 1)
-                WHERE (mc.id IS NOT NULL OR ms.id IS NOT NULL OR mn.id IS NOT NULL)
+                CROSS JOIN classes c
+                WHERE c.id = ?
+                AND EXISTS (
+                    SELECT 1 FROM coefficients_matieres cm 
+                    WHERE cm.matiere_id = m.id 
+                    AND (
+                        (cm.cible_id = c.id AND cm.cible_type = 'classe') OR 
+                        (cm.cible_id = c.niveau_id AND cm.cible_type = 'niveau') OR 
+                        (cm.cible_id = c.serie_id AND cm.cible_type = 'serie')
+                    )
+                    AND cm.actif = 1
+                )
                 ORDER BY m.nom";
         
-        return $this->matiereModel->query($sql, [$classeId]);
+        return $this->db->query($sql, [$classeId]);
     }
     
     /**

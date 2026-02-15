@@ -1,0 +1,4 @@
+﻿--- D├®marrage de la migration ROSSIGNOLES V2 (Phase 1) ---
+Chargement du fichier : 2026_02_15_phase1_fondations.sql
+Ex├®cution des requ├¬tes SQL...
+ÔØî Erreur PDO lors de la migration : SQLSTATE[HY000]: General error: 1267 Illegal mix of collations (utf8mb4_general_ci,IMPLICIT) and (utf8mb4_unicode_ci,IMPLICIT) for operation '='

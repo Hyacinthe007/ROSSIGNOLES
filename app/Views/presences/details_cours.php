@@ -4,171 +4,197 @@ require_once __DIR__ . '/../layout/header.php';
 require_once __DIR__ . '/../layout/sidebar.php';
 ?>
 
-<div class="main-content">
-    <div class="page-header">
-        <h1><i class="fas fa-users"></i> Liste de Présence</h1>
-        <div class="actions">
-            <a href="/presences?date=<?= $date ?>" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+<div class="p-4 md:p-8">
+    <!-- En-tête -->
+    <div class="header-actions">
+        <div class="page-header-clean">
+            <h1>
+                <i class="fas fa-users"></i>
+                Liste de Présence
+            </h1>
+            <p>Détail des présences pour le cours du <?= date('d/m/Y', strtotime($date)) ?></p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="<?= url('presences') ?>?date=<?= $date ?>" class="btn-retour">
+                <i class="fas fa-arrow-left"></i>
+                Retour
             </a>
-            <button onclick="window.print()" class="btn btn-primary">
-                <i class="fas fa-print"></i> Imprimer
+            <button onclick="window.print()" class="btn-retour" style="background: #805ad5;">
+                <i class="fas fa-print"></i>
+                Imprimer
             </button>
         </div>
     </div>
 
     <!-- Informations du cours -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Informations du Cours</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3">
-                    <strong>Date :</strong><br>
+    <div class="cours-info-card">
+        <h3 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600; color: #1a202c; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-chalkboard" style="color: #4299e1;"></i>
+            Informations du Cours
+        </h3>
+        <div class="cours-info-grid">
+            <div class="cours-info-item">
+                <span class="info-label">Date</span>
+                <span class="info-value">
                     <?= date('d/m/Y', strtotime($date)) ?>
                     (<?= ucfirst(strftime('%A', strtotime($date))) ?>)
-                </div>
-                <div class="col-md-3">
-                    <strong>Horaire :</strong><br>
-                    <?= date('H:i', strtotime($cours['heure_debut'])) ?> 
-                    - 
-                    <?= date('H:i', strtotime($cours['heure_fin'])) ?>
-                </div>
-                <div class="col-md-3">
-                    <strong>Classe :</strong><br>
-                    <span class="badge bg-secondary fs-6">
-                        <?= htmlspecialchars($cours['classe_code']) ?>
-                    </span>
-                </div>
-                <div class="col-md-3">
-                    <strong>Matière :</strong><br>
-                    <span class="badge fs-6" style="background-color: <?= htmlspecialchars($cours['couleur'] ?? '#3498db') ?>">
+                </span>
+            </div>
+            <div class="cours-info-item">
+                <span class="info-label">Horaire</span>
+                <span class="info-value" style="color: #4299e1;">
+                    <?= date('H:i', strtotime($cours['heure_debut'])) ?> - <?= date('H:i', strtotime($cours['heure_fin'])) ?>
+                </span>
+            </div>
+            <div class="cours-info-item">
+                <span class="info-label">Classe</span>
+                <span class="info-value">
+                    <span class="badge-clean badge-classe"><?= htmlspecialchars($cours['classe_code']) ?></span>
+                </span>
+            </div>
+            <div class="cours-info-item">
+                <span class="info-label">Matière</span>
+                <span class="info-value">
+                    <span class="badge-clean badge-matiere" style="background-color: <?= htmlspecialchars($cours['couleur'] ?? '#4299e1') ?>">
                         <?= htmlspecialchars($cours['matiere_nom']) ?>
                     </span>
-                </div>
+                </span>
             </div>
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <strong>Enseignant :</strong><br>
-                    <?= htmlspecialchars($cours['enseignant_nom'] ?? 'Non assigné') ?>
-                </div>
+            <div class="cours-info-item">
+                <span class="info-label">Enseignant</span>
+                <span class="info-value"><?= htmlspecialchars($cours['enseignant_nom'] ?? 'Non assigné') ?></span>
             </div>
         </div>
     </div>
 
     <!-- Statistiques -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-info">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value"><?= $stats['total'] ?></div>
-                    <div class="stat-label">Effectif total</div>
-                </div>
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-content">
+                <h3>Effectif total</h3>
+                <p class="stat-number"><?= $stats['total'] ?></p>
+            </div>
+            <div class="stat-icon icon-blue">
+                <i class="fas fa-users"></i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-success">
-                    <i class="fas fa-user-check"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value"><?= $stats['presents'] ?></div>
-                    <div class="stat-label">Présents</div>
-                </div>
+
+        <div class="stat-box">
+            <div class="stat-content">
+                <h3>Présents</h3>
+                <p class="stat-number"><?= $stats['presents'] ?></p>
+            </div>
+            <div class="stat-icon icon-green">
+                <i class="fas fa-user-check"></i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-danger">
-                    <i class="fas fa-user-times"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value"><?= $stats['absents'] ?></div>
-                    <div class="stat-label">Absents</div>
-                </div>
+
+        <div class="stat-box">
+            <div class="stat-content">
+                <h3>Absents</h3>
+                <p class="stat-number"><?= $stats['absents'] ?></p>
+            </div>
+            <div class="stat-icon icon-red">
+                <i class="fas fa-user-times"></i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon <?= $stats['taux_presence'] >= 90 ? 'bg-success' : ($stats['taux_presence'] >= 75 ? 'bg-warning' : 'bg-danger') ?>">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value"><?= $stats['taux_presence'] ?>%</div>
-                    <div class="stat-label">Taux de présence</div>
-                </div>
+
+        <div class="stat-box">
+            <div class="stat-content">
+                <h3>Taux de présence</h3>
+                <p class="stat-number"><?= $stats['taux_presence'] ?>%</p>
+            </div>
+            <div class="stat-icon icon-purple">
+                <i class="fas fa-percentage"></i>
             </div>
         </div>
     </div>
 
     <!-- Liste des élèves -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Liste des Élèves</h5>
+    <div class="content-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 class="section-title" style="margin-bottom: 0;">
+                <i class="fas fa-list-check"></i>
+                Liste des Élèves
+            </h2>
+            <div class="filter-tabs" id="statusFilter">
+                <button class="filter-tab active" data-filter="all" onclick="filterByStatus('all', this)">
+                    Tous (<?= count($eleves) ?>)
+                </button>
+                <button class="filter-tab" data-filter="present" onclick="filterByStatus('present', this)">
+                    <i class="fas fa-check-circle" style="color: #48bb78;"></i> Présents (<?= $stats['presents'] ?>)
+                </button>
+                <button class="filter-tab" data-filter="absent" onclick="filterByStatus('absent', this)">
+                    <i class="fas fa-times-circle" style="color: #f56565;"></i> Absents (<?= $stats['absents'] ?>)
+                </button>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
+
+        <?php if (empty($eleves)): ?>
+            <div class="empty-state">
+                <i class="fas fa-users-slash"></i>
+                <h3>Aucun élève trouvé</h3>
+                <p>Il n'y a pas d'élève inscrit dans cette classe.</p>
+            </div>
+        <?php else: ?>
+            <div class="table-container">
+                <table class="eleves-table">
                     <thead>
                         <tr>
-                            <th width="50">#</th>
-                            <th width="80">Photo</th>
-                            <th>Matricule</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th width="120" class="text-center">Statut</th>
-                            <th>Motif</th>
+                            <th style="width: 50px;">#</th>
+                            <th style="width: 50px;">Photo</th>
+                            <th><i class="fas fa-id-card" style="margin-right: 4px;"></i>Matricule</th>
+                            <th><i class="fas fa-user" style="margin-right: 4px;"></i>Nom</th>
+                            <th><i class="fas fa-user" style="margin-right: 4px;"></i>Prénom</th>
+                            <th style="width: 130px; text-align: center;"><i class="fas fa-clipboard-check" style="margin-right: 4px;"></i>Statut</th>
+                            <th><i class="fas fa-comment" style="margin-right: 4px;"></i>Motif</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php $index = 1; ?>
                         <?php foreach ($eleves as $eleve): ?>
-                            <tr class="<?= $eleve['present'] ? 'table-success-light' : 'table-danger-light' ?>">
-                                <td><?= $index++ ?></td>
+                            <tr class="<?= $eleve['present'] ? 'row-present' : 'row-absent' ?>"
+                                data-status="<?= $eleve['present'] ? 'present' : 'absent' ?>">
+                                <td style="font-weight: 500; color: #a0aec0;"><?= $index++ ?></td>
                                 <td>
                                     <?php if (!empty($eleve['photo'])): ?>
-                                        <img src="/public/uploads/eleves/<?= htmlspecialchars($eleve['photo']) ?>" 
+                                        <img src="<?= url('public/uploads/eleves/' . htmlspecialchars($eleve['photo'])) ?>" 
                                              alt="Photo" 
-                                             class="rounded-circle" 
-                                             width="40" 
-                                             height="40"
-                                             style="object-fit: cover;">
+                                             class="avatar-small">
                                     <?php else: ?>
-                                        <div class="avatar-placeholder">
+                                        <div class="avatar-placeholder-sm">
                                             <?= strtoupper(substr($eleve['nom'], 0, 1)) ?>
                                         </div>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= htmlspecialchars($eleve['matricule']) ?></td>
+                                <td style="font-family: monospace; font-size: 0.85rem; color: #718096;">
+                                    <?= htmlspecialchars($eleve['matricule']) ?>
+                                </td>
                                 <td><strong><?= htmlspecialchars($eleve['nom']) ?></strong></td>
                                 <td><?= htmlspecialchars($eleve['prenom']) ?></td>
-                                <td class="text-center">
+                                <td style="text-align: center;">
                                     <?php if ($eleve['present']): ?>
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check"></i> Présent
+                                        <span class="badge-clean badge-present">
+                                            <i class="fas fa-check-circle"></i> Présent
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-times"></i> Absent
+                                        <span class="badge-clean badge-absent">
+                                            <i class="fas fa-times-circle"></i> Absent
                                         </span>
                                         <?php if ($eleve['absence'] && $eleve['absence']['justifiee']): ?>
-                                            <span class="badge bg-warning text-dark ms-1">
-                                                <i class="fas fa-file-alt"></i> Justifié
+                                            <span class="badge-clean badge-justified" style="margin-left: 4px;">
+                                                <i class="fas fa-file-alt"></i>
                                             </span>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!$eleve['present'] && $eleve['absence']): ?>
-                                        <small class="text-muted">
+                                        <small style="color: #718096;">
                                             <?= htmlspecialchars($eleve['absence']['motif'] ?? '-') ?>
                                         </small>
                                     <?php else: ?>
-                                        -
+                                        <span style="color: #cbd5e0;">-</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -176,86 +202,33 @@ require_once __DIR__ . '/../layout/sidebar.php';
                     </tbody>
                 </table>
             </div>
-        </div>
+
+            <!-- Bouton imprimer -->
+            <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button onclick="window.print()" class="btn-filter" style="background: #805ad5;">
+                    <i class="fas fa-print"></i> Imprimer la liste
+                </button>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
-<style>
-.stat-card {
-    display: flex;
-    align-items: center;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    color: white;
-    font-size: 1.5rem;
-}
-
-.stat-content {
-    flex: 1;
-}
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.stat-label {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-}
-
-.table-success-light {
-    background-color: #d4edda !important;
-}
-
-.table-danger-light {
-    background-color: #f8d7da !important;
-}
-
-.avatar-placeholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-@media print {
-    .page-header .actions,
-    .sidebar,
-    .no-print {
-        display: none !important;
-    }
+<script>
+// Filtrage par statut
+function filterByStatus(status, button) {
+    // Mettre à jour les onglets
+    document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+    button.classList.add('active');
     
-    .main-content {
-        margin-left: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .card {
-        border: 1px solid #dee2e6 !important;
-        box-shadow: none !important;
-        page-break-inside: avoid;
-    }
+    // Filtrer les lignes
+    document.querySelectorAll('.eleves-table tbody tr').forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            row.style.display = row.dataset.status === status ? '' : 'none';
+        }
+    });
 }
-</style>
+</script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

@@ -30,8 +30,7 @@ class NotesController extends BaseController {
         $anneeModel = new AnneeScolaire();
         $classeModel = new Classe();
         $periodeModel = new Periode();
-        $examenModel = new ExamenFinal();
-        $interroModel = new Interrogation();
+        $evalModel = new \App\Models\Evaluation();
 
         // Récupérer l'année scolaire active
         $anneeActive = $anneeModel->getActive();
@@ -48,20 +47,8 @@ class NotesController extends BaseController {
         $evaluations = [];
 
         if ($classeId && $periodeId) {
-            // Récupérer les examens
-            $examens = $examenModel->getByClassePeriode($classeId, $periodeId);
-
-            // Récupérer les interrogations
-            $interros = $interroModel->getByClassePeriode($classeId, $periodeId);
-
-            $evaluations = array_merge($examens, $interros);
-            
-            // Trier par date (descendant)
-            usort($evaluations, function($a, $b) {
-                $dateA = $a['type'] === 'examen' ? $a['date_examen'] : $a['date_interrogation'];
-                $dateB = $b['type'] === 'examen' ? $b['date_examen'] : $b['date_interrogation'];
-                return strtotime($dateB) - strtotime($dateA);
-            });
+            // Récupérer toutes les évaluations (unifiées)
+            $evaluations = $evalModel->getByClassePeriode((int)$classeId, (int)$periodeId);
         }
 
         $this->view('notes/list', [
@@ -405,36 +392,22 @@ class NotesController extends BaseController {
     }
 
     /**
-     * Récupération modèle / table / clé en fonction du type d'évaluation
+     * Récupération du contexte d'évaluation unique (V2)
      */
     private function getEvaluationContext($type, $id) {
-        $model = null;
-        $tableNotes = '';
-        $fkId = '';
+        $evalModel = new \App\Models\Evaluation();
         
-        if ($type === 'examen') {
-            $model = new ExamenFinal();
-            $tableNotes = 'notes_examens';
-            $fkId = 'examen_id';
-        } elseif ($type === 'interrogation') {
-            $model = new Interrogation();
-            $tableNotes = 'notes_interrogations';
-            $fkId = 'interrogation_id';
-        } else {
-            throw new \Exception("Type d'évaluation invalide");
-        }
-        
-        $evaluation = $model->find($id);
+        $evaluation = $evalModel->find($id);
         if (!$evaluation) {
             throw new \Exception("Évaluation non trouvée");
         }
 
-        $details = $model->getDetailsWithRelations($id);
+        $details = $evalModel->getDetailsWithRelations($id);
 
         return [
-            'model' => $model,
-            'tableNotes' => $tableNotes,
-            'fkId' => $fkId,
+            'model' => $evalModel,
+            'tableNotes' => 'notes',
+            'fkId' => 'evaluation_id',
             'evaluation' => $evaluation,
             'details' => $details
         ];
@@ -503,43 +476,28 @@ class NotesController extends BaseController {
         $elevesEligibles = 0;
         
         foreach ($notes as $eleveId => $noteVal) {
-            // Vérifier l'éligibilité de l'élève
             $eligibilite = $this->verifierEligibiliteEleve($eleveId, $anneeScolaireId);
             
             if (!$eligibilite['eligible']) {
-                // Logger l'élève non éligible
                 $elevesNonEligibles[] = [
                     'eleve' => $eligibilite['eleve'] ?? "Élève #{$eleveId}",
                     'raison' => $eligibilite['raison']
                 ];
-                error_log("Note NON sauvegardée pour élève #{$eleveId} ({$eligibilite['eleve']}) : {$eligibilite['raison']}");
-                continue; // Passer cet élève
+                continue;
             }
             
             $elevesEligibles++;
-            $isAbsent = isset($absences[$eleveId]) ? 1 : 0;
-            $appreciation = $appreciations[$eleveId] ?? '';
             
-            // Vérifier si la note existe déjà
-            $exists = $model->queryOne(
-                "SELECT id FROM $tableNotes WHERE $fkId = ? AND eleve_id = ?",
-                [$evaluationId, $eleveId]
-            );
-            
-            if ($exists) {
-                $model->query(
-                    "UPDATE $tableNotes SET note = ?, absent = ?, appreciation = ?, modifie_par = ?, date_modification = NOW() WHERE id = ?",
-                    [$noteVal !== '' ? $noteVal : null, $isAbsent, $appreciation, $_SESSION['user_id'] ?? null, $exists['id']]
-                );
-            } else {
-                $model->query(
-                    "INSERT INTO $tableNotes ($fkId, eleve_id, note, absent, appreciation, saisi_par, date_saisie) VALUES (?, ?, ?, ?, ?, ?, NOW())",
-                    [$evaluationId, $eleveId, $noteVal !== '' ? $noteVal : null, $isAbsent, $appreciation, $_SESSION['user_id'] ?? null]
-                );
-            }
+            $this->noteModel->upsert([
+                'evaluation_id' => $evaluationId,
+                'eleve_id'      => $eleveId,
+                'note'          => $noteVal !== '' ? (float)$noteVal : null,
+                'absent'        => isset($absences[$eleveId]) ? 1 : 0,
+                'appreciation'  => $appreciations[$eleveId] ?? '',
+                'saisi_par'     => $_SESSION['user_id'] ?? null
+            ]);
         }
         
-        // Si des élèves ont été bloqués, stocker l'info en session pour afficher un message
         if (!empty($elevesNonEligibles)) {
             $_SESSION['notes_blocage_info'] = [
                 'nb_bloques' => count($elevesNonEligibles),
@@ -547,6 +505,12 @@ class NotesController extends BaseController {
                 'details' => $elevesNonEligibles
             ];
         }
+
+        // Déclencher un événement pour invalider le cache (V2)
+        \App\Core\EventDispatcher::dispatch('notes.saisies', [
+            'evaluation_id' => $evaluationId,
+            'classe_id' => $evaluation['classe_id']
+        ]);
     }
     
     /**

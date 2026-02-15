@@ -403,4 +403,27 @@ class ApiController extends BaseController {
         fclose($output);
         exit;
     }
+
+    /**
+     * API - Liste des élèves d'une classe
+     * ?classe_id=X
+     */
+    public function classesEleves() {
+        $classeId = $_GET['classe_id'] ?? null;
+        
+        // Récupérer l'année scolaire active
+        $anneeModel = new AnneeScolaire();
+        $anneeActive = $anneeModel->getActive();
+        $anneeId = $anneeActive ? $anneeActive['id'] : null;
+
+        if (!$anneeId) {
+            $anneeActiveData = $anneeModel->queryOne("SELECT * FROM annees_scolaires WHERE actif = 1 LIMIT 1");
+            $anneeId = $anneeActiveData ? $anneeActiveData['id'] : null;
+        }
+        
+        $classeModel = new Classe();
+        $eleves = $classeModel->getElevesWithPaymentStatus($classeId, $anneeId);
+        
+        $this->jsonResponse($eleves, count($eleves), 'eleves');
+    }
 }

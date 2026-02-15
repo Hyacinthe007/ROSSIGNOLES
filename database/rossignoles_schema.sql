@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `eleves` (
   `lieu_naissance` varchar(100) NOT NULL,
   `sexe` enum('M', 'F') NOT NULL,
   `photo` varchar(255) DEFAULT NULL,
-  `statut` enum('actif', 'inactif', 'diplome', 'exclus', 'transfere') DEFAULT 'actif',
+  `statut` enum('brouillon', 'actif', 'inactif', 'diplome', 'exclus', 'transfere') DEFAULT 'brouillon',
   `date_inscription` date DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),

@@ -196,6 +196,9 @@ class InscriptionsController extends BaseController {
         // Réinitialiser les données si on commence au début (pas d'étape ou étape 1)
         if (!isset($_GET['etape']) || $_GET['etape'] == 1) {
             unset($_SESSION['inscription_data']);
+            // Nettoyer aussi les messages de session pour l'étape 1
+            unset($_SESSION['success']);
+            unset($_SESSION['error']);
         }
         
         $etape = $_GET['etape'] ?? 1;
@@ -211,6 +214,90 @@ class InscriptionsController extends BaseController {
             case 7: $this->etape7Confirmation(); break;
             default: $this->redirect('/inscriptions/nouveau?etape=1');
         }
+    }
+    
+    /**
+     * Annule une inscription en brouillon et nettoie tous les données associées
+     */
+    public function annulerInscription() {
+        if (!isset($_SESSION['inscription_data'])) {
+            $_SESSION['error'] = "Aucune inscription en cours à annuler.";
+            $this->redirect('/inscriptions/nouveau?etape=1');
+            return;
+        }
+        
+        $eleveId = $_SESSION['inscription_data']['eleve_id'] ?? null;
+        $inscriptionId = $_SESSION['inscription_data']['inscription_id'] ?? null;
+        
+        if ($eleveId) {
+            try {
+                $eleveModel = new Eleve();
+                $eleve = $eleveModel->find($eleveId);
+                
+                // Vérifier que l'élève est bien en statut 'brouillon' (non finalisé)
+                if ($eleve && $eleve['statut'] === 'brouillon') {
+                    // Utiliser une transaction pour garantir la cohérence
+                    $eleveModel->beginTransaction();
+                    
+                    try {
+                        // Supprimer l'inscription si elle existe
+                        if ($inscriptionId) {
+                            $inscriptionModel = new Inscription();
+                            $inscriptionModel->delete($inscriptionId);
+                        }
+                        
+                        // Supprimer les documents uploadés
+                        $docModel = new DocumentsInscription();
+                        $documents = $docModel->getByEleve($eleveId);
+                        foreach ($documents as $doc) {
+                            // Supprimer le fichier physique
+                            $filePath = PUBLIC_PATH . '/' . $doc['chemin_fichier'];
+                            if (file_exists($filePath)) {
+                                unlink($filePath);
+                            }
+                            // Supprimer l'entrée en BDD
+                            $docModel->delete($doc['id']);
+                        }
+                        
+                        // Supprimer les relations élève-parent
+                        $parentModel = new ParentModel();
+                        $parentModel->execute(
+                            "DELETE FROM eleves_parents WHERE eleve_id = ?",
+                            [$eleveId]
+                        );
+                        
+                        // Supprimer l'élève
+                        $eleveModel->delete($eleveId);
+                        
+                        $eleveModel->commit();
+                        $_SESSION['success'] = "Inscription annulée avec succès. Toutes les données ont été supprimées.";
+                    } catch (\Exception $e) {
+                        $eleveModel->rollback();
+                        throw $e;
+                    }
+                } else {
+                    // L'élève n'est pas en brouillon (réinscription ou déjà finalisé)
+                    // Supprimer seulement l'inscription brouillon si elle existe, sans toucher à l'élève
+                    if ($inscriptionId) {
+                        $inscriptionModel = new Inscription();
+                        $inscription = $inscriptionModel->find($inscriptionId);
+                        if ($inscription && ($inscription['statut'] ?? '') !== 'validee') {
+                            $inscriptionModel->delete($inscriptionId);
+                        }
+                    }
+                    $_SESSION['success'] = "Inscription annulée.";
+                }
+            } catch (\Exception $e) {
+                error_log("Erreur lors de l'annulation d'inscription: " . $e->getMessage());
+                $_SESSION['error'] = "Erreur lors de l'annulation : " . $e->getMessage();
+            }
+        }
+        
+        // Nettoyer la session
+        unset($_SESSION['inscription_data']);
+        
+        // Rediriger vers la page d'accueil des inscriptions
+        $this->redirect('/inscriptions/nouveau?etape=1');
     }
     
     // La méthode etape1ChoixType est gérée par le trait
@@ -478,6 +565,11 @@ class InscriptionsController extends BaseController {
                   );
               }
               $model->finaliserInscription($inscriptionId, $data, $data['paiement_initial'] ?? null);
+              
+              // Passer l'élève du statut 'brouillon' à 'actif' maintenant que l'inscription est finalisée
+              $eleveModel = new Eleve();
+              $eleveModel->update($data['eleve_id'], ['statut' => 'actif', 'date_inscription' => date('Y-m-d')]);
+              
               LogActivite::log(
                   'Finalisation Inscription', 
                   'Scolarité', 

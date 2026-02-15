@@ -7,7 +7,7 @@ $breadcrumbs = [
 ];
 ?>
 
-<div class="p-4 md:p-8">
+<div class="p-0 md:p-8">
     <!-- En-tête -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

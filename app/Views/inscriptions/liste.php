@@ -1,4 +1,4 @@
-<div class="p-4 md:p-8">
+<div class="p-0 md:p-8">
     <!-- En-tête -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>

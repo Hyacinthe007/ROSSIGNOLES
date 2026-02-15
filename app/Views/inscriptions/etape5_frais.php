@@ -1,4 +1,4 @@
-<div class="p-4 md:p-8">
+<div class="p-0 md:p-8">
     <!-- En-tête simplifié -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -166,6 +166,12 @@
                 <a href="<?= url('inscriptions/nouveau?etape=5') ?>" 
                    class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition text-center">
                    <i class="fas fa-arrow-left mr-2"></i>Retour
+                </a>
+                
+                <a href="<?= url('inscriptions/annulerInscription') ?>" 
+                   onclick="return confirm('Êtes-vous sûr ? Cela supprimera l\'inscription et tous les documents.');"
+                   class="px-6 py-3 rounded-lg border border-red-300 text-red-700 font-medium hover:bg-red-50 transition text-center">
+                   <i class="fas fa-times mr-2"></i>Annuler
                 </a>
                 
                 <button type="submit" onclick="return confirm('Confirmez-vous le paiement et la validation de l\'inscription ?');"

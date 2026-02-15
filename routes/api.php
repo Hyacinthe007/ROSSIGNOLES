@@ -39,6 +39,9 @@ $apiRoutes = [
     
     // Notes
     ['pattern' => 'api/notes',                     'method' => 'GET', 'handler' => 'ApiController@notes'],
+    
+    // Classes - Élèves
+    ['pattern' => 'api/classes/eleves',            'method' => 'GET', 'handler' => 'ApiController@classesEleves'],
 ];
 
 return $apiRoutes;

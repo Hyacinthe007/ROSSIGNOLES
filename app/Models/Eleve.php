@@ -228,5 +228,21 @@ class Eleve extends BaseModel {
             [$anneeActiveId, $anneeActiveId, $anneeActiveId]
         );
     }
-}
-
+    
+    /**
+     * Nettoie les éléves en statut 'brouillon' orphelins (non finalisés après 24h)
+     * Les brouillons sans inscription associée et créés il y a plus de 24h sont supprimés
+     */
+    public function cleanupOrphanedDrafts() {
+        $count = $this->execute(
+            "DELETE FROM {$this->table} 
+             WHERE statut = 'brouillon' 
+             AND created_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)
+             AND NOT EXISTS (
+                 SELECT 1 FROM inscriptions i 
+                 WHERE i.eleve_id = {$this->table}.id
+             )"
+        );
+        
+        return $count;
+    }}

@@ -480,6 +480,10 @@ class SystemeController extends BaseController {
         $this->view('systeme/aide', ['title' => 'Centre d\'Aide']);
     }
 
+    public function apiDocs() {
+        $this->view('systeme/api_docs', ['title' => 'Documentation API']);
+    }
+
     public function apropos() {
         $this->view('systeme/apropos', ['title' => 'À Propos']);
     }

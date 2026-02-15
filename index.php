@@ -64,6 +64,18 @@ require_once APP_PATH . '/Helpers/functions.php';
 // Utiliser les classes avec namespaces
 use App\Middleware\CsrfMiddleware;
 use App\Core\Router;
+use App\Core\Cache;
+use App\Core\EventDispatcher;
+
+// ── V2 : Initialiser le cache ────────────────────────────────────────────────
+// Le dossier storage/cache sera créé automatiquement si nécessaire
+if (!is_dir(STORAGE_PATH . '/cache')) {
+    @mkdir(STORAGE_PATH . '/cache', 0755, true);
+}
+
+// ── V2 : Enregistrer les listeners d'événements métier ───────────────────────
+$registerEvents = require CONFIG_PATH . '/events.php';
+$registerEvents();
 
 // Charger les routes
 $webRoutes = require __DIR__ . '/routes/web.php';

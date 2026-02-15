@@ -1,4 +1,4 @@
-<div class="p-4 md:p-8">
+<div class="p-0 md:p-8">
     <style>
         .final-receipt {
             background: white;
@@ -123,7 +123,7 @@
                 <div class="info-row"><span class="label">Année scolaire :</span> <span class="value"><?= e($paiement['annee_scolaire'] ?? 'N/A') ?></span></div>
                 <div class="info-row"><span class="label">Matricule :</span> <span class="value"><?= e($inscription['eleve_matricule'] ?? '-') ?></span></div>
                 <div class="info-row"><span class="label">Nom & Prénom :</span> <span class="value" style="text-transform: uppercase;"><?= e($inscription['eleve_nom'] . ' ' . $inscription['eleve_prenom']) ?></span></div>
-                <div class="info-row"><span class="label">Classe :</span> <span class="value"><?= e($inscription['classe_nom'] ?? 'N/A') ?></span></div>
+                <div class="info-row"><span class="label">Classe :</span> <span class="value"><?= e($inscription['classe_code'] ?? 'N/A') ?></span></div>
             </div>
 
             <div style="text-align: right; background: #f9fafb; padding: 15px; border-radius: 8px;">

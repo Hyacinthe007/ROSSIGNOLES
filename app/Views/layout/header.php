@@ -183,6 +183,7 @@
         <?php 
         $currentUri = $_SERVER['REQUEST_URI'];
         $isHelpPage = strpos($currentUri, 'systeme/aide') !== false 
+                   || strpos($currentUri, 'systeme/api-docs') !== false
                    || strpos($currentUri, 'systeme/apropos') !== false
                    || (strpos($currentUri, 'finance/recus') !== false && isset($_GET['id']));
         if (!$isHelpPage): 

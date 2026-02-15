@@ -56,10 +56,16 @@ class ElevesController extends BaseController {
 
         $params = [];
         if (!empty($search)) {
-            $sql .= " AND (e.nom LIKE ? OR e.prenom LIKE ? OR e.matricule LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
+            // Recherche FULLTEXT optimisée (Phase 4)
+            // On ajoute un '*' à chaque mot pour une recherche "commence par" puissante
+            $searchTerms = '';
+            foreach (explode(' ', $search) as $term) {
+                if (strlen($term) > 2) $searchTerms .= '+' . $term . '* ';
+            }
+            $searchTerms = trim($searchTerms) ?: $search . '*';
+
+            $sql .= " AND MATCH(e.nom, e.prenom, e.matricule) AGAINST(? IN BOOLEAN MODE)";
+            $params[] = $searchTerms;
         }
 
         $sql .= " ORDER BY e.nom ASC, e.prenom ASC";

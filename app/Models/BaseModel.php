@@ -18,6 +18,9 @@ class BaseModel {
     protected $fillable = [];
     protected $hidden = [];
     
+    /** @var bool Activer l'audit automatique pour ce modèle */
+    protected $auditable = false;
+    
     public function __construct() {
         $this->db = $this->getConnection();
     }
@@ -199,7 +202,7 @@ class BaseModel {
     }
     
     /**
-     * Crée un nouvel enregistrement
+     * Crée un nouvel enregistrement avec audit automatique
      */
     public function create($data) {
         try {
@@ -214,7 +217,14 @@ class BaseModel {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(array_values($data));
             
-            return $this->db->lastInsertId();
+            $id = (int)$this->db->lastInsertId();
+
+            // Audit automatique
+            if ($this->auditable && class_exists('\App\Middleware\AuditMiddleware')) {
+                \App\Middleware\AuditMiddleware::logCreate($this->table, $id, $data);
+            }
+            
+            return $id;
         } catch (PDOException $e) {
             if ($e->getCode() == '42S02') {
                 error_log("Table {$this->table} n'existe pas dans la base de données");
@@ -225,11 +235,17 @@ class BaseModel {
     }
     
     /**
-     * Met à jour un enregistrement
+     * Met à jour un enregistrement avec audit automatique
      */
     public function update($id, $data) {
         $data = $this->filterFillable($data);
         
+        // Récupérer les anciennes valeurs si l'audit est activé
+        $oldData = null;
+        if ($this->auditable && class_exists('\App\Middleware\AuditMiddleware')) {
+            $oldData = $this->find($id);
+        }
+
         $fields = [];
         $values = [];
         foreach ($data as $key => $value) {
@@ -242,15 +258,35 @@ class BaseModel {
                " WHERE {$this->primaryKey} = ?";
         
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute($values);
+        $result = $stmt->execute($values);
+
+        // Audit automatique
+        if ($result && $oldData && class_exists('\App\Middleware\AuditMiddleware')) {
+            \App\Middleware\AuditMiddleware::logUpdate($this->table, (int)$id, (array)$oldData, $data);
+        }
+
+        return $result;
     }
     
     /**
-     * Supprime un enregistrement
+     * Supprime un enregistrement avec audit automatique
      */
     public function delete($id) {
+        // Récupérer les anciennes valeurs si l'audit est activé
+        $oldData = null;
+        if ($this->auditable && class_exists('\App\Middleware\AuditMiddleware')) {
+            $oldData = $this->find($id);
+        }
+
         $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE {$this->primaryKey} = ?");
-        return $stmt->execute([$id]);
+        $result = $stmt->execute([$id]);
+
+        // Audit automatique
+        if ($result && $oldData && class_exists('\App\Middleware\AuditMiddleware')) {
+            \App\Middleware\AuditMiddleware::logDelete($this->table, (int)$id, (array)$oldData);
+        }
+
+        return $result;
     }
     
     /**

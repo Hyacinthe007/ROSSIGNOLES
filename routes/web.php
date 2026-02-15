@@ -56,6 +56,7 @@ $routes = [
     ['pattern' => 'inscriptions/modifier/{id}', 'method' => 'GET', 'handler' => 'InscriptionsController@modifier'],
     ['pattern' => 'inscriptions/update', 'method' => 'POST', 'handler' => 'InscriptionsController@mettreAJour'],
     ['pattern' => 'inscriptions/recu/{id}', 'method' => 'GET', 'handler' => 'InscriptionsController@recuPaiement'],
+    ['pattern' => 'inscriptions/annulerInscription', 'method' => 'GET', 'handler' => 'InscriptionsController@annulerInscription'],
     ['pattern' => 'inscriptions/documents/{id}', 'method' => 'GET', 'handler' => 'InscriptionDocumentController@documents'],
     ['pattern' => 'inscriptions/documents/{id}', 'method' => 'POST', 'handler' => 'InscriptionDocumentController@documents'],
     ['pattern' => 'inscriptions/documents/upload', 'method' => 'POST', 'handler' => 'InscriptionDocumentController@upload'],
@@ -322,6 +323,7 @@ $routes = [
     ['pattern' => 'systeme/utilisateurs/toggle-status/{id}', 'method' => 'POST', 'handler' => 'SystemeController@toggleStatus'],
     ['pattern' => 'systeme/utilisateurs/sync-parents', 'method' => 'POST', 'handler' => 'SystemeController@syncParentsGroup'],
     ['pattern' => 'systeme/aide', 'method' => 'GET', 'handler' => 'SystemeController@aide'],
+    ['pattern' => 'systeme/api-docs', 'method' => 'GET', 'handler' => 'SystemeController@apiDocs'],
     ['pattern' => 'systeme/apropos', 'method' => 'GET', 'handler' => 'SystemeController@apropos'],
     
     // Groupes
