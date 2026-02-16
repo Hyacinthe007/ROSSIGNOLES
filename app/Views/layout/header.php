@@ -24,132 +24,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="<?= url('public/assets/css/admin-style.css') ?>">
+    <link rel="stylesheet" href="<?= url('public/assets/css/style-rechreche.css') ?>">
     <link rel="stylesheet" href="<?= url('public/assets/css/global-tooltips.css') ?>">
     <script src="<?= url('public/assets/js/global-tooltips.js') ?>" defer></script>
     <script src="<?= url('public/assets/js/secure-actions.js') ?>" defer></script>
     <meta name="csrf-token" content="<?= csrf_token() ?>">
-    <style>
-        /* Barre de recherche avec bordure tournante continue */
-        .smart-search-box {
-            position: relative;
-            padding: 3px; /* Bordure légèrement plus épaisse pour qu'elle soit bien "pleine" */
-            border-radius: 9999px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            width: 100%;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .smart-search-box::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            /* Utilisation d'une dimension dynamique pour couvrir toute la largeur/hauteur même en format ultra-large */
-            width: 150%; 
-            padding-bottom: 150%; 
-            background: conic-gradient(
-                from 0deg,
-                #3b82f6, #6366f1, #8b5cf6, #d946ef, #ec4899, #f43f5e, 
-                #f97316, #eab308, #84cc16, #22c55e, #10b981, #06b6d4, #3b82f6
-            );
-            animation: rotate-gradient 4s linear infinite;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
-
-        .smart-search-inner {
-            position: relative;
-            z-index: 1;
-            background: #fff; /* Retour à un fond plein pour une ligne bien nette sur le bord */
-            width: 100%;
-            height: 100%;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-        }
-
-        @keyframes rotate-gradient {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .smart-search-input {
-            flex: 1;
-            height: 36px; /* Réduit de 42px à 36px */
-            padding: 0 12px;
-            border: none !important;
-            background: transparent !important;
-            font-size: 0.95rem;
-            color: #1f2937;
-            outline: none !important;
-            font-weight: 500;
-        }
-
-        .smart-search-input::placeholder {
-            color: #9ca3af;
-            font-weight: 400;
-        }
-
-        .smart-search-icon {
-            margin-left: 16px;
-            color: #9ca3af;
-            font-size: 15px;
-        }
-
-        .smart-search-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-right: 14px;
-        }
-
-        .smart-search-action-btn {
-            color: #71717a;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .smart-search-action-btn:hover {
-            color: #3b82f6;
-            transform: scale(1.1);
-        }
-
-        /* Copilot-style Icon */
-        .copilot-swirl {
-            width: 26px;
-            height: 26px;
-            background: linear-gradient(135deg, #10b981, #3b82f6, #6366f1, #a855f7, #ec4899);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: rotate(-10deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .copilot-swirl::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
-            left: -100%;
-            top: 0;
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            100% { left: 100%; }
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -165,14 +44,15 @@
                 </svg>
             </button>
 
-            <!-- Bouton toggle sidebar -->
+            <!-- Bouton toggle sidebar
             <button id="toggleSidebarBtn" class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-md border hover:bg-gray-100 transition-colors"
                 aria-label="Réduire/Agrandir le menu">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                 </svg>
             </button>
-
+            -->
+            
             <a href="<?= url('dashboard') ?>" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <i class="fas fa-graduation-cap text-2xl text-blue-600"></i>
                 <span class="text-xl font-bold text-gray-800 hidden sm:block">École Mandroso</span>
