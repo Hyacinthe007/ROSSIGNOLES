@@ -85,29 +85,69 @@ $breadcrumbs = [
                 <div class="p-0"> <!-- Removed padding for full-height side layout -->
                     <?php
                     $targetLabels = [
-                        'inscriptions' => 'Inscriptions (Gestion)',
+                        // === Scolarité ===
+                        'scolarite' => 'Module Scolarité',
+                        'inscriptions_new' => 'Nouvelle inscription',
+                        'inscriptions_list' => 'Gestion inscriptions',
                         'eleves' => 'Liste des élèves',
+                        'eleves_classe' => 'Élèves par classe',
                         'parents' => 'Parents / Tuteurs',
-                        'scolarite' => 'Accès au module Scolarité',
-                        'finance' => 'Finance / Caisse',
-                        'echeancier' => 'Échéanciers',
-                        'pedagogie' => 'Enseignement / Classes',
+                        // === Finance ===
+                        'finance' => 'Module Finance',
+                        'finance_dashboard' => 'Tableau de bord Finance',
+                        'finance_mensuel' => 'Paiement Mensuel',
+                        'echeanciers' => 'Échéanciers',
+                        'recus' => 'Reçus de paiement',
+                        'paie' => 'Salaires & Paie',
+                        // === Pédagogie ===
+                        'pedagogie' => 'Module Pédagogie',
+                        'enseignements' => 'Enseignements',
+                        'calendrier' => 'Emplois du temps',
                         'parcours' => 'Parcours Scolaires',
                         'conseils' => 'Conseils de classe',
-                        'personnel' => 'Personnel (Gestion)',
-                        'absences_personnel' => 'Absences Personnel',
-                        'notes' => 'Notes / Évaluations',
+                        'presences' => 'Présences par cours',
+                        // === Ressources Humaines ===
+                        'personnel' => 'Module Personnel',
+                        'personnel_new' => 'Nouveau Personnel',
+                        'personnel_list' => 'Liste du personnel',
+                        'absences_personnel' => 'Absences du personnel',
+                        // === Évaluations ===
+                        'evaluations' => 'Gestion évaluations',
+                        'notes' => 'Notes',
+                        'resultats' => 'Résultats',
                         'bulletins' => 'Bulletins',
-                        'absences' => 'Absences & Retards',
+                        // === Vie scolaire ===
+                        'viescolaire' => 'Module Vie scolaire',
+                        'absences' => 'Assiduité (Absences & Retards)',
                         'sanctions' => 'Sanctions',
-                        'viescolaire' => 'Accès au module Vie Scolaire',
+                        // === Communication ===
+                        'communication' => 'Module Communication',
                         'annonces' => 'Annonces',
-                        'notifications' => 'Notifications / SMS',
-                        'communication' => 'Accès au module Communication',
+                        'messagerie' => 'Messagerie',
+                        'notifications' => 'Notifications',
+                        // === Paramètres ===
                         'systeme' => 'Configurations',
-                        'roles' => 'Rôles & Permissions',
                         'users' => 'Utilisateurs',
-                        'logs' => 'Logs / Historique'
+                        'roles' => 'Rôles',
+                        'logs' => 'Logs'
+                    ];
+
+                    // Labels pour les actions
+                    $actionLabelsGlobal = [
+                        'view' => 'Lire',
+                        'read' => 'Consulter',
+                        'create' => 'Créer',
+                        'update' => 'Modifier',
+                        'delete' => 'Supprimer',
+                        'export_pdf' => 'Export PDF',
+                        'export_excel' => 'Export Excel',
+                        'print' => 'Imprimer',
+                        'validate' => 'Valider',
+                        'generate' => 'Générer',
+                        'config' => 'Configurer',
+                        'dashboard' => 'Tableau de bord',
+                        'all' => 'Accès complet',
+                        'manage' => 'Gérer'
                     ];
 
                     $groupedPermissions = [];
@@ -122,7 +162,7 @@ $breadcrumbs = [
                     $orderedModules = [
                         'Scolarité',
                         'Finance',
-                        'Enseignement',
+                        'Pédagogie',
                         'Ressources Humaines',
                         'Évaluations',
                         'Vie scolaire',
@@ -178,17 +218,17 @@ $breadcrumbs = [
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <?php foreach ($targets as $targetName => $actions): ?>
                                             <div class="mb-6 group">
-                                                <div class="flex items-center justify-between mb-3 border-b border-gray-200 pb-1.5">
-                                                    <h6 class="text-[9px] font-black text-gray-500 lowercase first-letter:uppercase tracking-wider"><?= e($targetLabels[$targetName] ?? ucfirst($targetName)) ?></h6>
+                                                <div class="flex items-center justify-between mb-3 border-b border-gray-200 pb-2">
+                                                    <h6 class="text-xs font-bold text-gray-800 lowercase first-letter:uppercase tracking-wider"><?= e($targetLabels[$targetName] ?? ucfirst($targetName)) ?></h6>
                                                     <div class="flex gap-2">
-                                                        <button type="button" onclick="selectTargetPermissions('<?= $targetName ?>', true)" class="text-[8px] font-bold text-blue-500 hover:text-blue-700 uppercase">Tous</button>
-                                                        <span class="text-gray-300 text-[8px]">|</span>
-                                                        <button type="button" onclick="selectTargetPermissions('<?= $targetName ?>', false)" class="text-[8px] font-bold text-gray-400 hover:text-gray-600 uppercase">Aucun</button>
-                                                     </div>
-                                                 </div>
-                                                 <div class="flex flex-col gap-2 px-1">
+                                                        <button type="button" onclick="selectTargetPermissions('<?= $targetName ?>', true)" class="text-xs text-blue-600 hover:font-bold hover:text-blue-800">Tous</button>
+                                                        <span class="text-gray-300 text-xs">|</span>
+                                                        <button type="button" onclick="selectTargetPermissions('<?= $targetName ?>', false)" class="text-xs text-blue-500 hover:font-bold hover:text-blue-600">Aucun</button>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col gap-2 px-1">
                                                     <?php
-                                                    $order = ['view' => 1, 'create' => 2, 'update' => 3, 'delete' => 4];
+                                                    $order = ['view' => 1, 'read' => 2, 'create' => 3, 'update' => 4, 'delete' => 5, 'export_pdf' => 6, 'export_excel' => 7, 'print' => 8, 'validate' => 9, 'generate' => 10, 'config' => 11, 'dashboard' => 12, 'all' => 13, 'manage' => 14];
                                                     uksort($actions, function($a, $b) use ($order) {
                                                         return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
                                                     });
@@ -201,8 +241,7 @@ $breadcrumbs = [
                                                                 class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-all">
                                                             <span class="text-[11px] font-semibold text-gray-700 group-hover/label:text-blue-600 transition-colors">
                                                                 <?php
-                                                                $actionLabels = ['view' => 'Lire', 'create' => 'Créer', 'update' => 'Modifier', 'delete' => 'Supprimer'];
-                                                                echo $actionLabels[$action] ?? ucfirst($action);
+                                                                echo $actionLabelsGlobal[$action] ?? ucfirst($action);
                                                                 ?>
                                                             </span>
                                                         </label>

@@ -31,30 +31,31 @@
         
         <!-- Barre de recherche -->
         <div class="bg-white rounded-lg shadow-md p-4">
-            <form method="GET" action="<?= url('parents/list') ?>" class="flex flex-col md:flex-row gap-3">
+            <div class="flex flex-col md:flex-row gap-3">
                 <div class="flex-1">
                     <div class="relative">
                         <input type="text" 
-                               name="search" 
+                               id="searchInput"
                                value="<?= e($_GET['search'] ?? '') ?>"
                                placeholder="Rechercher un parent ou un élève (nom, prénom, téléphone, email)..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                               class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               autocomplete="off">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400" id="searchIcon"></i>
+                        <div id="searchSpinner" class="absolute right-3 top-2.5 hidden">
+                            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
-                <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition flex items-center justify-center gap-2 shadow">
-                    <i class="fas fa-search"></i>
-                    <span>Rechercher</span>
+                <button type="button" 
+                        id="btnReset"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition flex items-center justify-center gap-2 hidden">
+                    <i class="fas fa-times"></i>
+                    <span>Réinitialiser</span>
                 </button>
-                <?php if (!empty($_GET['search'])): ?>
-                    <a href="<?= url('parents/list') ?>" 
-                       class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-times"></i>
-                        <span>Réinitialiser</span>
-                    </a>
-                <?php endif; ?>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -72,10 +73,10 @@
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-900 uppercase tracking-wider"><i class="fas fa-tools mr-2"></i>Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody id="parentsTableBody" class="bg-white divide-y divide-gray-200">
                     <?php if (empty($parents)): ?>
                         <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                                 <i class="fas fa-inbox text-4xl mb-4 block"></i>
                                 <?php if (!empty($search)): ?>
                                     <p class="font-medium">Aucun parent trouvé pour "<?= e($search) ?>"</p>
@@ -140,3 +141,174 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchSpinner = document.getElementById('searchSpinner');
+    const btnReset = document.getElementById('btnReset');
+    const tableBody = document.getElementById('parentsTableBody');
+    const baseUrl = '<?= url('') ?>';
+    
+    let debounceTimer = null;
+    let currentXHR = null;
+    
+    // Afficher le bouton réinitialiser si le champ a déjà une valeur
+    if (searchInput.value.trim() !== '') {
+        btnReset.classList.remove('hidden');
+    }
+    
+    // Formater le numéro de téléphone malgache (03X XX XXX XX)
+    function formatTelephone(tel) {
+        if (!tel) return 'N/A';
+        const clean = tel.replace(/[^0-9]/g, '');
+        if (clean.length === 10 && clean.substring(0, 2) === '03') {
+            return clean.substring(0, 3) + ' ' + clean.substring(3, 5) + ' ' + clean.substring(5, 8) + ' ' + clean.substring(8, 10);
+        }
+        return tel || 'N/A';
+    }
+    
+    // Échapper les caractères HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+    
+    // Construire le HTML d'une ligne de parent
+    function buildRow(parent) {
+        const nom = escapeHtml((parent.nom || '') + ' ' + (parent.prenom || ''));
+        const tel = escapeHtml(formatTelephone(parent.telephone));
+        const email = escapeHtml(parent.email || '') || 'N/A';
+        const lien = escapeHtml(parent.lien_parente || parent.type_parent || 'Parent');
+        const nbEnfants = parseInt(parent.nb_enfants) || 0;
+        const badgeColor = nbEnfants > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600';
+        
+        return `<tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <div class="font-medium">${nom}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tel}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${email}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">${lien}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">
+                    <i class="fas fa-child mr-1"></i>${nbEnfants}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex justify-end gap-2">
+                    <a href="${baseUrl}parents/details/${parent.id}" class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded transition" title="Voir les détails">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="${baseUrl}parents/edit/${parent.id}" class="text-green-600 hover:text-green-900 p-2 hover:bg-green-50 rounded transition" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="${baseUrl}inscriptions/inscrire-enfant/${parent.id}" class="text-purple-600 hover:text-purple-900 p-2 hover:bg-purple-50 rounded transition" title="Inscrire un autre enfant">
+                        <i class="fas fa-child"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>`;
+    }
+    
+    // Construire le HTML quand aucun résultat
+    function buildEmptyRow(searchTerm) {
+        if (searchTerm) {
+            return `<tr>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-4 block"></i>
+                    <p class="font-medium">Aucun parent trouvé pour "${escapeHtml(searchTerm)}"</p>
+                    <p class="text-sm mt-2">Essayez avec d'autres termes de recherche</p>
+                </td>
+            </tr>`;
+        }
+        return `<tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                <i class="fas fa-inbox text-4xl mb-4 block"></i>
+                <p>Aucun parent enregistré</p>
+                <p class="text-sm mt-2">Les parents seront créés automatiquement lors de l'inscription des élèves</p>
+            </td>
+        </tr>`;
+    }
+    
+    // Effectuer la recherche AJAX
+    function performSearch(query) {
+        // Annuler la requête précédente si en cours
+        if (currentXHR) {
+            currentXHR.abort();
+        }
+        
+        searchSpinner.classList.remove('hidden');
+        
+        currentXHR = new XMLHttpRequest();
+        currentXHR.open('GET', baseUrl + 'parents/search?q=' + encodeURIComponent(query), true);
+        currentXHR.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        
+        currentXHR.onload = function() {
+            searchSpinner.classList.add('hidden');
+            if (currentXHR.status === 200) {
+                try {
+                    const response = JSON.parse(currentXHR.responseText);
+                    if (response.success && response.data) {
+                        if (response.data.length === 0) {
+                            tableBody.innerHTML = buildEmptyRow(query);
+                        } else {
+                            tableBody.innerHTML = response.data.map(buildRow).join('');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Erreur de parsing JSON:', e);
+                }
+            }
+            currentXHR = null;
+        };
+        
+        currentXHR.onerror = function() {
+            searchSpinner.classList.add('hidden');
+            currentXHR = null;
+        };
+        
+        currentXHR.send();
+    }
+    
+    // Événement sur le champ de recherche (debounce 300ms)
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        // Afficher/masquer le bouton réinitialiser
+        if (query !== '') {
+            btnReset.classList.remove('hidden');
+        } else {
+            btnReset.classList.add('hidden');
+        }
+        
+        // Annuler le timer précédent
+        clearTimeout(debounceTimer);
+        
+        // Lancer la recherche après 300ms d'inactivité
+        debounceTimer = setTimeout(function() {
+            performSearch(query);
+        }, 300);
+    });
+    
+    // Bouton réinitialiser
+    btnReset.addEventListener('click', function() {
+        searchInput.value = '';
+        btnReset.classList.add('hidden');
+        clearTimeout(debounceTimer);
+        performSearch('');
+        searchInput.focus();
+    });
+    
+    // Empêcher la soumission du formulaire sur Entrée
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+});
+</script>

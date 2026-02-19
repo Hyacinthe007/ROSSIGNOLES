@@ -132,5 +132,50 @@ class ParentsController extends BaseController {
             $this->view('parents/delete', ['parent' => $parent]);
         }
     }
+    
+    /**
+     * Recherche AJAX pour le live search
+     */
+    public function search() {
+        $search = trim($_GET['q'] ?? '');
+        
+        if (!empty($search)) {
+            $parents = $this->parentModel->query(
+                "SELECT p.*, COUNT(DISTINCT ep.eleve_id) as nb_enfants
+                 FROM parents p
+                 LEFT JOIN eleves_parents ep ON p.id = ep.parent_id
+                 LEFT JOIN eleves e ON ep.eleve_id = e.id
+                 WHERE p.nom LIKE ? 
+                    OR p.prenom LIKE ? 
+                    OR p.telephone LIKE ? 
+                    OR p.email LIKE ?
+                    OR e.nom LIKE ?
+                    OR e.prenom LIKE ?
+                    OR CONCAT(e.nom, ' ', e.prenom) LIKE ?
+                    OR CONCAT(e.prenom, ' ', e.nom) LIKE ?
+                 GROUP BY p.id
+                 ORDER BY p.nom ASC",
+                [
+                    "$search%", "$search%", "$search%", "$search%",
+                    "$search%", "$search%", "$search%", "$search%"
+                ]
+            );
+        } else {
+            $parents = $this->parentModel->query(
+                "SELECT p.*, COUNT(DISTINCT ep.eleve_id) as nb_enfants
+                 FROM parents p
+                 LEFT JOIN eleves_parents ep ON p.id = ep.parent_id
+                 GROUP BY p.id
+                 ORDER BY p.nom ASC"
+            );
+        }
+        
+        $this->json([
+            'success' => true,
+            'data' => $parents,
+            'count' => count($parents),
+            'search' => $search
+        ]);
+    }
 }
 

@@ -23,7 +23,7 @@ class CsrfMiddleware {
      * Liste des routes exclues du contrôle CSRF (patterns regex)
      */
     private static $excludedRoutes = [
-        'auth/login',
+        'auth/.*',
         'api/.*'
     ];
 

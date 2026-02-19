@@ -71,6 +71,11 @@
              */
             bindEvents() {
                 document.addEventListener('click', (e) => this.handleGlobalClick(e));
+
+                // Mettre à jour isMobile lors du redimensionnement
+                window.addEventListener('resize', () => {
+                    this.isMobile = window.innerWidth < 1024;
+                });
             }
 
             handleGlobalClick(e) {
@@ -207,6 +212,24 @@
                     e.preventDefault();
                     this.closeMobileMenu();
                     return;
+                }
+
+                // E. Clic en dehors de la sidebar → auto-collapse
+                // Si la sidebar est dépliée (non-collapsed) et que le clic est en dehors
+                // de la sidebar et du bouton toggle, on passe en mode collapsed.
+                if (this.sidebar && !this.sidebar.classList.contains('collapsed') && !this.isMobile) {
+                    const isOutsideSidebar = !this.sidebar.contains(e.target);
+                    const isOutsideToggle = !this.toggleBtn || !this.toggleBtn.contains(e.target);
+                    const isOutsideBurger = !this.mobileBurgerBtn || !this.mobileBurgerBtn.contains(e.target);
+
+                    if (isOutsideSidebar && isOutsideToggle && isOutsideBurger) {
+                        // Passer en mode collapsed
+                        this.sidebar.classList.add('collapsed');
+                        this.updateToggleIcon(true);
+                        localStorage.setItem(this.storageKey, 'true');
+                        this.setCookie(this.storageKey, 'true');
+                        this.closeAllAccordions();
+                    }
                 }
             }
 

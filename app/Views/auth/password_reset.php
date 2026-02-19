@@ -37,6 +37,7 @@
             <?php endif; ?>
 
             <form method="POST" action="<?= url('auth/password-reset') ?>" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-envelope mr-2 text-gray-500"></i>Adresse email

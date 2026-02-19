@@ -40,42 +40,69 @@ $breadcrumbs = [
                 <div class="p-0"> <!-- Removed padding for full-height side layout -->
                     <?php
                     $targetLabels = [
-                        // Scolarité
+                        // === Scolarité ===
+                        'scolarite' => 'Module Scolarité',
                         'inscriptions_new' => 'Nouvelle inscription',
                         'inscriptions_list' => 'Gestion inscriptions',
                         'eleves' => 'Liste des élèves',
                         'eleves_classe' => 'Élèves par classe',
                         'parents' => 'Parents / Tuteurs',
-                        // Finance
-                        'finance_dashboard' => 'Tableau de bord (Finance)',
+                        // === Finance ===
+                        'finance' => 'Module Finance',
+                        'finance_dashboard' => 'Tableau de bord Finance',
                         'finance_mensuel' => 'Paiement Mensuel',
                         'echeanciers' => 'Échéanciers',
                         'recus' => 'Reçus de paiement',
-                        // Pédagogie
+                        'paie' => 'Salaires & Paie',
+                        // === Pédagogie ===
+                        'pedagogie' => 'Module Pédagogie',
                         'enseignements' => 'Enseignements',
                         'calendrier' => 'Emplois du temps',
                         'parcours' => 'Parcours Scolaires',
                         'conseils' => 'Conseils de classe',
-                        // Ressources Humaines
+                        'presences' => 'Présences par cours',
+                        // === Ressources Humaines ===
+                        'personnel' => 'Module Personnel',
                         'personnel_new' => 'Nouveau Personnel',
                         'personnel_list' => 'Liste du personnel',
                         'absences_personnel' => 'Absences du personnel',
-                        // Évaluations
+                        // === Évaluations ===
+                        'evaluations' => 'Gestion évaluations',
                         'notes' => 'Notes',
                         'resultats' => 'Résultats',
                         'bulletins' => 'Bulletins',
-                        // Vie scolaire
-                        'absences' => 'Absences & Retards',
+                        // === Vie scolaire ===
+                        'viescolaire' => 'Module Vie scolaire',
+                        'absences' => 'Assiduité (Absences & Retards)',
                         'sanctions' => 'Sanctions',
-                        // Communication
+                        // === Communication ===
+                        'communication' => 'Module Communication',
                         'annonces' => 'Annonces',
                         'messagerie' => 'Messagerie',
                         'notifications' => 'Notifications',
-                        // Paramètres
+                        // === Paramètres ===
                         'systeme' => 'Configurations',
                         'users' => 'Utilisateurs',
                         'roles' => 'Rôles',
                         'logs' => 'Logs'
+                    ];
+
+                    // Labels pour les actions
+                    $actionLabelsGlobal = [
+                        'view' => 'Lire',
+                        'read' => 'Consulter',
+                        'create' => 'Créer',
+                        'update' => 'Modifier',
+                        'delete' => 'Supprimer',
+                        'export_pdf' => 'Export PDF',
+                        'export_excel' => 'Export Excel',
+                        'print' => 'Imprimer',
+                        'validate' => 'Valider',
+                        'generate' => 'Générer',
+                        'config' => 'Configurer',
+                        'dashboard' => 'Tableau de bord',
+                        'all' => 'Accès complet',
+                        'manage' => 'Gérer'
                     ];
 
                     $groupedPermissions = [];
@@ -91,7 +118,7 @@ $breadcrumbs = [
                         'Scolarité',
                         'Finance',
                         'Pédagogie',
-                        'Ressources humaines',
+                        'Ressources Humaines',
                         'Évaluations',
                         'Vie scolaire',
                         'Communication',
@@ -156,7 +183,7 @@ $breadcrumbs = [
                                                 </div>
                                                 <div class="flex flex-col gap-2 px-1">
                                                     <?php
-                                                    $order = ['view' => 1, 'create' => 2, 'update' => 3, 'delete' => 4];
+                                                    $order = ['view' => 1, 'read' => 2, 'create' => 3, 'update' => 4, 'delete' => 5, 'export_pdf' => 6, 'export_excel' => 7, 'print' => 8, 'validate' => 9, 'generate' => 10, 'config' => 11, 'dashboard' => 12, 'all' => 13, 'manage' => 14];
                                                     uksort($actions, function($a, $b) use ($order) {
                                                         return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
                                                     });
@@ -170,15 +197,7 @@ $breadcrumbs = [
                                                                 class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-all">
                                                             <span class="text-[11px] font-semibold text-gray-700 group-hover/label:text-blue-600 transition-colors">
                                                                 <?php
-                                                                $actionLabels = [
-                                                                    'view' => 'Lire',
-                                                                    'create' => 'Créer',
-                                                                    'update' => 'Modifier',
-                                                                    'delete' => 'Supprimer',
-                                                                    'export_pdf' => 'Export PDF',
-                                                                    'export_excel' => 'Export Excel'
-                                                                ];
-                                                                echo $actionLabels[$action] ?? ucfirst($action);
+                                                                echo $actionLabelsGlobal[$action] ?? ucfirst($action);
                                                                 ?>
                                                             </span>
                                                         </label>

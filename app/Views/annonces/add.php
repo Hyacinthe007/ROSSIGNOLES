@@ -18,6 +18,7 @@ $breadcrumbs = [
         </div>
 
         <form action="<?= url('annonces/add') ?>" method="POST" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
                 <div class="space-y-2">
                     <label for="titre" class="block text-sm font-medium text-gray-700">Titre de l'annonce <span class="text-red-500">*</span></label>

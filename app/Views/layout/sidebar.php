@@ -167,29 +167,37 @@
             <?php endif; ?>
 
             <!-- MODULE 5: Évaluations -->
-            <?php if (hasPermission('notes.view')): ?>
+            <?php if (hasPermission('evaluations.view')): ?>
             <div class="menu-group">
-                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('notes') || isActiveRoute('bulletins') || isActiveRoute('interrogations') || isActiveRoute('examens') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
+                <div class="menu-item-header group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 <?= isActiveRoute('notes') || isActiveRoute('bulletins') || isActiveRoute('evaluations') || isActiveRoute('interrogations') || isActiveRoute('examens') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' ?>"
                      title="Évaluations">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-clipboard-list text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('notes') || isActiveRoute('bulletins') || isActiveRoute('interrogations') || isActiveRoute('examens') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
+                        <i class="fas fa-clipboard-list text-center flex-shrink-0 transition-colors duration-200 <?= isActiveRoute('notes') || isActiveRoute('bulletins') || isActiveRoute('evaluations') || isActiveRoute('interrogations') || isActiveRoute('examens') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600' ?>" style="width: 20px;"></i>
                         <span class="menu-text font-medium">Évaluations</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform duration-200"></i>
                 </div>
                 <div class="menu-sub-items hidden overflow-hidden transition-all duration-300">
+                    <?php if (hasPermission('evaluations.view')): ?>
                     <a href="<?= url('evaluations') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('evaluations') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-clipboard-list w-4 h-4 mr-2"></i><span>Gestion évaluations</span>
                     </a>
+                    <?php endif; ?>
+                    <?php if (hasPermission('notes.view')): ?>
                     <a href="<?= url('notes/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('notes/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-star w-4 h-4 mr-2"></i><span>Notes</span>
                     </a>
+                    <?php endif; ?>
+                    <?php if (hasPermission('resultats.view')): ?>
                     <a href="<?= url('notes/moyennes') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('notes/moyennes') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-chart-bar w-4 h-4 mr-2"></i><span>Résultats</span>
                     </a>
+                    <?php endif; ?>
+                    <?php if (hasPermission('bulletins.view')): ?>
                     <a href="<?= url('bulletins/list') ?>" class="menu-item flex items-center p-2 pl-11 text-sm <?= isExactActiveRoute('bulletins/list') ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600' ?>">
                         <i class="fas fa-file-alt w-4 h-4 mr-2"></i><span>Bulletins</span>
                     </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>

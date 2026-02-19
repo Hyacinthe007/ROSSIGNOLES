@@ -40,6 +40,7 @@ $routes = [
     ['pattern' => 'parents/edit/{id}', 'method' => 'POST', 'handler' => 'ParentsController@edit'],
     ['pattern' => 'parents/details/{id}', 'method' => 'GET', 'handler' => 'ParentsController@details'],
     ['pattern' => 'parents/delete/{id}', 'method' => 'POST', 'handler' => 'ParentsController@delete'],
+    ['pattern' => 'parents/search', 'method' => 'GET', 'handler' => 'ParentsController@search'],
     
     
     // Inscriptions (module unifié pour inscriptions et réinscriptions)

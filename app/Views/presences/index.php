@@ -4,15 +4,13 @@ require_once __DIR__ . '/../layout/header.php';
 require_once __DIR__ . '/../layout/sidebar.php';
 ?>
 
-
-
-<div class="p-4 md:p-8">
+<div class="p-0 md:p-8">
     <!-- En-tête -->
     <div class="header-actions">
         <div class="page-header-clean">
             <h1>
                 <i class="fas fa-chalkboard-teacher"></i>
-                Présences par Cours (<?= date('Y', strtotime($date)) ?> - <?= date('Y', strtotime($date)) + 1 ?>)
+                Présences par cours (<?= date('Y', strtotime($date)) ?> - <?= date('Y', strtotime($date)) + 1 ?>)
             </h1>
             <p>Consultez les présences pour chaque cours de la journée</p>
         </div>
@@ -160,7 +158,7 @@ require_once __DIR__ . '/../layout/sidebar.php';
     <div class="content-section">
         <h2 class="section-title">
             <i class="fas fa-list"></i>
-            Cours du <?= date('d/m/Y', strtotime($date)) ?> (<?= ucfirst(strftime('%A', strtotime($date))) ?>)
+            Cours du <?= ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'][date('w', strtotime($date))] ?> <?= date('d/m/Y', strtotime($date)) ?>
         </h2>
 
         <?php if (empty($cours)): ?>

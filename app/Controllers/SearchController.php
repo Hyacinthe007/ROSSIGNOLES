@@ -36,7 +36,7 @@ class SearchController extends BaseController {
             "SELECT id, matricule, nom, prenom, photo, 'eleve' as type 
              FROM eleves 
              WHERE (nom LIKE ? OR prenom LIKE ? OR matricule LIKE ?) 
-             AND deleted_at IS NULL 
+             AND statut != 'supprime' 
              LIMIT 5",
             ["%$query%", "%$query%", "%$query%"]
         );
